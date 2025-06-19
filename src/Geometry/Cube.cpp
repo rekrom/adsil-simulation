@@ -75,11 +75,12 @@ std::vector<Point> Cube::wireframe() const
 
     return edges;
 }
-
+#include <iostream>
 std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, const Vector &v, int n) const
 {
     std::vector<Point> points;
     float step = dimension_ / (n - 1);
+    std::cout << "step: " << step << std::endl;
 
     for (int i = 0; i < n; ++i)
     {

@@ -19,6 +19,11 @@ const std::vector<Point> &PointCloud::getPoints() const
     return points_;
 }
 
+void PointCloud::clear()
+{
+    points_.clear();
+}
+
 std::size_t PointCloud::size() const
 {
     return points_.size();

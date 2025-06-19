@@ -17,6 +17,8 @@ public:
 
     std::size_t size() const;
 
+    void clear();
+
     // Merge two point clouds
     PointCloud operator+(const PointCloud &other) const;
 

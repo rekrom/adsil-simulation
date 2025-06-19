@@ -1,8 +1,9 @@
 #include "Device/Device.hpp"
 #include <cmath>
 #include <sstream>
-
+#include <iostream>
 constexpr float DEG_TO_RAD = static_cast<float>(M_PI) / 180.0f;
+constexpr float RAD_TO_DEG = 180.0f / static_cast<float>(M_PI);
 
 Device::Device(const DeviceConfig &config)
     : origin_(config.origin),
@@ -20,15 +21,14 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
     for (const auto &point : pcd.getPoints())
     {
         Vector vec_to_point = point.toVectorFrom(origin_);
-
         float horizontal_p_angle = std::atan2(vec_to_point.y(), vec_to_point.x());
         float vertical_p_angle = std::atan2(vec_to_point.y(), vec_to_point.z());
 
         float horizontal_d_angle = std::atan2(direction_.y(), direction_.x());
         float vertical_d_angle = std::atan2(direction_.y(), direction_.z());
-
-        if (std::abs(horizontal_p_angle - horizontal_d_angle) <= horizontal_fov_rad_ / 2.0f &&
-            std::abs(vertical_p_angle - vertical_d_angle) <= vertical_fov_rad_ / 2.0f)
+        float epsilon = 1e-7;
+        if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0f)) < epsilon &&
+            (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0f)) < epsilon)
         {
             visible->addPoint(point);
         }

@@ -14,10 +14,10 @@ int main()
 
     // Origins for transmitters (same point)
     std::vector<Point> tx_origins = {
-        Point(-0.4f, 0.0f, 0.0f),
-        Point(-0.2f, 0.0f, 0.0f),
-        Point(+0.2f, 0.0f, 0.0f),
-        Point(+0.4f, 0.0f, 0.0f)};
+        Point(0.0f, 0.0f, 0.0f),
+        Point(0.0f, 0.0f, 0.0f),
+        Point(0.0f, 0.0f, 0.0f),
+        Point(0.0f, 0.0f, 0.0f)};
 
     // Create transmitters
     auto transmitters = DeviceFactory::createTransmitters(
@@ -29,14 +29,12 @@ int main()
 
     // Receiver setup
     std::vector<Point> rx_origins = {
-        Point(-1000 / 1000, 0, 0),
-        Point(500 / 1000, 500 / 1000, 1000 / 1000),
-        Point(-500 / 1000, 500 / 1000, 1000 / 1000),
-        Point(1000 / 1000, 0, 0)};
+        Point(-1000 / 1000.0f, 0, 0),
+        Point(1000 / 1000.0f, 0, 0)};
 
-    std::vector<Vector> rx_dirs(4, Vector(0, 1, 0));
-    std::vector<float> v_fovs(4, 20);
-    std::vector<float> h_fovs(4, 120);
+    std::vector<Vector> rx_dirs(rx_origins.size(), Vector(0, 1, 0));
+    std::vector<float> v_fovs(rx_origins.size(), 20);
+    std::vector<float> h_fovs(rx_origins.size(), 120);
 
     auto receivers = DeviceFactory::createReceivers(
         rx_origins,
@@ -44,22 +42,22 @@ int main()
         v_fovs,
         h_fovs);
 
-    auto cube = ShapeFactory::createCube({Point(0, 0.5, 0),
-                                          200.0f / 1000.0f,
+    auto cube = ShapeFactory::createCube({Point(-300.0f / 1000.0, 1500.0f / 1000.0f, 0),
+                                          600.0 / 1000.0f,
                                           Vector(0, 0, 0)});
 
-    auto cylinder = ShapeFactory::createCylinder({Point(0.2, 0.8, 0),
-                                                  300.0f / 1000.0f,
-                                                  50.0f / 1000.0f,
-                                                  Vector(0, 0, M_PI / 4)});
+    // auto cylinder = ShapeFactory::createCylinder({Point(-500, 100, 0),
+    //                                               2000.0,
+    //                                               300.0,
+    //                                               Vector(0, 0, 0)});
 
     // std::cout << cube->toString() << "\n";
     // std::cout << cylinder->toString() << "\n";
 
-    auto mesh = cube->surfaceMesh(25);
-    // std::cout << mesh->toString() << "\n";
+    auto mesh = cube->surfaceMesh(2048 * 16);
+    std::cout << mesh->toString() << "\n";
 
-    auto meshCy = cylinder->surfaceMesh(25);
+    // auto meshCy = cylinder->surfaceMesh(16);
     // std::cout << meshCy->toString() << "\n";
 
     // VIEWER START
@@ -80,31 +78,32 @@ int main()
     auto cubeRenderable = std::make_shared<PointCloudRenderable>(mesh);
     cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre
     cubeRenderable->setVisible(true);                      // sadece test için görünür yap
-
-    auto cylinderRenderable = std::make_shared<PointCloudRenderable>(meshCy);
-    cylinderRenderable->setColor(glm::vec3(1.0f, 0.5f, 0.2f));
-    cylinderRenderable->setVisible(true);
     viewer.addRenderable(cubeRenderable);
-    viewer.addRenderable(cylinderRenderable);
+
+    // auto cylinderRenderable = std::make_shared<PointCloudRenderable>(meshCy);
+    // cylinderRenderable->setColor(glm::vec3(1.0f, 0.5f, 0.2f));
+    // cylinderRenderable->setVisible(true);
+    // viewer.addRenderable(cylinderRenderable);
 
     auto cubeWireframeLines = cube->wireframe(); // returns std::vector<Point>
     auto renderable = std::make_shared<WireframeRenderable>(cubeWireframeLines, glm::vec3(0.6f, 0.6f, 0.6f));
-    viewer.addRenderable(renderable);
+    // viewer.addRenderable(renderable);
 
-    auto cylinderWireframeLines = cylinder->wireframe(); // returns std::vector<Point>
-    renderable = std::make_shared<WireframeRenderable>(cylinderWireframeLines, glm::vec3(0.6f, 0.6f, 0.6f));
-    viewer.addRenderable(renderable);
+    // auto cylinderWireframeLines = cylinder->wireframe(); // returns std::vector<Point>
+    // renderable = std::make_shared<WireframeRenderable>(cylinderWireframeLines, glm::vec3(0.6f, 0.6f, 0.6f));
+    // viewer.addRenderable(renderable);
 
     auto scene = std::make_shared<SimulationScene>();
+
     scene->addTransmitters(transmitters);
     scene->addReceivers(receivers);
     scene->addShape(cube);
-    scene->addShape(cylinder);
+    // scene->addShape(cylinder);
 
     SignalSolver solver(scene);
     auto closestPoints = solver.solve();
     std::cout << closestPoints->toString() << std::endl;
-    std::cout << "after solving" << std::endl;
+
     auto closestPointRenderable = std::make_shared<PointCloudRenderable>(closestPoints);
     closestPointRenderable->setColor(glm::vec3(1.0f, 0.0f, 0.5f));
     closestPointRenderable->setVisible(true);
