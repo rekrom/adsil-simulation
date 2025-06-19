@@ -1,6 +1,6 @@
-#include "ShapeFactory.hpp"
-#include "Cube.hpp"
-#include "Cylinder.hpp"
+#include "Geometry/ShapeFactory.hpp"
+#include "Geometry/Cube.hpp"
+#include "Geometry/Cylinder.hpp"
 
 std::shared_ptr<IShape> ShapeFactory::createCube(const CubeConfig &config)
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Viewer/Renderable.hpp"
-#include "Device.hpp"
+#include "Device/Device.hpp"
 #include <glad/glad.h>
 #include <memory>
 #include <glm/gtx/quaternion.hpp> // rotation için gerekli

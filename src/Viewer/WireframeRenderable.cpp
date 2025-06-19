@@ -1,36 +1,26 @@
-#include "Viewer/PointCloudRenderable.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+#include "Viewer/WireframeRenderable.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-PointCloudRenderable::PointCloudRenderable(std::shared_ptr<PointCloud> pointCloud)
-    : pointCloud_(std::move(pointCloud)), visible_(true), color_(1.0f, 1.0f, 1.0f) {}
+WireframeRenderable::WireframeRenderable(const std::vector<Point> &lines, glm::vec3 color)
+    : lines_(lines), color_(color) {}
 
-PointCloudRenderable::~PointCloudRenderable()
+WireframeRenderable::~WireframeRenderable()
 {
     glDeleteVertexArrays(1, &vao_);
     glDeleteBuffers(1, &vbo_);
     glDeleteProgram(shader_);
 }
 
-void PointCloudRenderable::setColor(const glm::vec3 &color)
-{
-    color_ = color;
-}
-
-void PointCloudRenderable::setVisible(bool visible)
-{
-    visible_ = visible;
-}
-
-void PointCloudRenderable::initGL()
+void WireframeRenderable::initGL()
 {
     createShader();
     createBuffers();
 }
 
-void PointCloudRenderable::createShader()
+void WireframeRenderable::createShader()
 {
-    const char *vertexShaderSource = R"(
+    const char *vSrc = R"(
         #version 330 core
         layout(location = 0) in vec3 aPos;
         uniform mat4 model;
@@ -38,10 +28,9 @@ void PointCloudRenderable::createShader()
         uniform mat4 projection;
         void main() {
             gl_Position = projection * view * model * vec4(aPos, 1.0);
-            gl_PointSize = 4.0;
         })";
 
-    const char *fragmentShaderSource = R"(
+    const char *fSrc = R"(
         #version 330 core
         out vec4 FragColor;
         uniform vec3 uColor;
@@ -50,11 +39,11 @@ void PointCloudRenderable::createShader()
         })";
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertexShaderSource, nullptr);
+    glShaderSource(vs, 1, &vSrc, nullptr);
     glCompileShader(vs);
 
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragmentShaderSource, nullptr);
+    glShaderSource(fs, 1, &fSrc, nullptr);
     glCompileShader(fs);
 
     shader_ = glCreateProgram();
@@ -65,11 +54,10 @@ void PointCloudRenderable::createShader()
     glDeleteShader(fs);
 }
 
-void PointCloudRenderable::createBuffers()
+void WireframeRenderable::createBuffers()
 {
     std::vector<float> vertices;
-    vertices.reserve(pointCloud_->size() * 3);
-    for (const auto &pt : pointCloud_->getPoints())
+    for (const auto &pt : lines_)
     {
         vertices.push_back(pt.x());
         vertices.push_back(pt.y());
@@ -89,11 +77,8 @@ void PointCloudRenderable::createBuffers()
     glBindVertexArray(0);
 }
 
-void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
+void WireframeRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
 {
-    if (!visible_ || pointCloud_->getPoints().empty())
-        return;
-
     glUseProgram(shader_);
 
     glm::mat4 model = glm::mat4(1.0f);
@@ -103,6 +88,6 @@ void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projec
     glUniform3fv(glGetUniformLocation(shader_, "uColor"), 1, glm::value_ptr(color_));
 
     glBindVertexArray(vao_);
-    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(pointCloud_->size()));
+    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lines_.size()));
     glBindVertexArray(0);
 }

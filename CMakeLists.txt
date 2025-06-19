@@ -27,6 +27,15 @@ find_package(glm REQUIRED)
 # Build executable
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLAD_SOURCES})
 
+# # Static Library
+# add_library(Core STATUC
+# src/Core/Vector.cpp
+# src/Core/Point.cpp
+# )
+# target_include_directories(Core PUBLIC
+#     ${CMAKE_SOURCE_DIR}/include
+# )
+
 # Link everything
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
