@@ -92,16 +92,3 @@ std::string Car::toString() const
         << ", rpy=" << orientation_.toString() << ")";
     return oss.str();
 }
-
-nlohmann::json Car::toJson() const
-{
-    return {
-        {"position", {{"x", position_.x()}, {"y", position_.y()}, {"z", position_.z()}}}};
-}
-
-void Car::fromJson(const nlohmann::json &j)
-{
-    // position_.setX(j.at("position").at("x").get<float>());
-    // position_.setY(j.at("position").at("y").get<float>());
-    // position_.setZ(j.at("position").at("z").get<float>());
-}

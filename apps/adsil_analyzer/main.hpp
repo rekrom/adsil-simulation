@@ -13,3 +13,7 @@
 #include <simulation/SignalSolver.hpp>
 #include <json/JsonUtils.hpp>
 #include <core/Car.hpp>
+#include <adapter/JsonAdapterRegistry.hpp>
+#include <adapter/PointJsonAdapter.hpp>
+#include <adapter/VectorJsonAdapter.hpp>
+#include <adapter/CarJsonAdapter.hpp>
