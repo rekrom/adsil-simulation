@@ -1,6 +1,5 @@
 #pragma once
 
-#include <json/JsonSerializable.hpp>
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
 #include <device/Device.hpp>
@@ -8,7 +7,7 @@
 #include <memory>
 #include <string>
 
-class Car : public JsonSerializable
+class Car
 {
 public:
     Car();
@@ -28,10 +27,6 @@ public:
     const std::vector<Point> &getTrajectory() const;
 
     std::string toString() const;
-
-    // JSON Serialization
-    nlohmann::json toJson() const override;
-    void fromJson(const nlohmann::json &j) override;
 
 private:
     Point position_;

@@ -120,13 +120,23 @@ int main()
 
     Car car(origin, orientation, tx, rx);
 
-    nlohmann::json j = car.toJson();
-    std::cout << j.dump(4) << std::endl;
+    adapter::JsonAdapterRegistry registry;
+    // İlgili adapterları kaydet
+    registry.registerAdapter<Car>(std::make_shared<adapter::CarJsonAdapter>());
 
-    JsonUtils::saveToFile("car.json", j);
-    std::cout << "done" << std::endl;
+    auto *carAdapter = registry.getAdapter<Car>();
+    if (!carAdapter)
+    {
+        std::cerr << "Car adapter bulunamadı!\n";
+        return 1;
+    }
 
-    Car loadedCar;
+    nlohmann::json j = carAdapter->toJson(car);
+    std::cout << "Serialized Car:\n"
+              << j.dump(4) << std::endl;
+
+    // JSON'dan Car objesi oluştur
+    Car loadedCar = carAdapter->fromJson(j);
 
     // viewer.run();
     return 0;

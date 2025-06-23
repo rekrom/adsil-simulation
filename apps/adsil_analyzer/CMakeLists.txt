@@ -23,6 +23,5 @@ target_link_libraries(${PROJECT_NAME}
         Device
         Simulation
         Viewer
-        JsonUtils
         Adapter
 )
