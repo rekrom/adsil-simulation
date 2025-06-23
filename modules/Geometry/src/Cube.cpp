@@ -80,8 +80,6 @@ std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, con
 {
     std::vector<Point> points;
     float step = dimension_ / (n - 1);
-    std::cout << "step: " << step << std::endl;
-
     for (int i = 0; i < n; ++i)
     {
         for (int j = 0; j < n; ++j)
