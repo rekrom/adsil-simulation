@@ -2,6 +2,15 @@
 #include <cmath>
 #include <sstream>
 
+Car::Car()
+    : position_(),
+      orientation_(),
+      transmitters_(),
+      receivers_()
+{
+    trajectory_.push_back(position_);
+}
+
 Car::Car(const Point &position,
          const Vector &orientation,
          const std::vector<std::shared_ptr<Device>> &transmitters,
@@ -82,4 +91,17 @@ std::string Car::toString() const
     oss << "Car(pos=" << position_.toString()
         << ", rpy=" << orientation_.toString() << ")";
     return oss.str();
+}
+
+nlohmann::json Car::toJson() const
+{
+    return {
+        {"position", {{"x", position_.x()}, {"y", position_.y()}, {"z", position_.z()}}}};
+}
+
+void Car::fromJson(const nlohmann::json &j)
+{
+    // position_.setX(j.at("position").at("x").get<float>());
+    // position_.setY(j.at("position").at("y").get<float>());
+    // position_.setZ(j.at("position").at("z").get<float>());
 }

@@ -6,7 +6,9 @@
 class Vector
 {
 public:
+    Vector();
     Vector(float x, float y, float z);
+    ~Vector();
 
     float x() const { return x_; }
     float y() const { return y_; }

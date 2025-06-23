@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include <iostream>
 
 int main()
 {
@@ -109,6 +110,24 @@ int main()
     closestPointRenderable->setVisible(true);
     viewer.addRenderable(closestPointRenderable);
 
-    viewer.run();
+    Point origin(0, 0, 0);
+    Vector orientation(0, 0, 0);
+    std::vector<std::shared_ptr<Device>> tx;
+    std::vector<std::shared_ptr<Device>> rx;
+
+    tx.clear();
+    rx.clear();
+
+    Car car(origin, orientation, tx, rx);
+
+    nlohmann::json j = car.toJson();
+    std::cout << j.dump(4) << std::endl;
+
+    JsonUtils::saveToFile("car.json", j);
+    std::cout << "done" << std::endl;
+
+    Car loadedCar;
+
+    // viewer.run();
     return 0;
 }

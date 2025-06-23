@@ -2,8 +2,15 @@
 #include <cmath>
 #include <sstream>
 
+Vector::Vector()
+    : x_(0), y_(0), z_(0) {}
+
 Vector::Vector(float x, float y, float z)
     : x_(x), y_(y), z_(z) {}
+
+Vector::~Vector()
+{
+}
 
 Vector Vector::normalized() const
 {
