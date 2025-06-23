@@ -11,7 +11,6 @@
 #include <viewer/WireframeRenderable.hpp>
 #include <simulation/SimulationScene.hpp>
 #include <simulation/SignalSolver.hpp>
-#include <json/JsonUtils.hpp>
 #include <core/Car.hpp>
 #include <adapter/JsonAdapterRegistry.hpp>
 #include <adapter/PointJsonAdapter.hpp>

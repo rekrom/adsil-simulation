@@ -10,8 +10,3 @@ target_include_directories(Core PUBLIC
 target_link_libraries(Core
     PUBLIC Device # Device modülü Core'a bağımlıysa
 )
-
-# JSON desteği için JsonUtils modülünü dahil et
-target_link_libraries(Core
-    PUBLIC JsonUtils
-)
