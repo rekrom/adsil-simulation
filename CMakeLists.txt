@@ -5,41 +5,27 @@ project(adsil_analyzer)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Automatically include source files
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "include/*.hpp")
+# Add include dir for legacy includes (if needed by main.cpp)
+include_directories(include)
 
-# GLAD manual integration
+# GLAD integration
 set(GLAD_SOURCES external/glad/src/glad.c)
 include_directories(external/glad/include)
 
-# Add include directory
-include_directories(include)
+# Source files for root-level main.cpp (if any)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "include/*.hpp")
 
-# Set CMAKE_PREFIX_PATH for GLFW
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/usr/lib/x86_64-linux-gnu/cmake/glfw3")
-
-# Find packages
+# External dependencies: MUST be found before Viewer
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
-# Build executable
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLAD_SOURCES})
-
-# # Static Library
-# add_library(Core STATUC
-# src/Core/Vector.cpp
-# src/Core/Point.cpp
-# )
-# target_include_directories(Core PUBLIC
-#     ${CMAKE_SOURCE_DIR}/include
-# )
-
-# Link everything
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        glfw
-        OpenGL::GL
-        glm::glm
-)
+# Add module subdirectories
+add_subdirectory(apps/adsil_analyzer)
+add_subdirectory(modules/Core)
+add_subdirectory(modules/Geometry)
+add_subdirectory(modules/Device)
+add_subdirectory(modules/Simulation)
+# add_subdirectory(modules/Solver)
+add_subdirectory(modules/Viewer)
