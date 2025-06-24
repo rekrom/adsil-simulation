@@ -24,4 +24,13 @@ target_link_libraries(${PROJECT_NAME}
         Simulation
         Viewer
         Adapter
+        Utils
+)
+
+add_custom_command(
+    TARGET adsil_analyzer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/resources
+            $<TARGET_FILE_DIR:adsil_analyzer>/resources
+    COMMENT "Copying resources folder to binary output directory"
 )

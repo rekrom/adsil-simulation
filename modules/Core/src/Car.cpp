@@ -11,6 +11,16 @@ Car::Car()
     trajectory_.push_back(position_);
 }
 
+Car::Car(const Transform &transform,
+         const std::vector<std::shared_ptr<Device>> &transmitters,
+         const std::vector<std::shared_ptr<Device>> &receivers)
+    : transform_(transform),
+      transmitters_(transmitters),
+      receivers_(receivers)
+{
+    trajectory_.push_back(transform_.getPosition());
+}
+
 Car::Car(const Point &position,
          const Vector &orientation,
          const std::vector<std::shared_ptr<Device>> &transmitters,
@@ -21,6 +31,15 @@ Car::Car(const Point &position,
       receivers_(receivers)
 {
     trajectory_.push_back(position_);
+}
+
+std::vector<std::shared_ptr<Device>> Car::getTransmitters() const
+{
+    return transmitters_;
+}
+std::vector<std::shared_ptr<Device>> Car::getReceivers() const
+{
+    return receivers_;
 }
 
 std::vector<std::shared_ptr<Device>> Car::getAllDevices() const
@@ -35,6 +54,7 @@ void Car::moveTo(const Point &newPosition)
     Vector delta(newPosition.x() - position_.x(),
                  newPosition.y() - position_.y(),
                  newPosition.z() - position_.z());
+    // Vector delta = newPosition - transform_.getPosition(); // operator- ile
 
     position_ = newPosition;
 
@@ -77,18 +97,26 @@ void Car::rotateYaw(float angleDeg)
         device->setDirection(rotatedDir.normalized());
     }
 
-    // update internal yaw
-    orientation_ = Vector(orientation_.x(), orientation_.y(), orientation_.z() + angleRad);
+    // transform_ içindeki orientation güncelleniyor
+    Vector ori = transform_.getOrientation();
+    transform_.setOrientation(Vector(ori.x(), ori.y(), ori.z() + angleRad));
 }
 
-const Point &Car::getPosition() const { return position_; }
-const Vector &Car::getOrientation() const { return orientation_; }
+const Point &Car::getPosition() const { return transform_.getPosition(); }
+const Vector &Car::getOrientation() const { return transform_.getOrientation(); }
+const Transform &Car::getTransform() const { return transform_; }
+
+void Car::setTransform(const Transform &transform)
+{
+    transform_ = transform;
+}
+
 const std::vector<Point> &Car::getTrajectory() const { return trajectory_; }
 
 std::string Car::toString() const
 {
     std::ostringstream oss;
-    oss << "Car(pos=" << position_.toString()
-        << ", rpy=" << orientation_.toString() << ")";
+    oss << "Car(pos=" << transform_.getPosition().toString()
+        << ", rpy=" << transform_.getOrientation().toString() << ")";
     return oss.str();
 }

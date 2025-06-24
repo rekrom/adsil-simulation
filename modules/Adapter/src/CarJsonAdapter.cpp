@@ -1,0 +1,58 @@
+#include <adapter/implementations/CarJsonAdapter.hpp>
+
+namespace adapter
+{
+
+    CarJsonAdapter::CarJsonAdapter()
+        : pointAdapter_(), vectorAdapter_(), deviceAdapter_()
+    {
+    }
+
+    nlohmann::json CarJsonAdapter::toJson(const Car &car) const
+    {
+        nlohmann::json j;
+        j["position"] = pointAdapter_.toJson(car.getPosition());
+        j["orientation"] = vectorAdapter_.toJson(car.getOrientation());
+
+        // transmitters dizisi
+        nlohmann::json txArr = nlohmann::json::array();
+        for (const auto &tx : car.getTransmitters())
+        {
+            txArr.push_back(deviceAdapter_.toJson(*tx));
+        }
+        j["transmitters"] = txArr;
+
+        // receivers dizisi
+        nlohmann::json rxArr = nlohmann::json::array();
+        for (const auto &rx : car.getReceivers())
+        {
+            rxArr.push_back(deviceAdapter_.toJson(*rx));
+        }
+        j["receivers"] = rxArr;
+
+        return j;
+    }
+
+    Car CarJsonAdapter::fromJson(const nlohmann::json &j) const
+    {
+        Point p = pointAdapter_.fromJson(j.at("position"));
+        Vector v = vectorAdapter_.fromJson(j.at("orientation"));
+
+        std::vector<std::shared_ptr<Device>> tx;
+        for (const auto &txJson : j.at("transmitters"))
+        {
+            Device d = deviceAdapter_.fromJson(txJson);
+            tx.push_back(std::make_shared<Device>(std::move(d)));
+        }
+
+        std::vector<std::shared_ptr<Device>> rx;
+        for (const auto &rxJson : j.at("receivers"))
+        {
+            Device d = deviceAdapter_.fromJson(rxJson);
+            rx.push_back(std::make_shared<Device>(std::move(d)));
+        }
+
+        return Car(p, v, tx, rx);
+    }
+
+} // namespace adapter

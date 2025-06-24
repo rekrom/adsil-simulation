@@ -1,7 +1,7 @@
 #pragma once
 
-#include <adapter/IJsonAdapterBase.hpp> // yeni base class
-#include <adapter/IJsonAdapter.hpp>     // yeni base class
+#include <adapter/interfaces/IJsonAdapterBase.hpp> // yeni base class
+#include <adapter/interfaces/IJsonAdapter.hpp>     // yeni base class
 #include <memory>
 #include <typeindex>
 #include <unordered_map>

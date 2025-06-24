@@ -1,4 +1,4 @@
-#include <geometry/Cylinder.hpp>
+#include <geometry/implementations/Cylinder.hpp>
 #include <core/RotationUtils.hpp>
 #include <cmath>
 

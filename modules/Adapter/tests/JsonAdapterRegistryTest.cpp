@@ -1,5 +1,5 @@
 #include <adapter/JsonAdapterRegistry.hpp>
-#include <adapter/PointJsonAdapter.hpp>
+#include <adapter/implementations/PointJsonAdapter.hpp>
 #include <core/Point.hpp>
 #include <cassert>
 #include <iostream>

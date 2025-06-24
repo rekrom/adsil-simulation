@@ -1,6 +1,6 @@
 #pragma once
 
-#include <geometry/IShape.hpp>
+#include <geometry/interfaces/IShape.hpp>
 #include <core/Point.hpp>
 #include <core/PointCloud.hpp>
 #include <core/Vector.hpp>

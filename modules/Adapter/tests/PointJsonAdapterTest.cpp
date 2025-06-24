@@ -1,4 +1,4 @@
-#include <adapter/PointJsonAdapter.hpp>
+#include <adapter/implementations/PointJsonAdapter.hpp>
 #include <cassert>
 #include <iostream>
 

@@ -24,6 +24,12 @@ public:
     const Vector &getDirection() const;
     void setDirection(const Vector &newDirection);
 
+    const float &getVerticalFovDeg() const;
+    void setVerticalFovDeg(const float &verticalFovDeg);
+
+    const float &getHorizontalFovDeg() const;
+    void setHorizontalFovDeg(const float &horizontalFovDeg);
+
 private:
     Point origin_;
     Vector direction_;

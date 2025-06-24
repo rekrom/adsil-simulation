@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/Point.hpp>
-#include <adapter/IJsonAdapter.hpp>
+#include <adapter/interfaces/IJsonAdapter.hpp>
 #include <nlohmann/json.hpp>
 
 namespace adapter

@@ -1,4 +1,4 @@
-#include <adapter/VectorJsonAdapter.hpp>
+#include <adapter/implementations/VectorJsonAdapter.hpp>
 #include <cassert>
 #include <iostream>
 

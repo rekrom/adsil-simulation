@@ -1,13 +1,15 @@
 #pragma once
 
-#include <geometry/IShape.hpp>
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
+#include <geometry/interfaces/IShape.hpp>
+#include <geometry/implementations/ShapeBase.hpp>
 
-class Cube : public IShape
+#include <core/Transform.hpp>
+#include <core/PointCloud.hpp>
+
+class Cube : public ShapeBase
 {
 public:
-    Cube(const Point &origin, float dimension, const Vector &orientation);
+    Cube(const Transform &transform, float dimension);
 
     std::shared_ptr<PointCloud> surfaceMesh(int quality = 16) const override;
 
@@ -16,10 +18,7 @@ public:
     std::string toString() const override;
 
 private:
-    Point origin_;
     float dimension_;
-    Vector orientation_;
-
     std::vector<Point> generateFace(
         const Vector &center,
         const Vector &u,

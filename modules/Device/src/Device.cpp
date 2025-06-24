@@ -57,6 +57,25 @@ void Device::setDirection(const Vector &newDirection)
     direction_ = newDirection.normalized(); // always keep direction normalized
 }
 
+const float &Device::getVerticalFovDeg() const
+{
+    return vertical_fov_deg_;
+}
+
+void Device::setVerticalFovDeg(const float &verticalFovDeg)
+{
+    vertical_fov_rad_ = verticalFovDeg * DEG_TO_RAD;
+}
+
+const float &Device::getHorizontalFovDeg() const
+{
+    return horizontal_fov_deg_;
+}
+void Device::setHorizontalFovDeg(const float &horizontalFovDeg)
+{
+    horizontal_fov_rad_ = horizontalFovDeg * DEG_TO_RAD;
+}
+
 std::string Device::toString() const
 {
     std::ostringstream oss;

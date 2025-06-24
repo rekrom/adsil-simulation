@@ -15,4 +15,16 @@ namespace RotationUtils
         rot = glm::rotate(rot, rotation.x(), glm::vec3(1.0f, 0.0f, 0.0f));
         return rot;
     }
+
+    template <typename T>
+    inline constexpr T deg2rad(T deg)
+    {
+        return deg * static_cast<T>(M_PI) / static_cast<T>(180);
+    }
+
+    template <typename T>
+    inline constexpr T rad2deg(T rad)
+    {
+        return rad * static_cast<T>(180) / static_cast<T>(M_PI);
+    }
 }

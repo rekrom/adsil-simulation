@@ -1,8 +1,8 @@
 #pragma once
 
-#include "IShape.hpp"
-#include "CubeConfig.hpp"
-#include "CylinderConfig.hpp"
+#include <geometry/interfaces/IShape.hpp>
+#include <geometry/configs/CubeConfig.hpp>
+#include <geometry/configs/CylinderConfig.hpp>
 #include <memory>
 
 class ShapeFactory

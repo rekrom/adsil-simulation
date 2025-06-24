@@ -1,7 +1,7 @@
 #pragma once
 
 #include <device/Device.hpp>
-#include <geometry/IShape.hpp>
+#include <geometry/interfaces/IShape.hpp>
 #include <core/PointCloud.hpp>
 
 #include <vector>

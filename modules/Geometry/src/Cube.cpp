@@ -1,8 +1,9 @@
-#include <geometry/Cube.hpp>
+#include <geometry/implementations/Cube.hpp>
 #include <core/RotationUtils.hpp>
+#include <iostream>
 
-Cube::Cube(const Point &origin, float dimension, const Vector &orientation)
-    : origin_(origin), dimension_(dimension), orientation_(orientation) {}
+Cube::Cube(const Transform &transform, float dimension)
+    : ShapeBase(transform), dimension_(dimension) {}
 
 std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
 {
@@ -33,7 +34,7 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
 std::vector<Point> Cube::wireframe() const
 {
     std::vector<Point> edges;
-    glm::vec3 center = origin_.toGlmVec3();
+    glm::vec3 center = transform_.getPosition().toGlmVec3();
     float half = dimension_ / 2.0f;
 
     // Cube köşe noktaları
@@ -75,7 +76,7 @@ std::vector<Point> Cube::wireframe() const
 
     return edges;
 }
-#include <iostream>
+
 std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, const Vector &v, int n) const
 {
     std::vector<Point> points;
@@ -85,11 +86,11 @@ std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, con
         for (int j = 0; j < n; ++j)
         {
             Vector offset = u * (-dimension_ / 2 + i * step) + v * (-dimension_ / 2 + j * step);
-            Vector rotated = RotationUtils::rotateRPY(center + offset, orientation_);
+            Vector rotated = RotationUtils::rotateRPY(center + offset, transform_.getOrientation());
             points.emplace_back(
-                origin_.x() + rotated.x(),
-                origin_.y() + rotated.y(),
-                origin_.z() + rotated.z());
+                transform_.getPosition().x() + rotated.x(),
+                transform_.getPosition().y() + rotated.y(),
+                transform_.getPosition().z() + rotated.z());
         }
     }
 

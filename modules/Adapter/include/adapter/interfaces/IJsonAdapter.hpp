@@ -1,6 +1,6 @@
 #pragma once
 
-#include <adapter/IJsonAdapterBase.hpp>
+#include <adapter/interfaces/IJsonAdapterBase.hpp>
 #include <nlohmann/json.hpp>
 namespace adapter
 {
