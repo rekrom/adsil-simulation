@@ -3,6 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stdexcept>
 #include <iostream>
+#include <core/RotationUtils.hpp>
 
 namespace viewer
 {
@@ -179,8 +180,17 @@ namespace viewer
 
     void DeviceRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
+        std::cout << device_->getName() << " [POS] " << device_->getGlobalTransform().getPosition().toString() << std::endl;
+        std::cout << device_->getName() << " [ORI] " << device_->getGlobalTransform().getOrientation().toString() << std::endl;
+        // glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
+        glm::mat4 model(1.0f);
+        model = glm::translate(model, device_->getGlobalTransform().getPosition().toGlmVec3());
+        Vector orientation_(0, 0, 0);
+        Vector dir(device_->getGlobalTransform().getOrientation().x(), device_->getGlobalTransform().getOrientation().y(), device_->getGlobalTransform().getOrientation().z());
 
-        glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
+        orientation_ = RotationUtils::eulerFromDirection(dir);
+        model *= glm::toMat4(orientation_.toGlmQuat());
+
         model = glm::scale(model, glm::vec3(0.51f)); // <-- Check if this differs!
 
         glUseProgram(shader_);

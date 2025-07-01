@@ -21,6 +21,8 @@ int main()
         return 1;
     }
 
+    auto carPtr = std::make_shared<Car>(carAdapter->fromJson(car_json)); // create shared_ptr from it
+
     // JSON'dan Car objesi oluştur
     // nlohmann::json j = carAdapter->toJson(loadedCar);
     // std::cout << "Car: " << j.dump(4) << std::endl;
@@ -94,7 +96,6 @@ int main()
     viewer.addRenderable(axis);
 
     // std::cout << carPtr.get()->getPosition().toString() << std::endl;
-    auto carPtr = std::make_shared<Car>(carAdapter->fromJson(car_json)); // create shared_ptr from it
     auto carRenderable = std::make_shared<viewer::CarRenderable>(carPtr);
     viewer.addRenderable(carRenderable);
 

@@ -5,16 +5,16 @@
         "z": 0.0
     },
     "position": {
-        "x": 1.0,
+        "x": 0.0,
         "y": 0.0,
-        "z": 3.0
+        "z": 0.0
     },
     "receivers": [
         {
             "origin": {
-                "x": 0.0,
+                "x": -1.0,
                 "y": 0.0,
-                "z": -1.0
+                "z": 0.0
             },
             "placement_angles": {
                 "horizontal_angle_deg": 0.0,
@@ -26,9 +26,9 @@
         },
         {
             "origin": {
-                "x": 0.0,
+                "x": 1.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 0.0
             },
             "placement_angles": {
                 "horizontal_angle_deg": 0.0,
@@ -43,7 +43,7 @@
         {
             "origin": {
                 "x": 0.0,
-                "y": 0.0,
+                "y": 0.5,
                 "z": 0.0
             },
             "placement_angles": {

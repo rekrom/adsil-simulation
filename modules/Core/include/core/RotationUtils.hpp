@@ -27,4 +27,7 @@ namespace RotationUtils
     {
         return rad * static_cast<T>(180) / static_cast<T>(M_PI);
     }
+
+    Vector eulerFromDirection(const Vector &dir);
+
 }

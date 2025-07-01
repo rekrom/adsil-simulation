@@ -1,5 +1,7 @@
 #include <viewer/interfaces/Camera.hpp>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0f)
@@ -81,4 +83,16 @@ glm::vec3 Camera::getPosition() const
 float Camera::getFov() const
 {
     return fov_;
+}
+
+std::string Camera::toString() const
+{
+    std::ostringstream oss;
+    oss << "Camera {\n";
+    oss << "  Position: (" << position_.x << ", " << position_.y << ", " << position_.z << ")\n";
+    oss << "  Up: (" << up_.x << ", " << up_.y << ", " << up_.z << ")\n";
+    oss << "  Yaw: " << yaw_ << "\n";
+    oss << "  Pitch: " << pitch_ << "\n";
+    oss << "}";
+    return oss.str();
 }

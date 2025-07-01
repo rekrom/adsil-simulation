@@ -5,7 +5,6 @@
 
 namespace core
 {
-
     class IHasTransformNode
     {
     public:
