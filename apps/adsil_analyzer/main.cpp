@@ -9,7 +9,7 @@ int main()
     registry.registerAdapter<Car>(std::make_shared<adapter::CarJsonAdapter>());
 
     nlohmann::json car_json;
-    if (!utils::readJsonFromFile("bin/resources/car.json", car_json))
+    if (!utils::readJsonFromFile("/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources/car.json", car_json))
     {
         exit(0);
     }
@@ -23,9 +23,9 @@ int main()
 
     // JSON'dan Car objesi oluştur
     Car loadedCar = carAdapter->fromJson(car_json);
-
     nlohmann::json j = carAdapter->toJson(loadedCar);
-    std::cout << "Car: " << j.dump(4) << std::endl;
+    // std::cout << "Car: " << j.dump(4) << std::endl;
+    auto carPtr = std::make_shared<Car>(loadedCar); // create shared_ptr from it
 
     // auto cube = ShapeFactory::createCube({Point(-300.0f / 1000.0, 1500.0f / 1000.0f, 0),
     //                                       600.0 / 1000.0f,
@@ -91,9 +91,19 @@ int main()
     // // viewer.addRenderable(closestPointRenderable);
 
     // // VIEWER START
-    OpenGLViewer viewer(1280, 720, "ADSIL Analyzer - OpenGL");
-    // auto axis = std::make_shared<AxisRenderable>();
-    // viewer.addRenderable(axis);
+    viewer::OpenGLViewer viewer(1280, 720, "ADSIL Analyzer - OpenGL");
+    auto axis = std::make_shared<viewer::AxisRenderable>();
+    viewer.addRenderable(axis);
+
+    std::cout << carPtr.get()->getPosition().toString() << std::endl;
+    auto carRenderable = std::make_shared<viewer::CarRenderable>(carPtr);
+    viewer.addRenderable(carRenderable);
+
+    // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(ShapeFactory::createCube({Point(0, 0, 0), 0.5f, Vector(0, 0, 0)}).get()->surfaceMesh());
+    // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre
+    // cubeRenderable->setVisible(true);                      // sadece test için görünür yap
+    // viewer.addRenderable(cubeRenderable);
+
     viewer.run();
 
     return 0;

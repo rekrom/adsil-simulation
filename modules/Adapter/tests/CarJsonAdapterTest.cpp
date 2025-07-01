@@ -16,28 +16,30 @@ void testCarJsonAdapter()
 {
     Point origin(0.0f, 0.0f, 0.0f);
     Vector orientation(0.0f, 0.0f, 0.0f);
+    Transform transform(origin, orientation);
 
     std::vector<std::shared_ptr<Device>> transmitters;
     transmitters.push_back(std::make_shared<Device>(DeviceConfig{
-        Point(0.0f, 0.0f, 0.0f),
-        Vector(-0.7071067f, 0.7071067f, 0.0f),
+        Transform(Point(0.0f, 0.0f, 0.0f),
+                  Vector(-0.7071067f, 0.7071067f, 0.0f)),
         20.0f, 20.0f, "TX1"}));
     transmitters.push_back(std::make_shared<Device>(DeviceConfig{
-        Point(0.0f, 0.0f, 0.0f),
-        Vector(0.7071067f, -0.7071067f, 0.0f),
+        Transform(Point(0.0f, 0.0f, 0.0f),
+                  Vector(0.7071067f, -0.7071067f, 0.0f)),
         20.0f, 20.0f, "TX2"}));
 
     std::vector<std::shared_ptr<Device>> receivers;
     receivers.push_back(std::make_shared<Device>(DeviceConfig{
-        Point(1000.0f, 0.0f, 0.0f),
-        Vector(0.0f, 1.0f, 0.0f),
+        Transform(Point(1000.0f, 0.0f, 0.0f),
+                  Vector(0.0f, 1.0f, 0.0f)),
         20.0f, 20.0f, "RX1"}));
     receivers.push_back(std::make_shared<Device>(DeviceConfig{
-        Point(-1000.0f, 0.0f, 0.0f),
-        Vector(0.0f, 1.0f, 0.0f),
+        Transform(Point(-1000.0f, 0.0f, 0.0f),
+                  Vector(0.0f, 1.0f, 0.0f)),
         20.0f, 20.0f, "RX2"}));
 
-    Car car(origin, orientation, transmitters, receivers);
+    CarConfig config(transform, transmitters, receivers);
+    Car car(config);
 
     CarJsonAdapter adapter;
 
@@ -48,12 +50,6 @@ void testCarJsonAdapter()
 
     // Deserialize
     Car loadedCar = adapter.fromJson(j);
-
-    std::cout << "--------------------" << std::endl;
-    std::cout << loadedCar.getTransmitters()[0]->getDirection().x() << std::endl;
-    std::cout << car.getTransmitters()[0]->getDirection().x() << std::endl;
-    std::cout << (loadedCar.getTransmitters()[0]->getDirection().x() == car.getTransmitters()[0]->getDirection().x()) << std::endl;
-    std::cout << "--------------------" << std::endl;
 
     // Basic validations with tolerance
     assert(floatEqual(loadedCar.getPosition().x(), car.getPosition().x()));

@@ -1,5 +1,5 @@
 #include <adapter/implementations/CarJsonAdapter.hpp>
-
+#include <iostream>
 namespace adapter
 {
 
@@ -38,6 +38,8 @@ namespace adapter
         Point p = pointAdapter_.fromJson(j.at("position"));
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
 
+        Transform t(p, v);
+
         std::vector<std::shared_ptr<Device>> tx;
         for (const auto &txJson : j.at("transmitters"))
         {
@@ -51,8 +53,11 @@ namespace adapter
             Device d = deviceAdapter_.fromJson(rxJson);
             rx.push_back(std::make_shared<Device>(std::move(d)));
         }
+        std::cout << "[ADAPTER] " << p.toString() << std::endl;
 
-        return Car(p, v, tx, rx);
+        CarConfig config(t, tx, rx);
+
+        return Car(config);
     }
 
 } // namespace adapter

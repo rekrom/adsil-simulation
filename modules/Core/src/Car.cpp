@@ -1,36 +1,38 @@
 #include <core/Car.hpp>
 #include <cmath>
 #include <sstream>
+#include <iostream>
 
 Car::Car()
-    : position_(),
-      orientation_(),
+    : transformNode_(std::make_shared<core::TransformNode>()),
       transmitters_(),
-      receivers_()
+      receivers_(),
+      trajectory_()
 {
-    trajectory_.push_back(position_);
+    trajectory_.push_back(transformNode_->getLocalTransform().getPosition());
 }
 
-Car::Car(const Transform &transform,
-         const std::vector<std::shared_ptr<Device>> &transmitters,
-         const std::vector<std::shared_ptr<Device>> &receivers)
-    : transform_(transform),
-      transmitters_(transmitters),
-      receivers_(receivers)
+Car::Car(const CarConfig &config)
+    : transformNode_(config.transformNode ? config.transformNode : std::make_shared<core::TransformNode>(config.transform)),
+      transmitters_(config.transmitters),
+      receivers_(config.receivers),
+      trajectory_()
 {
-    trajectory_.push_back(transform_.getPosition());
-}
+    // Setup device transform nodes parented to car node
+    for (auto &device : transmitters_)
+    {
+        if (!device->getTransformNode())
+            device->setTransformNode(std::make_shared<core::TransformNode>());
+        device->getTransformNode()->setParent(transformNode_);
+    }
+    for (auto &device : receivers_)
+    {
+        if (!device->getTransformNode())
+            device->setTransformNode(std::make_shared<core::TransformNode>());
+        device->getTransformNode()->setParent(transformNode_);
+    }
 
-Car::Car(const Point &position,
-         const Vector &orientation,
-         const std::vector<std::shared_ptr<Device>> &transmitters,
-         const std::vector<std::shared_ptr<Device>> &receivers)
-    : position_(position),
-      orientation_(orientation),
-      transmitters_(transmitters),
-      receivers_(receivers)
-{
-    trajectory_.push_back(position_);
+    trajectory_.push_back(transformNode_->getLocalTransform().getPosition());
 }
 
 std::vector<std::shared_ptr<Device>> Car::getTransmitters() const
@@ -51,64 +53,50 @@ std::vector<std::shared_ptr<Device>> Car::getAllDevices() const
 
 void Car::moveTo(const Point &newPosition)
 {
-    Vector delta(newPosition.x() - position_.x(),
-                 newPosition.y() - position_.y(),
-                 newPosition.z() - position_.z());
-    // Vector delta = newPosition - transform_.getPosition(); // operator- ile
-
-    position_ = newPosition;
-
-    for (auto &device : getAllDevices())
-    {
-        Point updatedOrigin = device->getOrigin() + delta;
-        device->setOrigin(updatedOrigin);
-    }
+    auto localTransform = transformNode_->getLocalTransform();
+    localTransform.setPosition(newPosition);
+    transformNode_->setLocalTransform(localTransform);
 
     trajectory_.push_back(newPosition);
 }
 
 void Car::moveForward(float step)
 {
-    float yaw = orientation_.z();
+    Vector orientation = getOrientation();
+    float yaw = orientation.z();
+
     float dx = std::sin(yaw) * step;
     float dy = std::cos(yaw) * step;
     float dz = 0.0f;
 
-    moveTo(Point(position_.x() + dx, position_.y() + dy, position_.z() + dz));
+    Point currentPos = getPosition();
+    moveTo(Point(currentPos.x() + dx, currentPos.y() + dy, currentPos.z() + dz));
 }
 
 void Car::rotateYaw(float angleDeg)
 {
     float angleRad = angleDeg * static_cast<float>(M_PI) / 180.0f;
-    float cosA = std::cos(angleRad);
-    float sinA = std::sin(angleRad);
 
-    auto rotate = [cosA, sinA](const Vector &v) -> Vector
-    {
-        return Vector(
-            v.x() * cosA - v.y() * sinA,
-            v.x() * sinA + v.y() * cosA,
-            v.z());
-    };
+    auto localTransform = transformNode_->getLocalTransform();
+    Vector ori = localTransform.getOrientation();
+    ori = ori + Vector(0.f, 0.f, angleRad); // Assuming operator+ is rotation addition
+    localTransform.setOrientation(ori);
 
-    for (auto &device : getAllDevices())
-    {
-        Vector rotatedDir = rotate(device->getDirection());
-        device->setDirection(rotatedDir.normalized());
-    }
-
-    // transform_ içindeki orientation güncelleniyor
-    Vector ori = transform_.getOrientation();
-    transform_.setOrientation(Vector(ori.x(), ori.y(), ori.z() + angleRad));
+    transformNode_->setLocalTransform(localTransform);
 }
 
-const Point &Car::getPosition() const { return transform_.getPosition(); }
-const Vector &Car::getOrientation() const { return transform_.getOrientation(); }
-const Transform &Car::getTransform() const { return transform_; }
-
-void Car::setTransform(const Transform &transform)
+const Point &Car::getPosition() const { return transformNode_->getLocalTransform().getPosition(); }
+const Vector &Car::getOrientation() const { return transformNode_->getLocalTransform().getOrientation(); }
+const Transform &Car::getTransform() const { return transformNode_->getLocalTransform(); }
+Transform Car::getGlobalTransform() { return transformNode_->getGlobalTransform(); };
+std::shared_ptr<core::TransformNode> Car::getTransformNode() const
 {
-    transform_ = transform;
+    return transformNode_;
+}
+
+void Car::setTransformNode(std::shared_ptr<core::TransformNode> transformNode)
+{
+    transformNode_ = std::move(transformNode);
 }
 
 const std::vector<Point> &Car::getTrajectory() const { return trajectory_; }
@@ -116,7 +104,17 @@ const std::vector<Point> &Car::getTrajectory() const { return trajectory_; }
 std::string Car::toString() const
 {
     std::ostringstream oss;
-    oss << "Car(pos=" << transform_.getPosition().toString()
-        << ", rpy=" << transform_.getOrientation().toString() << ")";
+    oss << "Car(pos=" << transformNode_->getLocalTransform().getPosition().toString()
+        << ", rpy=" << transformNode_->getLocalTransform().getOrientation().toString() << ")";
     return oss.str();
+}
+
+Transform Car::getDeviceWorldTransform(const Device &device) const
+{
+    if (!device.getTransformNode())
+    {
+        // fallback: return device's local transform
+        return device.getTransform();
+    }
+    return device.getTransformNode()->getGlobalTransform();
 }

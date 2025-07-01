@@ -1,10 +1,11 @@
 #pragma once
-
+#include <core/Vector.hpp>
 #include <string>
 #include <cmath>
 #include <core/Vector.hpp>
 #include <glm/glm.hpp>
 
+class Vector;
 class Point
 {
 public:
