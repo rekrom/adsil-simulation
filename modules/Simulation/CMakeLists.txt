@@ -13,4 +13,5 @@ target_link_libraries(Simulation
 
 target_link_libraries(Simulation
     PUBLIC Geometry  # Geometry modülü Core'a bağımlıysa
+    Spatial
 )

@@ -40,7 +40,7 @@ namespace adapter
         Vector v_rad(RotationUtils::deg2rad(v.x()), RotationUtils::deg2rad(v.y()), RotationUtils::deg2rad(v.z()));
 
         // std::cout << "[CAR] " << v.toString() << std::endl;
-        auto node = std::make_shared<core::TransformNode>(Transform(p, v_rad));
+        auto node = std::make_shared<spatial::TransformNode>(Transform(p, v_rad));
 
         std::vector<std::shared_ptr<Device>> tx;
         for (const auto &txJson : j.at("transmitters"))

@@ -101,6 +101,7 @@ namespace viewer
         glEnableVertexAttribArray(1);
         glBindVertexArray(0);
     }
+
     void AxisRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
         glUseProgram(shader_);

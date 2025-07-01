@@ -180,9 +180,9 @@ namespace viewer
 
     void DeviceRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        std::cout << device_->getName() << " [POS] " << device_->getGlobalTransform().getPosition().toString() << std::endl;
-        std::cout << device_->getName() << " [ORI] " << device_->getGlobalTransform().getOrientation().toString() << std::endl;
         // glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
+        // WARNING: we should convert direction to euler angle thats why we cant use generic getModelMatrix.
+        // WARNING: it assumes model has `orientation`, not direction.
         glm::mat4 model(1.0f);
         model = glm::translate(model, device_->getGlobalTransform().getPosition().toGlmVec3());
         Vector orientation_(0, 0, 0);

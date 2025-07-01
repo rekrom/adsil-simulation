@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <core/TransformNode.hpp>
+#include <spatial/implementations/TransformNode.hpp>
 
-namespace core
+namespace spatial
 {
     class IHasTransformNode
     {

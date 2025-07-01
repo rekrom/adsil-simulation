@@ -8,7 +8,7 @@ Car::Car()
       receivers_(),
       trajectory_()
 {
-    transformNode_ = std::make_shared<core::TransformNode>();
+    transformNode_ = std::make_shared<spatial::TransformNode>();
     trajectory_.push_back(transformNode_->getLocalTransform().getPosition());
 }
 
@@ -22,13 +22,13 @@ Car::Car(const CarConfig &config)
     for (auto &device : transmitters_)
     {
         if (!device->getTransformNode())
-            device->setTransformNode(std::make_shared<core::TransformNode>());
+            device->setTransformNode(std::make_shared<spatial::TransformNode>());
         device->getTransformNode()->setParent(transformNode_);
     }
     for (auto &device : receivers_)
     {
         if (!device->getTransformNode())
-            device->setTransformNode(std::make_shared<core::TransformNode>());
+            device->setTransformNode(std::make_shared<spatial::TransformNode>());
         device->getTransformNode()->setParent(transformNode_);
     }
 
@@ -98,12 +98,12 @@ Vector Car::getOrientation() const
     return getTransformNode()->getGlobalTransform().getOrientation();
 }
 
-std::shared_ptr<core::TransformNode> Car::getTransformNode() const
+std::shared_ptr<spatial::TransformNode> Car::getTransformNode() const
 {
     return transformNode_;
 }
 
-// void Car::setTransformNode(std::shared_ptr<core::TransformNode> transformNode)
+// void Car::setTransformNode(std::shared_ptr<spatial::TransformNode> transformNode)
 // {
 //     transformNode_ = std::move(transformNode);
 // }

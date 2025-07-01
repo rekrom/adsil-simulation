@@ -1,7 +1,7 @@
-#include <core/TransformNode.hpp>
+#include <spatial/implementations/TransformNode.hpp>
 #include <algorithm> // for std::remove
 #include <iostream>
-namespace core
+namespace spatial
 {
 
     // Constructor: default local transform (identity)
@@ -110,4 +110,4 @@ namespace core
         }
     }
 
-} // namespace core
+} // namespace spatial

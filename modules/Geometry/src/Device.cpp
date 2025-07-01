@@ -6,7 +6,7 @@ constexpr float DEG_TO_RAD = static_cast<float>(M_PI) / 180.0f;
 constexpr float RAD_TO_DEG = 180.0f / static_cast<float>(M_PI);
 
 Device::Device(const DeviceConfig &config)
-    : transformNode_(std::make_shared<core::TransformNode>(config.transform)),
+    : transformNode_(std::make_shared<spatial::TransformNode>(config.transform)),
       vertical_fov_deg_(config.vertical_fov_deg),
       horizontal_fov_deg_(config.horizontal_fov_deg),
       vertical_fov_rad_(config.vertical_fov_deg * DEG_TO_RAD),
@@ -56,12 +56,12 @@ const Point &Device::getOrigin() const
     return transformNode_->getLocalTransform().getPosition();
 }
 
-std::shared_ptr<core::TransformNode> Device::getTransformNode() const
+std::shared_ptr<spatial::TransformNode> Device::getTransformNode() const
 {
     return transformNode_;
 }
 
-void Device::setTransformNode(std::shared_ptr<core::TransformNode> transformNode)
+void Device::setTransformNode(std::shared_ptr<spatial::TransformNode> transformNode)
 {
     transformNode_ = std::move(transformNode);
 }

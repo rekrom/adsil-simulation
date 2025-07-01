@@ -2,16 +2,16 @@
 
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
-#include <core/TransformNode.hpp>
+#include <spatial/implementations/TransformNode.hpp>
 #include <core/configs/CarConfig.hpp>
-#include <core/HasTransformNodeBase.hpp>
+#include <spatial/implementations/HasTransformNodeBase.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <vector>
 #include <memory>
 #include <string>
-#include <core/Transform.hpp>
+#include <spatial/implementations/Transform.hpp>
 
-class Car : public core::HasTransformNodeBase
+class Car : public spatial::HasTransformNodeBase
 {
 public:
     Car();
@@ -29,7 +29,7 @@ public:
     const std::vector<Point> &getTrajectory() const;
     std::string toString() const;
 
-    std::shared_ptr<core::TransformNode> getTransformNode() const override;
+    std::shared_ptr<spatial::TransformNode> getTransformNode() const override;
 
     Transform getTransform() const;
     Point getPosition() const;

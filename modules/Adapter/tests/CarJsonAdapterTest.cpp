@@ -17,7 +17,7 @@ void testCarJsonAdapter()
     Point origin(0.0f, 0.0f, 0.0f);
     Vector orientation(0.0f, 0.0f, 0.0f);
 
-    auto node = std::make_shared<core::TransformNode>(Transform(origin, orientation));
+    auto node = std::make_shared<spatial::TransformNode>(Transform(origin, orientation));
 
     std::vector<std::shared_ptr<Device>> transmitters;
     transmitters.push_back(std::make_shared<Device>(DeviceConfig{

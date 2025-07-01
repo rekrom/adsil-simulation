@@ -6,7 +6,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include "Transform.hpp" // assuming you have this for position/orientation storage
 
-namespace core
+namespace spatial
 {
 
     class TransformNode : public std::enable_shared_from_this<TransformNode>
@@ -49,4 +49,4 @@ namespace core
         void updateGlobalTransform() const;
     };
 
-} // namespace core
+} // namespace spatial

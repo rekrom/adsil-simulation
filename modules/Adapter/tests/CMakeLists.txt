@@ -15,7 +15,7 @@ foreach(TEST_FILE ${TEST_SOURCES})
     )
 
     target_link_libraries(${TEST_TARGET}
-        PRIVATE Adapter Core
+        PRIVATE Adapter Core Spatial
     )
 
     add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})

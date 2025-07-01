@@ -9,7 +9,7 @@ namespace viewer
         : width_(width), height_(height), title_(title), window_(nullptr), camera_(
                                                                                glm::vec3(0.0f, 3.0f, 10.0f), // position
                                                                                glm::vec3(0.0f, 1.0f, 0.0f),  // up direction
-                                                                               90.0f,                        // yaw (looking toward -Z)
+                                                                               -90.0f,                       // yaw (looking toward -Z)
                                                                                -15.0f                        // pitch
                                                                                ),
           lastX_(width / 2.0f), lastY_(height / 2.0f),

@@ -20,6 +20,7 @@ target_link_libraries(${PROJECT_NAME}
         glm::glm
         Core
         Geometry
+        Spatial
         Simulation
         Viewer
         Adapter

@@ -27,19 +27,14 @@ int main()
     // nlohmann::json j = carAdapter->toJson(loadedCar);
     // std::cout << "Car: " << j.dump(4) << std::endl;
 
-    // auto cube = ShapeFactory::createCube({Point(-300.0f / 1000.0, 1500.0f / 1000.0f, 0),
-    //                                       600.0 / 1000.0f,
-    //                                       Vector(0, 0, 0)});
-
-    // // auto cylinder = ShapeFactory::createCylinder({Point(-500, 100, 0),
-    // //                                               2000.0,
-    // //                                               300.0,
-    // //                                               Vector(0, 0, 0)});
+    // auto cylinder = ShapeFactory::createCylinder({Point(-500, 100, 0),
+    //                                               2000.0,
+    //                                               300.0,
+    //                                               Vector(0, 0, 0)});
 
     // // std::cout << cube->toString() << "\n";
     // // std::cout << cylinder->toString() << "\n";
 
-    // auto mesh = cube->surfaceMesh(2048 * 16);
     // std::cout << mesh->toString() << "\n";
 
     // // auto meshCy = cylinder->surfaceMesh(16);
@@ -56,10 +51,6 @@ int main()
     //     auto rxRenderable = std::make_shared<DeviceRenderable>(rx, glm::vec3(0.0f, 0.0f, 1.0f)); // mavi
     //     viewer.addRenderable(rxRenderable);
     // }
-    // auto cubeRenderable = std::make_shared<PointCloudRenderable>(mesh);
-    // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre
-    // cubeRenderable->setVisible(true);                      // sadece test için görünür yap
-    // viewer.addRenderable(cubeRenderable);
 
     // // auto cylinderRenderable = std::make_shared<PointCloudRenderable>(meshCy);
     // // cylinderRenderable->setColor(glm::vec3(1.0f, 0.5f, 0.2f));
@@ -95,9 +86,22 @@ int main()
     auto axis = std::make_shared<viewer::AxisRenderable>();
     viewer.addRenderable(axis);
 
+    auto ground = std::make_shared<viewer::GroundRenderable>();
+    viewer.addRenderable(ground);
+
     // std::cout << carPtr.get()->getPosition().toString() << std::endl;
     auto carRenderable = std::make_shared<viewer::CarRenderable>(carPtr);
     viewer.addRenderable(carRenderable);
+
+    auto cube = ShapeFactory::createCube({Point(-3.0f, 0.0f, 5.0f),
+                                          600.0 / 1000.0f,
+                                          Vector(0, 0, 0)});
+    auto mesh = cube->surfaceMesh(2048 * 16);
+
+    auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(mesh);
+    cubeRenderable->setColor(glm::vec3(0.5f, 0.5f, 0.5f)); // isteğe göre
+    cubeRenderable->setVisible(true);                      // sadece test için görünür yap
+    viewer.addRenderable(cubeRenderable);
 
     // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(ShapeFactory::createCube({Point(0, 0, 0), 0.5f, Vector(0, 0, 0)}).get()->surfaceMesh());
     // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre

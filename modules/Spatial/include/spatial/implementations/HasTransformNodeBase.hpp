@@ -1,10 +1,10 @@
 // HasTransformNodeBase.hpp
 #pragma once
 
-#include <core/interfaces/IHasTransformNode.hpp>
-#include <core/TransformNode.hpp>
+#include <spatial/interfaces/IHasTransformNode.hpp>
+#include <spatial/implementations/TransformNode.hpp>
 
-namespace core
+namespace spatial
 {
     class HasTransformNodeBase : public IHasTransformNode
     {

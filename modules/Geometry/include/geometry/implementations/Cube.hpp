@@ -3,7 +3,7 @@
 #include <geometry/interfaces/IShape.hpp>
 #include <geometry/implementations/ShapeBase.hpp>
 
-#include <core/Transform.hpp>
+#include <spatial/implementations/Transform.hpp>
 #include <core/PointCloud.hpp>
 
 class Cube : public ShapeBase

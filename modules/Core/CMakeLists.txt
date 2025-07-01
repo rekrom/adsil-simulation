@@ -9,4 +9,5 @@ target_include_directories(Core PUBLIC
 
 target_link_libraries(Core
     PUBLIC Geometry # Device modülü Core'a bağımlıysa
+        Spatial
 )
