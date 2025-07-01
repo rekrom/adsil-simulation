@@ -4,13 +4,14 @@
 #include <core/Vector.hpp>
 #include <core/TransformNode.hpp>
 #include <core/configs/CarConfig.hpp>
-#include <device/Device.hpp>
+#include <core/HasTransformNodeBase.hpp>
+#include <geometry/implementations/Device.hpp>
 #include <vector>
 #include <memory>
 #include <string>
 #include <core/Transform.hpp>
 
-class Car
+class Car : public core::HasTransformNodeBase
 {
 public:
     Car();
@@ -25,21 +26,16 @@ public:
     std::vector<std::shared_ptr<Device>> getReceivers() const;
     std::vector<std::shared_ptr<Device>> getAllDevices() const;
 
-    const Point &getPosition() const;
-    const Vector &getOrientation() const;
-    const Transform &getTransform() const;
-    std::shared_ptr<core::TransformNode> getTransformNode() const;
-    Transform getGlobalTransform();
-
-    void setTransformNode(std::shared_ptr<core::TransformNode> transformNode);
-
     const std::vector<Point> &getTrajectory() const;
-
     std::string toString() const;
 
+    std::shared_ptr<core::TransformNode> getTransformNode() const override;
+
+    Transform getTransform() const;
+    Point getPosition() const;
+    Vector getOrientation() const;
+
 private:
-    // Transform transform_;
-    std::shared_ptr<core::TransformNode> transformNode_;
     std::vector<std::shared_ptr<Device>> transmitters_;
     std::vector<std::shared_ptr<Device>> receivers_;
     std::vector<Point> trajectory_;

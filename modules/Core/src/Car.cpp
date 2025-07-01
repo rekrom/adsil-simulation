@@ -4,20 +4,20 @@
 #include <iostream>
 
 Car::Car()
-    : transformNode_(std::make_shared<core::TransformNode>()),
-      transmitters_(),
+    : transmitters_(),
       receivers_(),
       trajectory_()
 {
+    transformNode_ = std::make_shared<core::TransformNode>();
     trajectory_.push_back(transformNode_->getLocalTransform().getPosition());
 }
 
 Car::Car(const CarConfig &config)
-    : transformNode_(config.transformNode ? config.transformNode : std::make_shared<core::TransformNode>(config.transform)),
-      transmitters_(config.transmitters),
+    : transmitters_(config.transmitters),
       receivers_(config.receivers),
       trajectory_()
 {
+    transformNode_ = config.transformNode;
     // Setup device transform nodes parented to car node
     for (auto &device : transmitters_)
     {
@@ -32,7 +32,7 @@ Car::Car(const CarConfig &config)
         device->getTransformNode()->setParent(transformNode_);
     }
 
-    trajectory_.push_back(transformNode_->getLocalTransform().getPosition());
+    trajectory_.push_back(getPosition());
 }
 
 std::vector<std::shared_ptr<Device>> Car::getTransmitters() const
@@ -85,19 +85,28 @@ void Car::rotateYaw(float angleDeg)
     transformNode_->setLocalTransform(localTransform);
 }
 
-const Point &Car::getPosition() const { return transformNode_->getLocalTransform().getPosition(); }
-const Vector &Car::getOrientation() const { return transformNode_->getLocalTransform().getOrientation(); }
-const Transform &Car::getTransform() const { return transformNode_->getLocalTransform(); }
-Transform Car::getGlobalTransform() { return transformNode_->getGlobalTransform(); };
+Transform Car::getTransform() const
+{
+    return getTransformNode()->getGlobalTransform();
+}
+Point Car::getPosition() const
+{
+    return getTransformNode()->getGlobalTransform().getPosition();
+}
+Vector Car::getOrientation() const
+{
+    return getTransformNode()->getGlobalTransform().getOrientation();
+}
+
 std::shared_ptr<core::TransformNode> Car::getTransformNode() const
 {
     return transformNode_;
 }
 
-void Car::setTransformNode(std::shared_ptr<core::TransformNode> transformNode)
-{
-    transformNode_ = std::move(transformNode);
-}
+// void Car::setTransformNode(std::shared_ptr<core::TransformNode> transformNode)
+// {
+//     transformNode_ = std::move(transformNode);
+// }
 
 const std::vector<Point> &Car::getTrajectory() const { return trajectory_; }
 

@@ -12,7 +12,7 @@ namespace core
     TransformNode::TransformNode(const Transform &localTransform)
         : localTransform_(localTransform), dirty_(true)
     {
-        std::cout << localTransform_.get3DDirectionVector().toString() << std::endl;
+        // std::cout << localTransform_.get3DDirectionVector().toString() << std::endl;
     }
 
     void TransformNode::setLocalTransform(const Transform &transform)

@@ -22,10 +22,8 @@ int main()
     }
 
     // JSON'dan Car objesi oluştur
-    Car loadedCar = carAdapter->fromJson(car_json);
-    nlohmann::json j = carAdapter->toJson(loadedCar);
+    // nlohmann::json j = carAdapter->toJson(loadedCar);
     // std::cout << "Car: " << j.dump(4) << std::endl;
-    auto carPtr = std::make_shared<Car>(loadedCar); // create shared_ptr from it
 
     // auto cube = ShapeFactory::createCube({Point(-300.0f / 1000.0, 1500.0f / 1000.0f, 0),
     //                                       600.0 / 1000.0f,
@@ -95,7 +93,8 @@ int main()
     auto axis = std::make_shared<viewer::AxisRenderable>();
     viewer.addRenderable(axis);
 
-    std::cout << carPtr.get()->getPosition().toString() << std::endl;
+    // std::cout << carPtr.get()->getPosition().toString() << std::endl;
+    auto carPtr = std::make_shared<Car>(carAdapter->fromJson(car_json)); // create shared_ptr from it
     auto carRenderable = std::make_shared<viewer::CarRenderable>(carPtr);
     viewer.addRenderable(carRenderable);
 

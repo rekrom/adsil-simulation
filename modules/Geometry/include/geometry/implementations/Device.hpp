@@ -6,7 +6,7 @@
 #include <core/PointCloud.hpp>
 #include <string>
 #include <memory>
-#include <device/DeviceConfig.hpp>
+#include <geometry/configs/DeviceConfig.hpp>
 
 class Device
 {

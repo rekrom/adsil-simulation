@@ -1,4 +1,4 @@
-#include <device/Device.hpp>
+#include <geometry/implementations/Device.hpp>
 #include <cmath>
 #include <sstream>
 #include <iostream>

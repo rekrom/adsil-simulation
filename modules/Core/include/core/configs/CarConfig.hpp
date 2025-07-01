@@ -1,25 +1,21 @@
 #pragma once
 
-#include <core/Transform.hpp>
-#include <device/Device.hpp>
+#include <core/TransformNode.hpp>
+#include <geometry/implementations/Device.hpp>
 #include <vector>
 #include <memory>
 
 struct CarConfig
 {
-    std::shared_ptr<core::TransformNode> transformNode; // optionally provide pre-made transform node
-    Transform transform;                                // fallback if transformNode not provided
-
+    std::shared_ptr<core::TransformNode> transformNode;
     std::vector<std::shared_ptr<Device>> transmitters;
     std::vector<std::shared_ptr<Device>> receivers;
 
-    CarConfig() = default;
-
-    // Convenience constructor for quick initialization with transform
-    CarConfig(const Transform &t,
-              const std::vector<std::shared_ptr<Device>> &tx = {},
-              const std::vector<std::shared_ptr<Device>> &rx = {})
-        : transform(t), transmitters(tx), receivers(rx) {}
-
-    // Optional: you can add other config parameters as needed
+    CarConfig(std::shared_ptr<core::TransformNode> node,
+              const std::vector<std::shared_ptr<Device>> &tx,
+              const std::vector<std::shared_ptr<Device>> &rx)
+        : transformNode(std::move(node)), transmitters(tx), receivers(rx)
+    {
+        assert(transformNode && "CarConfig requires valid transformNode");
+    }
 };

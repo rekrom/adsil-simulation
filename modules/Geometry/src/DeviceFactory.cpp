@@ -1,5 +1,5 @@
-#include <device/DeviceFactory.hpp>
-#include <device/DeviceConfig.hpp>
+#include <geometry/factories/DeviceFactory.hpp>
+#include <geometry/configs/DeviceConfig.hpp>
 
 std::vector<std::shared_ptr<Device>> DeviceFactory::createDevices(
     const std::string &namePrefix,

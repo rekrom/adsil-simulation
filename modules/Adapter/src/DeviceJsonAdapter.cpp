@@ -16,7 +16,7 @@ namespace adapter
         j["origin"] = pointAdapter_.toJson(device.getOrigin());
         // direction -> placement_angles dönüşümü:
         Vector direction = device.getDirection();
-        std::cout << direction.toString() << std::endl;
+        // std::cout << direction.toString() << std::endl;
         // dir = (x, y, z)
         // vertical_angle_deg = atan(z / y) * 180 / pi
         // horizontal_angle_deg = atan(x / y) * 180 / pi

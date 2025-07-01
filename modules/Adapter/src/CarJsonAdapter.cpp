@@ -38,7 +38,7 @@ namespace adapter
         Point p = pointAdapter_.fromJson(j.at("position"));
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
 
-        Transform t(p, v);
+        auto node = std::make_shared<core::TransformNode>(Transform(p, v));
 
         std::vector<std::shared_ptr<Device>> tx;
         for (const auto &txJson : j.at("transmitters"))
@@ -53,9 +53,8 @@ namespace adapter
             Device d = deviceAdapter_.fromJson(rxJson);
             rx.push_back(std::make_shared<Device>(std::move(d)));
         }
-        std::cout << "[ADAPTER] " << p.toString() << std::endl;
 
-        CarConfig config(t, tx, rx);
+        CarConfig config(node, tx, rx);
 
         return Car(config);
     }
