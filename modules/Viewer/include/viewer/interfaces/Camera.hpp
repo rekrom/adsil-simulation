@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm> // Required for std::clamp
-
+#include <iostream>
 class Camera
 {
 public:
@@ -18,6 +18,8 @@ public:
 
     glm::vec3 getPosition() const;
     float getFov() const;
+
+    std::string toString() const;
 
 private:
     void updateCameraVectors();

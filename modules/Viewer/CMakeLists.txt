@@ -14,6 +14,7 @@ target_include_directories(Viewer
 target_link_libraries(Viewer
     PUBLIC
         Core              # Depends on Core module
+        Spatial
         glad              # GLAD must be linked here
         glfw              # External: GLFW
         OpenGL::GL        # External: OpenGL

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <device/Device.hpp>
+#include <geometry/implementations/Device.hpp>
 #include <geometry/interfaces/IShape.hpp>
 #include <core/PointCloud.hpp>
 

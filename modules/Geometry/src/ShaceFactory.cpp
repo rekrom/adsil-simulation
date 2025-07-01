@@ -1,7 +1,7 @@
 #include <geometry/factories/ShapeFactory.hpp>
 #include <geometry/implementations/Cube.hpp>
 #include <geometry/implementations/Cylinder.hpp>
-#include <core/Transform.hpp>
+#include <spatial/implementations/Transform.hpp>
 
 std::shared_ptr<IShape> ShapeFactory::createCube(const CubeConfig &config)
 {

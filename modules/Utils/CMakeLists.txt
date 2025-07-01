@@ -11,4 +11,5 @@ target_include_directories(Utils PUBLIC
 
 target_link_libraries(Utils
     PUBLIC Core  # Utils modülü Core'a bağımlıysa
+    Spatial
 )

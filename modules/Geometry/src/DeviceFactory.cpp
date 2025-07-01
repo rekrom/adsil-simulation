@@ -1,5 +1,5 @@
-#include <device/DeviceFactory.hpp>
-#include <device/DeviceConfig.hpp>
+#include <geometry/factories/DeviceFactory.hpp>
+#include <geometry/configs/DeviceConfig.hpp>
 
 std::vector<std::shared_ptr<Device>> DeviceFactory::createDevices(
     const std::string &namePrefix,
@@ -13,9 +13,9 @@ std::vector<std::shared_ptr<Device>> DeviceFactory::createDevices(
 
     for (std::size_t i = 0; i < directions.size(); ++i)
     {
+        Transform t(origins[i], directions[i]);
         DeviceConfig config{
-            origins[i],
-            directions[i],
+            t,
             vertical_fovs[i],
             horizontal_fovs[i],
             namePrefix + std::to_string(i + 1)};

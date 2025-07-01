@@ -1,4 +1,3 @@
-#include <device/DeviceFactory.hpp>
 #include <geometry/geometry.hpp>
 #include <core/core.hpp>
 #include <simulation/simulation.hpp>

@@ -12,31 +12,47 @@
     "receivers": [
         {
             "origin": {
-                "x": 1000.0,
+                "x": -1.0,
                 "y": 0.0,
                 "z": 0.0
             },
             "placement_angles": {
-                "horizontal_angle_deg": 45.0,
-                "vertical_angle_deg": 45.0
+                "horizontal_angle_deg": 0.0,
+                "vertical_angle_deg": 0.0
             },
-            "vertical_fov_deg": 120,
-            "horizontal_fov_deg": 120
+            "vertical_fov_deg": 0,
+            "horizontal_fov_deg": 0,
+            "name": "rx1"
+        },
+        {
+            "origin": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "placement_angles": {
+                "horizontal_angle_deg": 0.0,
+                "vertical_angle_deg": 0.0
+            },
+            "vertical_fov_deg": 0,
+            "horizontal_fov_deg": 0,
+            "name": "rx2"
         }
     ],
     "transmitters": [
         {
             "origin": {
                 "x": 0.0,
-                "y": 0.0,
+                "y": 0.5,
                 "z": 0.0
             },
             "placement_angles": {
                 "horizontal_angle_deg": 0.0,
-                "vertical_angle_deg": 1.0
+                "vertical_angle_deg": 0.0
             },
-            "vertical_fov_deg": 120,
-            "horizontal_fov_deg": 120
+            "vertical_fov_deg": 0,
+            "horizontal_fov_deg": 0,
+            "name": "tx1"
         }
     ]
 }

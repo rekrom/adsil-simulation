@@ -22,3 +22,17 @@ Vector RotationUtils::rotateRPY(const Vector &vec, const Vector &rpy)
 
     return Vector(x3, y3, z3);
 }
+
+Vector RotationUtils::eulerFromDirection(const Vector &dir)
+{
+    Vector normDir = dir.normalized();
+
+    // Yaw: rotation around Z axis
+    float yaw = std::atan2(normDir.x(), normDir.y());
+
+    // Pitch: rotation around X axis
+    float pitch = std::atan2(-normDir.z(), std::sqrt(normDir.x() * normDir.x() + normDir.y() * normDir.y()));
+
+    // Roll is assumed zero
+    return Vector(0.0f, pitch, yaw);
+}

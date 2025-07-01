@@ -1,4 +1,4 @@
-#include <core/Transform.hpp>
+#include <spatial/implementations/Transform.hpp>
 #include <cmath>
 
 Transform::Transform()
@@ -39,7 +39,7 @@ void Transform::move(const Vector &delta)
     position_ = position_ + delta;
 }
 
-Vector Transform::get3DDirectionVector() const
+const Vector Transform::get3DDirectionVector() const
 {
     float roll = orientation_.x();
     float pitch = orientation_.y();
@@ -77,9 +77,40 @@ Vector Transform::get3DDirectionVector() const
     return dir.normalized();
 }
 
+void Transform::set3DDirectionVector(const Vector &dir)
+{
+    Vector normDir = dir.normalized();
+
+    // Assumption: local forward is (0, 1, 0), we're reversing the get3DDirectionVector logic.
+    // We aim to find the pitch and yaw that result in `normDir` when applying rotation.
+    // Roll is assumed to be 0.
+
+    float yaw = std::atan2(normDir.x(), normDir.y());                                                         // around Z
+    float pitch = std::atan2(-normDir.z(), std::sqrt(normDir.x() * normDir.x() + normDir.y() * normDir.y())); // around Y
+
+    orientation_ = Vector(0.0f, pitch, yaw); // roll = 0
+}
+
 void Transform::rotateYaw(float angleRad)
 {
     Vector ori = orientation_;
     ori = Vector(ori.x(), ori.y(), ori.z() + angleRad);
     orientation_ = ori;
+}
+
+Transform Transform::operator*(const Transform &other) const
+{
+    // Compose positions and orientations:
+    Point newPos = this->getPosition() + this->getOrientation().rotatePoint(other.getPosition());
+    Vector newOri = this->getOrientation() * other.getOrientation(); // Quaternion or equivalent
+
+    return Transform(newPos, newOri);
+}
+
+glm::mat4 Transform::getModelMatrix() const
+{
+    glm::mat4 m(1.0f);
+    m = glm::translate(m, position_.toGlmVec3());
+    m *= glm::toMat4(orientation_.toGlmQuat());
+    return m;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <adapter/interfaces/IJsonAdapter.hpp>
-#include <device/Device.hpp>
+#include <geometry/implementations/Device.hpp>
 #include <adapter/implementations/PointJsonAdapter.hpp>
 #include <adapter/implementations/VectorJsonAdapter.hpp>
 #include <nlohmann/json.hpp>

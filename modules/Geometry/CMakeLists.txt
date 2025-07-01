@@ -9,4 +9,5 @@ target_include_directories(Geometry PUBLIC
 
 target_link_libraries(Geometry
     PUBLIC Core  # Geometry modülü Core'a bağımlıysa
+        Spatial
 )

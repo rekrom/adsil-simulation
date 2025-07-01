@@ -1,6 +1,6 @@
 #pragma once
 
-#include <device/Device.hpp>
+#include <geometry/implementations/Device.hpp>
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
 #include <vector>

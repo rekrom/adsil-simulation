@@ -2,7 +2,7 @@
 
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
-#include <core/Transform.hpp>
+#include <spatial/implementations/Transform.hpp>
 #include <geometry/interfaces/IShape.hpp>
 
 class ShapeBase : public IShape

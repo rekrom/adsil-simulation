@@ -2,6 +2,11 @@
 
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Transform
 {
@@ -16,9 +21,15 @@ public:
     void setOrientation(const Vector &orientation);
 
     void move(const Vector &delta);
-    Vector get3DDirectionVector() const;
+
+    const Vector get3DDirectionVector() const;
+    void set3DDirectionVector(const Vector &dir);
 
     void rotateYaw(float angleRad);
+
+    Transform operator*(const Transform &other) const;
+
+    glm::mat4 getModelMatrix() const;
 
 private:
     Point position_;
