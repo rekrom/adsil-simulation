@@ -56,8 +56,15 @@ namespace adapter
             Device d = deviceAdapter_.fromJson(rxJson);
             rx.push_back(std::make_shared<Device>(std::move(d)));
         }
+        CarDimension dim(0, 0, 0);
+        auto dims = j.at("dimension");
+        dim.length = dims.at("length");
+        dim.width = dims.at("width");
+        dim.height = dims.at("height");
 
-        CarConfig config(node, tx, rx);
+        std::cout << "[DIM]" << dim.height << dim.length << dim.width << std::endl;
+
+        CarConfig config(node, tx, rx, dim);
 
         return Car(config);
     }

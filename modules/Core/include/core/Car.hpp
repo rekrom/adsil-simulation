@@ -34,11 +34,13 @@ public:
     Transform getTransform() const;
     Point getPosition() const;
     Vector getOrientation() const;
+    CarDimension getDimension() const;
 
 private:
     std::vector<std::shared_ptr<Device>> transmitters_;
     std::vector<std::shared_ptr<Device>> receivers_;
     std::vector<Point> trajectory_;
+    CarDimension dimension;
 
 private:
     Transform getDeviceWorldTransform(const Device &device) const;

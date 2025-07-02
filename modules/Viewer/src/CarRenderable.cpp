@@ -72,55 +72,57 @@ namespace viewer
         float r = carColor_.r;
         float g = carColor_.g;
         float b = carColor_.b;
+        CarDimension dimension = car_->getDimension();
+        float length = dimension.length, width = dimension.width, height = dimension.height;
 
         float cubeVertices[] = {
             // Front face
-            -0.5f, -0.25f, -1.0f, r, g, b,
-            0.5f, -0.25f, -1.0f, r, g, b,
-            0.5f, 0.25f, -1.0f, r, g, b,
-            0.5f, 0.25f, -1.0f, r, g, b,
-            -0.5f, 0.25f, -1.0f, r, g, b,
-            -0.5f, -0.25f, -1.0f, r, g, b,
+            -width / 2, -height, -length / 2, r, g, b,
+            -width / 2, -height, +length / 2, r, g, b,
+            +width / 2, -height, +length / 2, r, g, b,
+            +width / 2, -height, +length / 2, r, g, b,
+            +width / 2, -height, -length / 2, r, g, b,
+            -width / 2, -height, -length / 2, r, g, b,
 
             // Back face
-            -0.5f, -0.25f, 1.0f, r, g, b,
-            0.5f, -0.25f, 1.0f, r, g, b,
-            0.5f, 0.25f, 1.0f, r, g, b,
-            0.5f, 0.25f, 1.0f, r, g, b,
-            -0.5f, 0.25f, 1.0f, r, g, b,
-            -0.5f, -0.25f, 1.0f, r, g, b,
+            -width / 2, height, -length / 2, r, g, b,
+            -width / 2, height, +length / 2, r, g, b,
+            +width / 2, height, +length / 2, r, g, b,
+            +width / 2, height, +length / 2, r, g, b,
+            +width / 2, height, -length / 2, r, g, b,
+            -width / 2, height, -length / 2, r, g, b,
 
             // Left face
-            -0.5f, 0.25f, 1.0f, r, g, b,
-            -0.5f, 0.25f, -1.0f, r, g, b,
-            -0.5f, -0.25f, -1.0f, r, g, b,
-            -0.5f, -0.25f, -1.0f, r, g, b,
-            -0.5f, -0.25f, 1.0f, r, g, b,
-            -0.5f, 0.25f, 1.0f, r, g, b,
+            +width / 2, +height, -length / 2, r, g, b,
+            +width / 2, -height, -length / 2, r, g, b,
+            -width / 2, -height, -length / 2, r, g, b,
+            -width / 2, -height, -length / 2, r, g, b,
+            -width / 2, +height, -length / 2, r, g, b,
+            +width / 2, +height, -length / 2, r, g, b,
 
             // Right face
-            0.5f, 0.25f, 1.0f, r, g, b,
-            0.5f, 0.25f, -1.0f, r, g, b,
-            0.5f, -0.25f, -1.0f, r, g, b,
-            0.5f, -0.25f, -1.0f, r, g, b,
-            0.5f, -0.25f, 1.0f, r, g, b,
-            0.5f, 0.25f, 1.0f, r, g, b,
+            +width / 2, +height, length / 2, r, g, b,
+            +width / 2, -height, length / 2, r, g, b,
+            -width / 2, -height, length / 2, r, g, b,
+            -width / 2, -height, length / 2, r, g, b,
+            -width / 2, +height, length / 2, r, g, b,
+            +width / 2, +height, length / 2, r, g, b,
 
             // Top face
-            -0.5f, 0.25f, -1.0f, r, g, b,
-            0.5f, 0.25f, -1.0f, r, g, b,
-            0.5f, 0.25f, 1.0f, r, g, b,
-            0.5f, 0.25f, 1.0f, r, g, b,
-            -0.5f, 0.25f, 1.0f, r, g, b,
-            -0.5f, 0.25f, -1.0f, r, g, b,
+            width / 2, -height, -length / 2, r, g, b,
+            width / 2, -height, +length / 2, r, g, b,
+            width / 2, +height, +length / 2, r, g, b,
+            width / 2, +height, +length / 2, r, g, b,
+            width / 2, +height, -length / 2, r, g, b,
+            width / 2, -height, -length / 2, r, g, b,
 
             // Bottom face
-            -0.5f, -0.25f, -1.0f, r, g, b,
-            0.5f, -0.25f, -1.0f, r, g, b,
-            0.5f, -0.25f, 1.0f, r, g, b,
-            0.5f, -0.25f, 1.0f, r, g, b,
-            -0.5f, -0.25f, 1.0f, r, g, b,
-            -0.5f, -0.25f, -1.0f, r, g, b};
+            -width / 2, -height, -length / 2, r, g, b,
+            -width / 2, -height, +length / 2, r, g, b,
+            -width / 2, +height, +length / 2, r, g, b,
+            -width / 2, +height, +length / 2, r, g, b,
+            -width / 2, +height, -length / 2, r, g, b,
+            -width / 2, -height, -length / 2, r, g, b};
 
         glGenVertexArrays(1, &cubeVAO_);
         glGenBuffers(1, &cubeVBO_);
@@ -158,8 +160,13 @@ namespace viewer
         #version 330 core
         in vec3 vColor;
         out vec4 FragColor;
-        void main() {
-            FragColor = vec4(vColor, 1.0);
+        uniform bool useUniformColor;
+        uniform vec3 uniformColor;
+        uniform float alpha;
+        void main() 
+        {
+            vec3 finalColor = useUniformColor ? uniformColor : vColor;
+            FragColor = vec4(finalColor, alpha);
         }
     )";
 
@@ -193,6 +200,14 @@ namespace viewer
         glUniformMatrix4fv(glGetUniformLocation(shader_, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shader_, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shader_, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+        bool useUniform = false;                                // Set true for override
+        glm::vec3 highlightColor = glm::vec3(1.0f, 1.0f, 0.0f); // yellow
+        float alpha = 0.8f;                                     // 1.0f = fully opaque, 0.0f = fully transparent
+
+        glUniform1i(glGetUniformLocation(shader_, "useUniformColor"), static_cast<GLint>(useUniform));
+        glUniform3fv(glGetUniformLocation(shader_, "uniformColor"), 1, glm::value_ptr(highlightColor));
+        glUniform1f(glGetUniformLocation(shader_, "alpha"), alpha);
 
         glBindVertexArray(cubeVAO_);
         glDrawArrays(GL_TRIANGLES, 0, 36);

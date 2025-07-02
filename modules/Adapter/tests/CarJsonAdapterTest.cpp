@@ -38,8 +38,8 @@ void testCarJsonAdapter()
         Transform(Point(-1000.0f, 0.0f, 0.0f),
                   Vector(0.0f, 1.0f, 0.0f)),
         20.0f, 20.0f, "RX2"}));
-
-    CarConfig config(node, transmitters, receivers);
+    CarDimension dim(1.0f, 1.0f, 1.0f);
+    CarConfig config(node, transmitters, receivers, dim);
     Car car(config);
 
     CarJsonAdapter adapter;

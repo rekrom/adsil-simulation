@@ -7,10 +7,10 @@ namespace viewer
 {
     OpenGLViewer::OpenGLViewer(int width, int height, const std::string &title)
         : width_(width), height_(height), title_(title), window_(nullptr), camera_(
-                                                                               glm::vec3(0.0f, 3.0f, 10.0f), // position
+                                                                               glm::vec3(0.0f, 20.0f, 5.0f), // position
                                                                                glm::vec3(0.0f, 1.0f, 0.0f),  // up direction
-                                                                               -90.0f,                       // yaw (looking toward -Z)
-                                                                               -15.0f                        // pitch
+                                                                               90.0f,                        // yaw (looking toward -Z)
+                                                                               -89.0f                        // pitch
                                                                                ),
           lastX_(width / 2.0f), lastY_(height / 2.0f),
           firstMouse_(true), rightMousePressed_(false),
@@ -53,6 +53,8 @@ namespace viewer
         glfwSetFramebufferSizeCallback(window_, [](GLFWwindow *, int w, int h)
                                        { glViewport(0, 0, w, h); });
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
         setupCallbacks(); // Add this line just before returning
     }
