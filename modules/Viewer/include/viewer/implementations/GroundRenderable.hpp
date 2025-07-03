@@ -1,5 +1,5 @@
 #pragma once
-#include <viewer/interfaces/Renderable.hpp>
+#include <viewer/implementations/Renderable.hpp>
 #include <glad/glad.h>
 
 namespace viewer
@@ -16,11 +16,12 @@ namespace viewer
         void cleanup() override;
 
     private:
-        void createBuffers();
-        void createShader();
-
-        GLuint vao_{0}, vbo_{0}, shader_{0};
         int vertexCount_{0};
+
+    protected:
+        void createShader() override;
+        void createBuffers() override;
+        glm::vec3 getCenter() const override;
     };
 
 }

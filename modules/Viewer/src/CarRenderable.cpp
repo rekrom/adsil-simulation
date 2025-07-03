@@ -9,6 +9,7 @@ namespace viewer
     CarRenderable::CarRenderable(std::shared_ptr<Car> car)
         : car_(std::move(car))
     {
+        setAlpha(0.9);
     }
 
     CarRenderable::~CarRenderable()
@@ -16,17 +17,22 @@ namespace viewer
         cleanup();
     }
 
+    std::shared_ptr<Car> CarRenderable::getCar() const
+    {
+        return car_;
+    }
+
     void CarRenderable::cleanup()
     {
-        if (cubeVBO_)
+        if (vbo_)
         {
-            glDeleteBuffers(1, &cubeVBO_);
-            cubeVBO_ = 0;
+            glDeleteBuffers(1, &vbo_);
+            vbo_ = 0;
         }
-        if (cubeVAO_)
+        if (vao_)
         {
-            glDeleteVertexArrays(1, &cubeVAO_);
-            cubeVAO_ = 0;
+            glDeleteVertexArrays(1, &vao_);
+            vao_ = 0;
         }
         if (shader_)
         {
@@ -77,58 +83,58 @@ namespace viewer
 
         float cubeVertices[] = {
             // Front face
-            -width / 2, -height, -length / 2, r, g, b,
-            -width / 2, -height, +length / 2, r, g, b,
-            +width / 2, -height, +length / 2, r, g, b,
-            +width / 2, -height, +length / 2, r, g, b,
-            +width / 2, -height, -length / 2, r, g, b,
-            -width / 2, -height, -length / 2, r, g, b,
+            -width / 2, -height / 2, -length / 2, r, g, b,
+            -width / 2, -height / 2, +length / 2, r, g, b,
+            +width / 2, -height / 2, +length / 2, r, g, b,
+            +width / 2, -height / 2, +length / 2, r, g, b,
+            +width / 2, -height / 2, -length / 2, r, g, b,
+            -width / 2, -height / 2, -length / 2, r, g, b,
 
             // Back face
-            -width / 2, height, -length / 2, r, g, b,
-            -width / 2, height, +length / 2, r, g, b,
-            +width / 2, height, +length / 2, r, g, b,
-            +width / 2, height, +length / 2, r, g, b,
-            +width / 2, height, -length / 2, r, g, b,
-            -width / 2, height, -length / 2, r, g, b,
+            -width / 2, height / 2, -length / 2, r, g, b,
+            -width / 2, height / 2, +length / 2, r, g, b,
+            +width / 2, height / 2, +length / 2, r, g, b,
+            +width / 2, height / 2, +length / 2, r, g, b,
+            +width / 2, height / 2, -length / 2, r, g, b,
+            -width / 2, height / 2, -length / 2, r, g, b,
 
             // Left face
-            +width / 2, +height, -length / 2, r, g, b,
-            +width / 2, -height, -length / 2, r, g, b,
-            -width / 2, -height, -length / 2, r, g, b,
-            -width / 2, -height, -length / 2, r, g, b,
-            -width / 2, +height, -length / 2, r, g, b,
-            +width / 2, +height, -length / 2, r, g, b,
+            +width / 2, +height / 2, -length / 2, r, g, b,
+            +width / 2, -height / 2, -length / 2, r, g, b,
+            -width / 2, -height / 2, -length / 2, r, g, b,
+            -width / 2, -height / 2, -length / 2, r, g, b,
+            -width / 2, +height / 2, -length / 2, r, g, b,
+            +width / 2, +height / 2, -length / 2, r, g, b,
 
             // Right face
-            +width / 2, +height, length / 2, r, g, b,
-            +width / 2, -height, length / 2, r, g, b,
-            -width / 2, -height, length / 2, r, g, b,
-            -width / 2, -height, length / 2, r, g, b,
-            -width / 2, +height, length / 2, r, g, b,
-            +width / 2, +height, length / 2, r, g, b,
+            +width / 2, +height / 2, length / 2, r, g, b,
+            +width / 2, -height / 2, length / 2, r, g, b,
+            -width / 2, -height / 2, length / 2, r, g, b,
+            -width / 2, -height / 2, length / 2, r, g, b,
+            -width / 2, +height / 2, length / 2, r, g, b,
+            +width / 2, +height / 2, length / 2, r, g, b,
 
             // Top face
-            width / 2, -height, -length / 2, r, g, b,
-            width / 2, -height, +length / 2, r, g, b,
-            width / 2, +height, +length / 2, r, g, b,
-            width / 2, +height, +length / 2, r, g, b,
-            width / 2, +height, -length / 2, r, g, b,
-            width / 2, -height, -length / 2, r, g, b,
+            width / 2, -height / 2, -length / 2, r, g, b,
+            width / 2, -height / 2, +length / 2, r, g, b,
+            width / 2, +height / 2, +length / 2, r, g, b,
+            width / 2, +height / 2, +length / 2, r, g, b,
+            width / 2, +height / 2, -length / 2, r, g, b,
+            width / 2, -height / 2, -length / 2, r, g, b,
 
             // Bottom face
-            -width / 2, -height, -length / 2, r, g, b,
-            -width / 2, -height, +length / 2, r, g, b,
-            -width / 2, +height, +length / 2, r, g, b,
-            -width / 2, +height, +length / 2, r, g, b,
-            -width / 2, +height, -length / 2, r, g, b,
-            -width / 2, -height, -length / 2, r, g, b};
+            -width / 2, -height / 2, -length / 2, r, g, b,
+            -width / 2, -height / 2, +length / 2, r, g, b,
+            -width / 2, +height / 2, +length / 2, r, g, b,
+            -width / 2, +height / 2, +length / 2, r, g, b,
+            -width / 2, +height / 2, -length / 2, r, g, b,
+            -width / 2, -height / 2, -length / 2, r, g, b};
 
-        glGenVertexArrays(1, &cubeVAO_);
-        glGenBuffers(1, &cubeVBO_);
+        glGenVertexArrays(1, &vao_);
+        glGenBuffers(1, &vbo_);
 
-        glBindVertexArray(cubeVAO_);
-        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO_);
+        glBindVertexArray(vao_);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
         glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
@@ -203,13 +209,12 @@ namespace viewer
 
         bool useUniform = false;                                // Set true for override
         glm::vec3 highlightColor = glm::vec3(1.0f, 1.0f, 0.0f); // yellow
-        float alpha = 0.8f;                                     // 1.0f = fully opaque, 0.0f = fully transparent
 
         glUniform1i(glGetUniformLocation(shader_, "useUniformColor"), static_cast<GLint>(useUniform));
         glUniform3fv(glGetUniformLocation(shader_, "uniformColor"), 1, glm::value_ptr(highlightColor));
-        glUniform1f(glGetUniformLocation(shader_, "alpha"), alpha);
+        glUniform1f(glGetUniformLocation(shader_, "alpha"), alpha_);
 
-        glBindVertexArray(cubeVAO_);
+        glBindVertexArray(vao_);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
 
@@ -230,6 +235,11 @@ namespace viewer
         {
             deviceRenderable->render(view, projection);
         }
+    }
+
+    glm::vec3 CarRenderable::getCenter() const
+    {
+        return car_->getPosition().toGlmVec3(); // Or however you access position
     }
 
 } // namespace viewer

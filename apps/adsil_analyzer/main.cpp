@@ -83,25 +83,25 @@ int main()
 
     // // VIEWER START
     viewer::OpenGLViewer viewer(1280, 720, "ADSIL Analyzer - OpenGL");
-    auto axis = std::make_shared<viewer::AxisRenderable>();
-    viewer.addRenderable(axis);
 
     auto ground = std::make_shared<viewer::GroundRenderable>();
     viewer.addRenderable(ground);
 
-    // std::cout << carPtr.get()->getPosition().toString() << std::endl;
-    auto carRenderable = std::make_shared<viewer::CarRenderable>(carPtr);
-    viewer.addRenderable(carRenderable);
+    auto axis = std::make_shared<viewer::AxisRenderable>();
+    viewer.addRenderable(axis);
 
-    auto cube = ShapeFactory::createCube({Point(-3.0f, 0.0f, 5.0f),
-                                          600.0 / 1000.0f,
+    auto cube = ShapeFactory::createCube({Point(-0.0f, 0.0f, 15.0f),
+                                          1.0f,
                                           Vector(0, 0, 0)});
     auto mesh = cube->surfaceMesh(2048 * 16);
-
     auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(mesh);
     cubeRenderable->setColor(glm::vec3(0.5f, 0.5f, 0.5f)); // isteğe göre
     cubeRenderable->setVisible(true);                      // sadece test için görünür yap
     viewer.addRenderable(cubeRenderable);
+
+    // std::cout << carPtr.get()->getPosition().toString() << std::endl;
+    auto carRenderable = std::make_shared<viewer::CarRenderable>(carPtr);
+    viewer.addRenderable(carRenderable);
 
     // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(ShapeFactory::createCube({Point(0, 0, 0), 0.5f, Vector(0, 0, 0)}).get()->surfaceMesh());
     // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre

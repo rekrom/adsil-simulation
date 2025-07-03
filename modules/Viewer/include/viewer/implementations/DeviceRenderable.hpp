@@ -1,6 +1,8 @@
 #pragma once
 
-#include <viewer/interfaces/Renderable.hpp>
+#include <viewer/implementations/Renderable.hpp>
+
+#include <viewer/implementations/FovPyramidRenderable.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <glad/glad.h>
 #include <memory>
@@ -19,17 +21,21 @@ namespace viewer
         void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
+        void enableFoV(bool enable);
 
     private:
-        void createBuffers();
-        void createShader();
-
         std::shared_ptr<Device> device_;
-        GLuint cubeVAO_{0}, cubeVBO_{0};
-        GLuint EBO_ = 0;
+
         GLuint arrowVAO_{0}, arrowVBO_{0};
-        GLuint shader_{0};
         glm::vec3 color_ = glm::vec3(1.0f); // varsayılan beyaz renk
+
+        bool showFoV_ = true;
+        std::unique_ptr<FoVPyramidRenderable> fovRenderable_;
+
+    protected:
+        void createShader() override;
+        void createBuffers() override;
+        glm::vec3 getCenter() const override;
     };
 
 }

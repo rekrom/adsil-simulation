@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interfaces/Renderable.hpp"
+#include "interfaces/IRenderable.hpp"
 #include "interfaces/Camera.hpp"
 
 #include "implementations/OpenGLViewer.hpp"

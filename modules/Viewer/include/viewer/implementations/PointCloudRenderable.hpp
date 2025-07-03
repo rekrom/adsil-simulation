@@ -1,6 +1,6 @@
 #pragma once
 
-#include <viewer/interfaces/Renderable.hpp>
+#include <viewer/implementations/Renderable.hpp>
 #include <core/PointCloud.hpp>
 #include <memory>
 #include <glad/glad.h>
@@ -25,11 +25,10 @@ namespace viewer
         glm::vec3 color_{1.0f, 1.0f, 1.0f}; // default white
         bool visible_{true};
 
-        GLuint vao_{0}, vbo_{0};
-        GLuint shader_{0};
-
-        void createShader();
-        void createBuffers();
+    protected:
+        void createShader() override;
+        void createBuffers() override;
+        glm::vec3 getCenter() const override;
     };
 
 }

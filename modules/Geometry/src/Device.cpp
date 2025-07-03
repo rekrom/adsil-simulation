@@ -56,6 +56,11 @@ const Point &Device::getOrigin() const
     return transformNode_->getLocalTransform().getPosition();
 }
 
+const Vector &Device::getOrientation() const
+{
+    return transformNode_->getLocalTransform().getOrientation();
+}
+
 std::shared_ptr<spatial::TransformNode> Device::getTransformNode() const
 {
     return transformNode_;

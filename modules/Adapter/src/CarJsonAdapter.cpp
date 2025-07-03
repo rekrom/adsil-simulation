@@ -35,7 +35,7 @@ namespace adapter
 
     Car CarJsonAdapter::fromJson(const nlohmann::json &j) const
     {
-        Point p = pointAdapter_.fromJson(j.at("position"));
+        Point p = pointAdapter_.fromJson(j.at("origin"));
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
         Vector v_rad(RotationUtils::deg2rad(v.x()), RotationUtils::deg2rad(v.y()), RotationUtils::deg2rad(v.z()));
 
@@ -45,7 +45,6 @@ namespace adapter
         std::vector<std::shared_ptr<Device>> tx;
         for (const auto &txJson : j.at("transmitters"))
         {
-            std::cout << "hello" << std::endl;
             Device d = deviceAdapter_.fromJson(txJson);
             tx.push_back(std::make_shared<Device>(std::move(d)));
         }
@@ -61,8 +60,6 @@ namespace adapter
         dim.length = dims.at("length");
         dim.width = dims.at("width");
         dim.height = dims.at("height");
-
-        std::cout << "[DIM]" << dim.height << dim.length << dim.width << std::endl;
 
         CarConfig config(node, tx, rx, dim);
 

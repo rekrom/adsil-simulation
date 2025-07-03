@@ -27,12 +27,12 @@ Vector RotationUtils::eulerFromDirection(const Vector &dir)
 {
     Vector normDir = dir.normalized();
 
-    // Yaw: rotation around Z axis
-    float yaw = std::atan2(normDir.x(), normDir.y());
+    // Yaw: rotation around Y axis (Z → X)
+    float yaw = std::atan2(normDir.x(), normDir.z());
 
-    // Pitch: rotation around X axis
-    float pitch = std::atan2(-normDir.z(), std::sqrt(normDir.x() * normDir.x() + normDir.y() * normDir.y()));
+    // Pitch: rotation around X axis (horizontal plane → Y)
+    float pitch = std::atan2(-normDir.y(), std::sqrt(normDir.x() * normDir.x() + normDir.z() * normDir.z()));
 
     // Roll is assumed zero
-    return Vector(0.0f, pitch, yaw);
+    return Vector(0.0f, pitch, yaw); // roll, pitch, yaw
 }

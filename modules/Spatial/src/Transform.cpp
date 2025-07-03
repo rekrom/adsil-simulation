@@ -81,14 +81,19 @@ void Transform::set3DDirectionVector(const Vector &dir)
 {
     Vector normDir = dir.normalized();
 
-    // Assumption: local forward is (0, 1, 0), we're reversing the get3DDirectionVector logic.
+    // Assumption: local forward is (0, 0, 1), we're reversing the get3DDirectionVector logic.
     // We aim to find the pitch and yaw that result in `normDir` when applying rotation.
     // Roll is assumed to be 0.
 
-    float yaw = std::atan2(normDir.x(), normDir.y());                                                         // around Z
-    float pitch = std::atan2(-normDir.z(), std::sqrt(normDir.x() * normDir.x() + normDir.y() * normDir.y())); // around Y
+    float yaw = std::atan2(normDir.x(), normDir.z()); /// forward is (0, 0, 1)
+                                                      // around Z
 
-    orientation_ = Vector(0.0f, pitch, yaw); // roll = 0
+    // Pitch (around X axis): angle from horizontal plane to direction
+    float pitch = std::atan2(-normDir.y(), std::sqrt(normDir.x() * normDir.x() + normDir.z() * normDir.z()));
+
+    float roll = 0.0f; // default, unless banking is needed
+
+    orientation_ = Vector(roll, pitch, yaw);
 }
 
 void Transform::rotateYaw(float angleRad)

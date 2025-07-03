@@ -126,4 +126,9 @@ namespace viewer
         shader_ = 0;
     }
 
+    glm::vec3 GroundRenderable::getCenter() const
+    {
+        glm::vec3 center(0, 0, 0);
+        return center;
+    }
 }

@@ -30,6 +30,9 @@ public:
     const Point &getOrigin() const;
     void setOrigin(const Point &newOrigin);
 
+    const Vector &getOrientation() const;
+    void setOrientation(const Vector &newOrientation);
+
     const Vector getDirection() const;
     void setDirection(const Vector &newDirection);
 

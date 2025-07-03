@@ -20,6 +20,7 @@ namespace viewer
 
     OpenGLViewer::~OpenGLViewer()
     {
+        renderables_.clear();
         cleanup();
     }
 
@@ -44,6 +45,8 @@ namespace viewer
 
         glfwMakeContextCurrent(window_);
 
+        imguiLayer_.init(window_);
+
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             throw std::runtime_error("Failed to initialize GLAD");
@@ -56,6 +59,8 @@ namespace viewer
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE); // Depth buffer should be writable!
+
         setupCallbacks(); // Add this line just before returning
     }
 
@@ -143,14 +148,22 @@ namespace viewer
 
         while (!glfwWindowShouldClose(window_))
         {
+
             updateDeltaTime();
             processInput(deltaTime_);
 
+            // Start new ImGui frame
+            imguiLayer_.beginFrame();
+
+            // GUI interaction logic
+            imguiLayer_.drawUI(renderables_);
             glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             render();
 
+            // End and render ImGui
+            imguiLayer_.endFrame();
             glfwSwapBuffers(window_);
             glfwPollEvents();
         }
@@ -158,20 +171,65 @@ namespace viewer
 
     void OpenGLViewer::render()
     {
+        static int frameCount = 0;
+        static double lastTime = glfwGetTime();
+
+        ++frameCount;
+        double currentTime = glfwGetTime();
+        if (currentTime - lastTime >= 1.0)
+        {
+            // std::cout << "FPS: " << frameCount << std::endl;
+            frameCount = 0;
+            lastTime = currentTime;
+        }
+
         glm::mat4 view = camera_.getViewMatrix();
         glm::mat4 projection = glm::perspective(
             glm::radians(camera_.getFov()),
             static_cast<float>(width_) / height_,
             0.1f, 1000.0f);
-        std::cout << "[CAM] " << camera_.toString() << std::endl;
+
+        std::vector<std::shared_ptr<Renderable>> opaque;
+        std::vector<std::shared_ptr<Renderable>> transparent;
+
         for (auto &r : renderables_)
         {
-            r->render(view, projection);
+            if (r->isTransparent())
+                transparent.push_back(r);
+            else
+                opaque.push_back(r);
         }
+
+        std::sort(transparent.begin(), transparent.end(),
+                  [this](const std::shared_ptr<Renderable> &a, const std::shared_ptr<Renderable> &b)
+                  {
+                      glm::vec3 camPos = camera_.getPosition();
+                      glm::vec3 aPos = a->getCenter(); // You'll implement this
+                      glm::vec3 bPos = b->getCenter();
+                      return glm::distance(camPos, aPos) > glm::distance(camPos, bPos); // back-to-front
+                  });
+
+        for (auto &r : opaque)
+            r->render(view, projection);
+
+        glDepthMask(GL_FALSE); // ⛔ prevent depth writes
+        for (auto &r : transparent)
+            r->render(view, projection);
+        glDepthMask(GL_TRUE); // ✅ restore
     }
 
     void OpenGLViewer::cleanup()
     {
+        // 1. renderables_ temizlenmeli
+        for (auto &r : renderables_)
+        {
+            r->cleanup(); // OpenGL context hâlâ aktifken
+        }
+
+        renderables_.clear(); // ardından shared_ptr’lar yok edilir
+
+        imguiLayer_.shutdown();
+
         if (window_)
         {
             glfwDestroyWindow(window_);

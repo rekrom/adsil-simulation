@@ -1,6 +1,6 @@
 #pragma once
 
-#include <viewer/interfaces/Renderable.hpp>
+#include <viewer/implementations/Renderable.hpp>
 #include <core/Point.hpp>
 #include <vector>
 #include <glm/glm.hpp>
@@ -18,12 +18,13 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
 
     private:
-        void createBuffers();
-        void createShader();
-
         std::vector<Point> lines_;
         glm::vec3 color_;
-        GLuint vao_{0}, vbo_{0}, shader_{0};
+
+    protected:
+        void createShader() override;
+        void createBuffers() override;
+        glm::vec3 getCenter() const override;
     };
 
 }

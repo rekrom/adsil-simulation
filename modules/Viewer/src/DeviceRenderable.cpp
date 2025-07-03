@@ -17,8 +17,8 @@ namespace viewer
 
     DeviceRenderable::~DeviceRenderable()
     {
-        glDeleteVertexArrays(1, &cubeVAO_);
-        glDeleteBuffers(1, &cubeVBO_);
+        glDeleteVertexArrays(1, &vao_);
+        glDeleteBuffers(1, &vbo_);
         glDeleteVertexArrays(1, &arrowVAO_);
         glDeleteBuffers(1, &arrowVBO_);
         glDeleteProgram(shader_);
@@ -29,6 +29,12 @@ namespace viewer
     {
         createShader();
         createBuffers();
+
+        if (showFoV_)
+        {
+            fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, device_->getHorizontalFovDeg(), device_->getVerticalFovDeg(), 20, 0.25f);
+            fovRenderable_->initGL();
+        }
     }
 
     void DeviceRenderable::createBuffers()
@@ -98,16 +104,16 @@ namespace viewer
             0, 1, 5, 5, 4, 0  // bottom face
         };
 
-        glGenVertexArrays(1, &cubeVAO_);
-        glGenBuffers(1, &cubeVBO_);
-        glGenBuffers(1, &EBO_);
+        glGenVertexArrays(1, &vao_);
+        glGenBuffers(1, &vbo_);
+        glGenBuffers(1, &ebo_);
 
-        glBindVertexArray(cubeVAO_);
+        glBindVertexArray(vao_);
 
-        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO_);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
         glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
         // Position attribute
@@ -180,16 +186,10 @@ namespace viewer
 
     void DeviceRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        // glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
-        // WARNING: we should convert direction to euler angle thats why we cant use generic getModelMatrix.
-        // WARNING: it assumes model has `orientation`, not direction.
-        glm::mat4 model(1.0f);
-        model = glm::translate(model, device_->getGlobalTransform().getPosition().toGlmVec3());
-        Vector orientation_(0, 0, 0);
-        Vector dir(device_->getGlobalTransform().getOrientation().x(), device_->getGlobalTransform().getOrientation().y(), device_->getGlobalTransform().getOrientation().z());
+        if (!device_)
+            return;
 
-        orientation_ = RotationUtils::eulerFromDirection(dir);
-        model *= glm::toMat4(orientation_.toGlmQuat());
+        glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
 
         model = glm::scale(model, glm::vec3(0.51f)); // <-- Check if this differs!
 
@@ -204,7 +204,7 @@ namespace viewer
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Draw cube with indices
-        glBindVertexArray(cubeVAO_);
+        glBindVertexArray(vao_);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
@@ -213,24 +213,34 @@ namespace viewer
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);
         glUseProgram(0);
+
+        if (showFoV_ && fovRenderable_)
+            fovRenderable_->render(view, projection);
+    }
+
+    void DeviceRenderable::enableFoV(bool enable)
+    {
+        showFoV_ = enable;
+        if (!enable)
+            fovRenderable_.reset();
     }
 
     void DeviceRenderable::cleanup()
     {
-        if (cubeVBO_)
+        if (vbo_)
         {
-            glDeleteBuffers(1, &cubeVBO_);
-            cubeVBO_ = 0;
+            glDeleteBuffers(1, &vbo_);
+            vbo_ = 0;
         }
-        if (cubeVAO_)
+        if (vao_)
         {
-            glDeleteVertexArrays(1, &cubeVAO_);
-            cubeVAO_ = 0;
+            glDeleteVertexArrays(1, &vao_);
+            vao_ = 0;
         }
-        if (EBO_)
+        if (ebo_)
         {
-            glDeleteBuffers(1, &EBO_);
-            EBO_ = 0;
+            glDeleteBuffers(1, &ebo_);
+            ebo_ = 0;
         }
         if (arrowVBO_)
         {
@@ -247,5 +257,15 @@ namespace viewer
             glDeleteProgram(shader_);
             shader_ = 0;
         }
+        if (fovRenderable_)
+        {
+            fovRenderable_->cleanup();
+            fovRenderable_.reset();
+        }
+    }
+
+    glm::vec3 DeviceRenderable::getCenter() const
+    {
+        return device_->getGlobalTransform().getPosition().toGlmVec3(); // Or however you access position
     }
 }

@@ -113,4 +113,11 @@ namespace viewer
         glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(pointCloud_->size()));
         glBindVertexArray(0);
     }
+
+    glm::vec3 PointCloudRenderable::getCenter() const
+    {
+        glm::vec3 center(0, 0, 0);
+        return center;
+    }
+
 }

@@ -8,7 +8,8 @@
 
 // 3. Diğer includes
 #include <viewer/interfaces/Camera.hpp>
-#include <viewer/interfaces/Renderable.hpp>
+#include <viewer/implementations/Renderable.hpp>
+#include <viewer/implementations/ImGuiLayer.hpp>
 #include <vector>
 #include <string>
 #include <memory>
@@ -33,13 +34,17 @@ namespace viewer
         void render(); // Placeholder: actual rendering logic goes here
         void cleanup();
 
-        std::vector<std::shared_ptr<Renderable>> renderables_;
+        void setupCallbacks();
+        void processInput(float deltaTime);
+        void updateDeltaTime();
 
+    private:
         GLFWwindow *window_;
         int width_;
         int height_;
         std::string title_;
 
+        ImGuiLayer imguiLayer_;
         Camera camera_;
         float lastX_;
         float lastY_;
@@ -49,8 +54,6 @@ namespace viewer
         float deltaTime_;
         float lastFrame_;
 
-        void setupCallbacks();
-        void processInput(float deltaTime);
-        void updateDeltaTime();
+        std::vector<std::shared_ptr<Renderable>> renderables_;
     };
 }

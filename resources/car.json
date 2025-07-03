@@ -4,15 +4,15 @@
         "y": 0.0,
         "z": 0.0
     },
-    "position": {
+    "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 5.0
     },
     "dimension": {
-        "length": 1.0,
-        "width": 1.0,
-        "height": 1.0
+        "length": 2.5300,
+        "width": 1.3900,
+        "height": 1.5200
     },
     "receivers": [
         {
@@ -21,12 +21,13 @@
                 "y": 0.0,
                 "z": 0.0
             },
-            "placement_angles": {
-                "horizontal_angle_deg": 0.0,
-                "vertical_angle_deg": 0.0
+            "orientation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "vertical_fov_deg": 0,
-            "horizontal_fov_deg": 0,
+            "vertical_fov_deg": 10,
+            "horizontal_fov_deg": 20,
             "name": "rx1"
         },
         {
@@ -35,12 +36,13 @@
                 "y": 0.0,
                 "z": 0.0
             },
-            "placement_angles": {
-                "horizontal_angle_deg": 0.0,
-                "vertical_angle_deg": 0.0
+            "orientation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "vertical_fov_deg": 0,
-            "horizontal_fov_deg": 0,
+            "vertical_fov_deg": 10,
+            "horizontal_fov_deg": 20,
             "name": "rx2"
         }
     ],
@@ -48,15 +50,16 @@
         {
             "origin": {
                 "x": 0.0,
-                "y": 0.5,
+                "y": 1.0,
                 "z": 0.0
             },
-            "placement_angles": {
-                "horizontal_angle_deg": 0.0,
-                "vertical_angle_deg": 0.0
+            "orientation": {
+                "x": -20.0,
+                "y": 20.0,
+                "z": 0.0
             },
-            "vertical_fov_deg": 0,
-            "horizontal_fov_deg": 0,
+            "vertical_fov_deg": 10,
+            "horizontal_fov_deg": 10,
             "name": "tx1"
         }
     ]
