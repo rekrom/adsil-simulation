@@ -10,9 +10,9 @@
 class Cube : public ShapeBase
 {
 public:
-    Cube(const Transform &transform, float dimension);
+    Cube(const Transform &transform, float dimension, std::string name);
 
-    std::shared_ptr<PointCloud> surfaceMesh(int quality = 16) const override;
+    std::shared_ptr<PointCloud> surfaceMesh(int quality = 2048) const override;
 
     std::vector<Point> wireframe() const override;
 

@@ -16,6 +16,7 @@ struct CubeDimension final
 struct CubeConfig
 {
     Point origin;
-    float dimension;
     Vector orientation;
+    float dimension;
+    std::string name;
 };

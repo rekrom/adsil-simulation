@@ -13,7 +13,9 @@ target_include_directories(Adapter PUBLIC
 target_link_libraries(Adapter
     PRIVATE Core
     Spatial
-            Geometry
+    Geometry
+    Simulation
+
 )
 
 

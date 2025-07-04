@@ -10,7 +10,7 @@
 namespace adapter
 {
 
-    nlohmann::json ShapeJsonAdapter::toJson(const std::shared_ptr<IShape> &shape) const
+    nlohmann::json ShapeJsonAdapter::toJson(const std::shared_ptr<ShapeBase> &shape) const
     {
         nlohmann::json j;
 
@@ -20,6 +20,7 @@ namespace adapter
             j["origin"] = {cube->getOrigin().x(), cube->getOrigin().y(), cube->getOrigin().z()};
             j["orientation"] = {cube->getOrientation().x(), cube->getOrientation().y(), cube->getOrientation().z()};
             j["dimension"] = cube->getDimension().height;
+            j["name"] = cube->getName();
         }
         else if (auto cylinder = std::dynamic_pointer_cast<Cylinder>(shape))
         {
@@ -28,6 +29,7 @@ namespace adapter
             j["orientation"] = {cylinder->getOrientation().x(), cylinder->getOrientation().y(), cylinder->getOrientation().z()};
             j["height"] = cylinder->getHeight();
             j["radius"] = cylinder->getRadius();
+            j["name"] = cylinder->getName();
         }
         else
         {
@@ -37,36 +39,33 @@ namespace adapter
         return j;
     }
 
-    std::shared_ptr<IShape> ShapeJsonAdapter::fromJson(const nlohmann::json &j) const
+    std::shared_ptr<ShapeBase> ShapeJsonAdapter::fromJson(const nlohmann::json &j) const
     {
         const std::string type = j.at("type").get<std::string>();
 
-        Point origin(
-            j.at("origin")[0].get<float>(),
-            j.at("origin")[1].get<float>(),
-            j.at("origin")[2].get<float>());
+        Point origin = pointAdapter_.fromJson(j.at("origin"));
 
-        Vector orientation(
-            j.at("orientation")[0].get<float>(),
-            j.at("orientation")[1].get<float>(),
-            j.at("orientation")[2].get<float>());
+        Vector v = vectorAdapter_.fromJson(j.at("orientation"));
+        Vector orientation(RotationUtils::deg2rad(v.x()), RotationUtils::deg2rad(v.y()), RotationUtils::deg2rad(v.z()));
 
         if (type == "Cube")
         {
             CubeConfig config{
                 .origin = origin,
-                .dimension = j.at("dimension").get<float>(),
                 .orientation = orientation,
-            };
+                .dimension = j.at("dimension").get<float>(),
+                .name = j.at("name").get<std::string>()};
             return ShapeFactory::createCube(config);
         }
         else if (type == "Cylinder")
         {
             CylinderConfig config{
                 .origin = origin,
+                .orientation = orientation,
                 .height = j.at("height").get<float>(),
                 .radius = j.at("radius").get<float>(),
-                .orientation = orientation,
+                .name = j.at("name").get<std::string>()
+
             };
             return ShapeFactory::createCylinder(config);
         }

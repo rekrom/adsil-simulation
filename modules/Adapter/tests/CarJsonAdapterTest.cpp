@@ -40,8 +40,7 @@ void testCarJsonAdapter()
         20.0f, 20.0f, "RX2"}));
     CarDimension dim(1.0f, 1.0f, 1.0f);
     CarConfig config(node, transmitters, receivers, dim);
-    Car car(config);
-
+    std::shared_ptr<Car> car = std::make_shared<Car>(config);
     CarJsonAdapter adapter;
 
     // Serialize
@@ -50,19 +49,19 @@ void testCarJsonAdapter()
               << j.dump(4) << std::endl;
 
     // Deserialize
-    Car loadedCar = adapter.fromJson(j);
+    std::shared_ptr<Car> loadedCar = adapter.fromJson(j);
 
     // Basic validations with tolerance
-    assert(floatEqual(loadedCar.getPosition().x(), car.getPosition().x()));
-    assert(floatEqual(loadedCar.getPosition().y(), car.getPosition().y()));
-    assert(floatEqual(loadedCar.getPosition().z(), car.getPosition().z()));
+    assert(floatEqual(loadedCar->getPosition().x(), car->getPosition().x()));
+    assert(floatEqual(loadedCar->getPosition().y(), car->getPosition().y()));
+    assert(floatEqual(loadedCar->getPosition().z(), car->getPosition().z()));
 
-    assert(floatEqual(loadedCar.getOrientation().x(), car.getOrientation().x()));
-    assert(floatEqual(loadedCar.getOrientation().y(), car.getOrientation().y()));
-    assert(floatEqual(loadedCar.getOrientation().z(), car.getOrientation().z()));
+    assert(floatEqual(loadedCar->getOrientation().x(), car->getOrientation().x()));
+    assert(floatEqual(loadedCar->getOrientation().y(), car->getOrientation().y()));
+    assert(floatEqual(loadedCar->getOrientation().z(), car->getOrientation().z()));
 
-    assert(loadedCar.getTransmitters().size() == car.getTransmitters().size());
-    assert(loadedCar.getReceivers().size() == car.getReceivers().size());
+    assert(loadedCar->getTransmitters().size() == car->getTransmitters().size());
+    assert(loadedCar->getReceivers().size() == car->getReceivers().size());
 
     std::cout << "[PASS] CarJsonAdapter serialization/deserialization test\n";
 }

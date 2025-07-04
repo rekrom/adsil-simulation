@@ -8,15 +8,15 @@ namespace adapter
     {
     }
 
-    nlohmann::json CarJsonAdapter::toJson(const Car &car) const
+    nlohmann::json CarJsonAdapter::toJson(const std::shared_ptr<Car> &car) const
     {
         nlohmann::json j;
-        j["origin"] = pointAdapter_.toJson(car.getPosition());
-        j["orientation"] = vectorAdapter_.toJson(car.getOrientation());
+        j["origin"] = pointAdapter_.toJson(car->getPosition());
+        j["orientation"] = vectorAdapter_.toJson(car->getOrientation());
 
         // transmitters dizisi
         nlohmann::json txArr = nlohmann::json::array();
-        for (const auto &tx : car.getTransmitters())
+        for (const auto &tx : car->getTransmitters())
         {
             txArr.push_back(deviceAdapter_.toJson(*tx));
         }
@@ -24,13 +24,13 @@ namespace adapter
 
         // receivers dizisi
         nlohmann::json rxArr = nlohmann::json::array();
-        for (const auto &rx : car.getReceivers())
+        for (const auto &rx : car->getReceivers())
         {
             rxArr.push_back(deviceAdapter_.toJson(*rx));
         }
         j["receivers"] = rxArr;
 
-        CarDimension dim = car.getDimension();
+        CarDimension dim = car->getDimension();
         j["dimension"] = {
             {"length", dim.length},
             {"width", dim.width},
@@ -39,7 +39,7 @@ namespace adapter
         return j;
     }
 
-    Car CarJsonAdapter::fromJson(const nlohmann::json &j) const
+    std::shared_ptr<Car> CarJsonAdapter::fromJson(const nlohmann::json &j) const
     {
         Point p = pointAdapter_.fromJson(j.at("origin"));
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
@@ -69,7 +69,7 @@ namespace adapter
 
         CarConfig config(node, tx, rx, dim);
 
-        return Car(config);
+        return std::make_shared<Car>(config);
     }
 
 } // namespace adapter

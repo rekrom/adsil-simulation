@@ -2,8 +2,8 @@
 #include <core/RotationUtils.hpp>
 #include <cmath>
 
-Cylinder::Cylinder(const Transform &transform, float height, float radius)
-    : ShapeBase(transform), cylinderDimension(height, radius) {}
+Cylinder::Cylinder(const Transform &transform, float height, float radius, std::string name)
+    : ShapeBase(transform, name), cylinderDimension(height, radius) {}
 
 std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
 {

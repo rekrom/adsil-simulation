@@ -13,7 +13,8 @@ struct CylinderDimension final
 struct CylinderConfig
 {
     Point origin;
+    Vector orientation;
     float height;
     float radius;
-    Vector orientation;
+    std::string name;
 };

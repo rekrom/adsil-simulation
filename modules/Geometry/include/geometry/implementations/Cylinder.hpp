@@ -9,9 +9,9 @@
 class Cylinder : public ShapeBase
 {
 public:
-    Cylinder(const Transform &transform, float height, float radius);
+    Cylinder(const Transform &transform, float height, float radius, std::string name);
 
-    std::shared_ptr<PointCloud> surfaceMesh(int quality = 16) const override;
+    std::shared_ptr<PointCloud> surfaceMesh(int quality = 2048) const override;
     std::vector<Point> wireframe() const override;
 
     std::string toString() const override;

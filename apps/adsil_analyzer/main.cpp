@@ -6,7 +6,9 @@ int main()
     // adapter initializations
     adapter::JsonAdapterRegistry registry;
     // register the carjson into the adapter
-    registry.registerAdapter<Car>(std::make_shared<adapter::CarJsonAdapter>());
+    registry.registerAdapter<std::shared_ptr<Car>>(std::make_shared<adapter::CarJsonAdapter>());
+    // registry.registerAdapter<std::shared_ptr<IShape>>(std::make_shared<adapter::ShapeJsonAdapter>());
+    registry.registerAdapter<std::shared_ptr<SimulationScene>>(std::make_shared<adapter::SceneJsonAdapter>());
 
     nlohmann::json car_json;
     if (!utils::readJsonFromFile("/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources/car.json", car_json))
@@ -14,10 +16,30 @@ int main()
         exit(0);
     }
 
-    auto *carAdapter = registry.getAdapter<Car>();
+    nlohmann::json objects_json;
+    if (!utils::readJsonFromFile("/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources/objects.json", objects_json))
+    {
+        exit(0);
+    }
+
+    auto *carAdapter = registry.getAdapter<std::shared_ptr<Car>>();
     if (!carAdapter)
     {
         std::cerr << "Car adapter bulunamadı!\n";
+        return 1;
+    }
+
+    // auto *shapeAdapter = registry.getAdapter<std::shared_ptr<IShape>>();
+    // if (!shapeAdapter)
+    // {
+    //     std::cerr << "IShape adapter bulunamadı!\n";
+    //     return 1;
+    // }
+
+    auto *sceneAdapter = registry.getAdapter<std::shared_ptr<SimulationScene>>();
+    if (!sceneAdapter)
+    {
+        std::cerr << "SimulationScene adapter bulunamadı!\n";
         return 1;
     }
 
@@ -84,22 +106,18 @@ int main()
     auto groundEntity = std::make_shared<viewer::GroundEntity>();
     viewer.addEntity(groundEntity); // Assuming `addEntity` works on IEntity*
 
-    auto carEntity = std::make_shared<viewer::CarEntity>(std::make_shared<Car>(carAdapter->fromJson(car_json)), glm::vec3(0.2f, 0.6f, 0.9f));
+    auto carEntity = std::make_shared<viewer::CarEntity>(carAdapter->fromJson(car_json), glm::vec3(0.2f, 0.6f, 0.9f));
     viewer.addEntity(carEntity);
 
-    // auto cube = ShapeFactory::createCube({Point(-0.0f, 0.0f, 15.0f),
-    //                                       1.0f,
-    //                                       Vector(0, 0, 0)});
-    // auto mesh = cube->surfaceMesh(2048 * 16);
-    // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(mesh);
-    // cubeRenderable->setColor(glm::vec3(0.5f, 0.5f, 0.5f)); // isteğe göre
-    // cubeRenderable->setVisible(true);                      // sadece test için görünür yap
-    // viewer.addRenderable(cubeRenderable);
+    auto scene = sceneAdapter->fromJson(objects_json);
+    std::cout << "[INFO] Scene loaded." << std::endl;
 
-    // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(ShapeFactory::createCube({Point(0, 0, 0), 0.5f, Vector(0, 0, 0)}).get()->surfaceMesh());
-    // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre
-    // cubeRenderable->setVisible(true);                      // sadece test için görünür yap
-    // viewer.addRenderable(cubeRenderable);
+    for (auto shape : scene->getShapes())
+    {
+        auto shapeEntity = std::make_shared<viewer::ShapeEntity>(shape);
+        viewer.addEntity(shapeEntity);
+    }
+    std::cout << "[INFO] Entities loaded." << std::endl;
 
     viewer.run();
 

@@ -10,13 +10,13 @@
 namespace adapter
 {
 
-    class CarJsonAdapter : public IJsonAdapter<Car>
+    class CarJsonAdapter : public IJsonAdapter<std::shared_ptr<Car>>
     {
     public:
         CarJsonAdapter();
 
-        nlohmann::json toJson(const Car &car) const override;
-        Car fromJson(const nlohmann::json &j) const override;
+        nlohmann::json toJson(const std::shared_ptr<Car> &car) const override;
+        std::shared_ptr<Car> fromJson(const nlohmann::json &j) const override;
 
     private:
         PointJsonAdapter pointAdapter_;

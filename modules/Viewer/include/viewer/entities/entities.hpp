@@ -4,3 +4,4 @@
 #include "CarEntity.hpp"
 #include "GroundEntity.hpp"
 #include "AxisEntity.hpp"
+#include "ShapeEntity.hpp"

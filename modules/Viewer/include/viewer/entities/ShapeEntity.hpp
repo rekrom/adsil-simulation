@@ -1,0 +1,34 @@
+#pragma once
+
+#include <geometry/implementations/ShapeBase.hpp>
+#include <viewer/entities/entities.hpp>
+#include <viewer/implementations/ShapeRenderable.hpp>
+#include <glm/glm.hpp>
+#include <memory>
+#include <string>
+
+namespace viewer
+{
+
+    class ShapeEntity : public Entity
+    {
+    public:
+        ShapeEntity(std::shared_ptr<ShapeBase> shape, const std::string &name = "UnnamedShape", const glm::vec3 &color = glm::vec3(0.6f, 0.6f, 0.9f));
+
+        void initGL() override;
+        void render(const glm::mat4 &view, const glm::mat4 &projection) override;
+        void cleanup() override;
+
+        glm::vec3 getColor() const override;
+        glm::vec3 getCenter() const override;
+        bool isTransparent() const override;
+        std::string getName() const override;
+
+    private:
+        std::shared_ptr<ShapeBase> shape_;
+        std::shared_ptr<ShapeRenderable> shapeRenderable_;
+        std::string name_;
+        glm::vec3 color_;
+    };
+
+}

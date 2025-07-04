@@ -153,7 +153,10 @@ namespace viewer
             return;
         }
         for (auto &e : entities_)
+        {
+            std::cout << "[DEBUG] Calling initGL for: " << e->getName() << std::endl;
             e->initGL();
+        }
 
         while (!glfwWindowShouldClose(window_))
         {

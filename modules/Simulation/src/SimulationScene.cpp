@@ -2,46 +2,42 @@
 
 SimulationScene::SimulationScene() = default;
 
-void SimulationScene::addTransmitter(std::shared_ptr<Device> tx)
-{
-    transmitters_.push_back(std::move(tx));
-}
-
-void SimulationScene::addTransmitters(const std::vector<std::shared_ptr<Device>> &devices)
-{
-    transmitters_.insert(transmitters_.end(), devices.begin(), devices.end());
-}
-
-void SimulationScene::addReceiver(std::shared_ptr<Device> rx)
-{
-    receivers_.push_back(std::move(rx));
-}
-
-void SimulationScene::addReceivers(const std::vector<std::shared_ptr<Device>> &devices)
-{
-    receivers_.insert(receivers_.end(), devices.begin(), devices.end());
-}
-
-void SimulationScene::addShape(std::shared_ptr<IShape> shape)
+void SimulationScene::addShape(std::shared_ptr<ShapeBase> shape)
 {
     shapes_.push_back(std::move(shape));
 }
 
+void SimulationScene::setCar(std::shared_ptr<Car> car)
+{
+    car_ = std::move(car);
+}
+
+const std::shared_ptr<Car> &SimulationScene::getCar() const
+{
+    return car_;
+}
+
 const std::vector<std::shared_ptr<Device>> &SimulationScene::getTransmitters() const
 {
-    return transmitters_;
+    assert(car_ && "car_ must be set before accessing transmitters");
+    return car_->getTransmitters();
 }
 
 const std::vector<std::shared_ptr<Device>> &SimulationScene::getReceivers() const
 {
-    return receivers_;
+    assert(car_ && "car_ must be set before accessing receivers");
+    return car_->getReceivers();
 }
 
-const std::vector<std::shared_ptr<IShape>> &SimulationScene::getShapes() const
+const std::vector<std::shared_ptr<ShapeBase>> &SimulationScene::getShapes() const
 {
     return shapes_;
 }
 
+bool SimulationScene::hasCar() const
+{
+    return static_cast<bool>(car_);
+}
 std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) const
 {
     auto merged = std::make_shared<PointCloud>();
