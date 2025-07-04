@@ -18,6 +18,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Initialize and update submodules (forcefully)
+        run: git submodule update --init --recursive --depth 1
+
       - name: Install dependencies
         run: |
           sudo apt update
