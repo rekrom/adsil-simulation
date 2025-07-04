@@ -21,10 +21,6 @@ int main()
         return 1;
     }
 
-    // JSON'dan Car objesi oluştur
-    // nlohmann::json j = carAdapter->toJson(loadedCar);
-    // std::cout << "Car: " << j.dump(4) << std::endl;
-
     // auto cylinder = ShapeFactory::createCylinder({Point(-500, 100, 0),
     //                                               2000.0,
     //                                               300.0,
@@ -88,6 +84,9 @@ int main()
     auto groundEntity = std::make_shared<viewer::GroundEntity>();
     viewer.addEntity(groundEntity); // Assuming `addEntity` works on IEntity*
 
+    auto carEntity = std::make_shared<viewer::CarEntity>(std::make_shared<Car>(carAdapter->fromJson(car_json)), glm::vec3(0.2f, 0.6f, 0.9f));
+    viewer.addEntity(carEntity);
+
     // auto cube = ShapeFactory::createCube({Point(-0.0f, 0.0f, 15.0f),
     //                                       1.0f,
     //                                       Vector(0, 0, 0)});
@@ -96,12 +95,6 @@ int main()
     // cubeRenderable->setColor(glm::vec3(0.5f, 0.5f, 0.5f)); // isteğe göre
     // cubeRenderable->setVisible(true);                      // sadece test için görünür yap
     // viewer.addRenderable(cubeRenderable);
-
-    auto carPtr = std::make_shared<Car>(carAdapter->fromJson(car_json)); // create shared_ptr from it
-    auto carEntity = std::make_shared<viewer::CarEntity>(carPtr, glm::vec3(0.2f, 0.6f, 0.9f));
-
-    // Register renderables (all of them) into viewer
-    viewer.addEntity(carEntity);
 
     // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(ShapeFactory::createCube({Point(0, 0, 0), 0.5f, Vector(0, 0, 0)}).get()->surfaceMesh());
     // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre

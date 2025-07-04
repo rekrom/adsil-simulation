@@ -3,7 +3,7 @@
 #include <iostream>
 
 Cube::Cube(const Transform &transform, float dimension)
-    : ShapeBase(transform), dimension_(dimension) {}
+    : ShapeBase(transform), dimension_(dimension), cubeDimension_(dimension) {}
 
 std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
 {
@@ -95,6 +95,11 @@ std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, con
     }
 
     return points;
+}
+
+CubeDimension Cube::getDimension()
+{
+    return cubeDimension_;
 }
 
 std::string Cube::toString() const

@@ -2,15 +2,15 @@
 #include <core/RotationUtils.hpp>
 #include <cmath>
 
-Cylinder::Cylinder(const Point &origin, float height, float radius, const Vector &orientation)
-    : origin_(origin), height_(height), radius_(radius), orientation_(orientation) {}
+Cylinder::Cylinder(const Transform &transform, float height, float radius)
+    : ShapeBase(transform), cylinderDimension(height, radius) {}
 
 std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
 {
     auto cloud = std::make_shared<PointCloud>();
     int circRes = std::max(8, quality);
     int heightRes = std::max(2, quality / 2);
-    float halfHeight = height_ / 2.0f;
+    float halfHeight = cylinderDimension.height_ / 2.0f;
 
     // Top and bottom
     for (float z : {-halfHeight, halfHeight})
@@ -18,12 +18,12 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
         for (int i = 0; i < circRes; ++i)
         {
             float angle = 2 * M_PI * i / circRes;
-            Vector local(radius_ * std::cos(angle), radius_ * std::sin(angle), z);
-            Vector rotated = RotationUtils::rotateRPY(local, orientation_);
+            Vector local(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), z);
+            Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
             cloud->addPoint(Point(
-                origin_.x() + rotated.x(),
-                origin_.y() + rotated.y(),
-                origin_.z() + rotated.z()));
+                transform_.getPosition().x() + rotated.x(),
+                transform_.getPosition().y() + rotated.y(),
+                transform_.getPosition().z() + rotated.z()));
         }
     }
 
@@ -31,18 +31,18 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     for (int i = 0; i < circRes; ++i)
     {
         float angle = 2 * M_PI * i / circRes;
-        Vector base(radius_ * std::cos(angle), radius_ * std::sin(angle), -halfHeight);
-        Vector top(radius_ * std::cos(angle), radius_ * std::sin(angle), +halfHeight);
+        Vector base(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), -halfHeight);
+        Vector top(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), +halfHeight);
 
         for (int j = 0; j < heightRes; ++j)
         {
             float t = static_cast<float>(j) / (heightRes - 1);
             Vector local = base + (top - base) * t;
-            Vector rotated = RotationUtils::rotateRPY(local, orientation_);
+            Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
             cloud->addPoint(Point(
-                origin_.x() + rotated.x(),
-                origin_.y() + rotated.y(),
-                origin_.z() + rotated.z()));
+                transform_.getPosition().x() + rotated.x(),
+                transform_.getPosition().y() + rotated.y(),
+                transform_.getPosition().z() + rotated.z()));
         }
     }
 
@@ -55,34 +55,43 @@ std::vector<Point> Cylinder::wireframe() const
 
     int segments = 16;
     float angleStep = 2 * M_PI / segments;
-    float halfHeight = height_ / 2.0f;
+    float halfHeight = cylinderDimension.height_ / 2.0f;
 
     for (int i = 0; i < segments; ++i)
     {
         float angle = i * angleStep;
-        float x = radius_ * cos(angle);
-        float y = radius_ * sin(angle);
+        float x = cylinderDimension.radius_ * cos(angle);
+        float y = cylinderDimension.radius_ * sin(angle);
 
         Vector bottomLocal(x, y, -halfHeight);
         Vector topLocal(x, y, +halfHeight);
 
-        Vector bottomRotated = RotationUtils::rotateRPY(bottomLocal, orientation_);
-        Vector topRotated = RotationUtils::rotateRPY(topLocal, orientation_);
+        Vector bottomRotated = RotationUtils::rotateRPY(bottomLocal, transform_.getOrientation());
+        Vector topRotated = RotationUtils::rotateRPY(topLocal, transform_.getOrientation());
 
         framePoints.emplace_back(Point(
-            origin_.x() + bottomRotated.x(),
-            origin_.y() + bottomRotated.y(),
-            origin_.z() + bottomRotated.z()));
+            transform_.getPosition().x() + bottomRotated.x(),
+            transform_.getPosition().y() + bottomRotated.y(),
+            transform_.getPosition().z() + bottomRotated.z()));
         framePoints.emplace_back(Point(
-            origin_.x() + topRotated.x(),
-            origin_.y() + topRotated.y(),
-            origin_.z() + topRotated.z()));
+            transform_.getPosition().x() + topRotated.x(),
+            transform_.getPosition().y() + topRotated.y(),
+            transform_.getPosition().z() + topRotated.z()));
     }
 
     return framePoints;
 }
 
+float Cylinder::getRadius()
+{
+    return cylinderDimension.radius_;
+}
+float Cylinder::getHeight()
+{
+    return cylinderDimension.height_;
+}
+
 std::string Cylinder::toString() const
 {
-    return "Cylinder(radius=" + std::to_string(radius_) + ", height=" + std::to_string(height_) + ")";
+    return "Cylinder(radius=" + std::to_string(cylinderDimension.radius_) + ", height=" + std::to_string(cylinderDimension.height_) + ")";
 }
