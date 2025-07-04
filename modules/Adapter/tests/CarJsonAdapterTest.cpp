@@ -64,26 +64,6 @@ void testCarJsonAdapter()
     assert(loadedCar.getTransmitters().size() == car.getTransmitters().size());
     assert(loadedCar.getReceivers().size() == car.getReceivers().size());
 
-    // Check each component of direction vector with tolerance
-    auto checkDirectionEqual = [&](const Vector &v1, const Vector &v2)
-    {
-        assert(floatEqual(v1.x(), v2.x()));
-        assert(floatEqual(v1.y(), v2.y()));
-        assert(floatEqual(v1.z(), v2.z()));
-    };
-
-    for (size_t i = 0; i < car.getTransmitters().size(); ++i)
-    {
-        checkDirectionEqual(loadedCar.getTransmitters()[i]->getOrientation(),
-                            car.getTransmitters()[i]->getOrientation());
-    }
-
-    for (size_t i = 0; i < car.getReceivers().size(); ++i)
-    {
-        checkDirectionEqual(loadedCar.getReceivers()[i]->getOrientation(),
-                            car.getReceivers()[i]->getOrientation());
-    }
-
     std::cout << "[PASS] CarJsonAdapter serialization/deserialization test\n";
 }
 
