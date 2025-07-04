@@ -11,3 +11,6 @@
 #include "implementations/PointCloudRenderable.hpp"
 #include "implementations/WireframeRenderable.hpp"
 #include "implementations/CarRenderable.hpp"
+
+#include "entities/DeviceEntity.hpp"
+#include "entities/CarEntity.hpp"

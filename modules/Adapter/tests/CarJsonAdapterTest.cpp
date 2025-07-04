@@ -74,14 +74,14 @@ void testCarJsonAdapter()
 
     for (size_t i = 0; i < car.getTransmitters().size(); ++i)
     {
-        checkDirectionEqual(loadedCar.getTransmitters()[i]->getDirection(),
-                            car.getTransmitters()[i]->getDirection());
+        checkDirectionEqual(loadedCar.getTransmitters()[i]->getOrientation(),
+                            car.getTransmitters()[i]->getOrientation());
     }
 
     for (size_t i = 0; i < car.getReceivers().size(); ++i)
     {
-        checkDirectionEqual(loadedCar.getReceivers()[i]->getDirection(),
-                            car.getReceivers()[i]->getDirection());
+        checkDirectionEqual(loadedCar.getReceivers()[i]->getOrientation(),
+                            car.getReceivers()[i]->getOrientation());
     }
 
     std::cout << "[PASS] CarJsonAdapter serialization/deserialization test\n";

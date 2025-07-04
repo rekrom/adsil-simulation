@@ -61,6 +61,21 @@
             "vertical_fov_deg": 10,
             "horizontal_fov_deg": 10,
             "name": "tx1"
+        },
+        {
+            "origin": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "orientation": {
+                "x": -20.0,
+                "y": 20.0,
+                "z": 0.0
+            },
+            "vertical_fov_deg": 10,
+            "horizontal_fov_deg": 10,
+            "name": "tx2"
         }
     ]
 }

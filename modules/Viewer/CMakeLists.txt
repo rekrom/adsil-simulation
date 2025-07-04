@@ -16,15 +16,21 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
+set(TINYOBJLOADER_SRC ${CMAKE_SOURCE_DIR}/external/tinyobjloader/tiny_obj_loader.cc)
+
+
 # Create static library
-add_library(Viewer STATIC ${VIEWER_SOURCES} ${VIEWER_HEADERS} ${IMGUI_SOURCES})
+add_library(Viewer STATIC ${VIEWER_SOURCES} ${VIEWER_HEADERS} ${IMGUI_SOURCES} ${TINYOBJLOADER_SRC})
 
 # Public headers for consumers of Viewer
 target_include_directories(Viewer
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/include
             ${IMGUI_DIR}
-        ${IMGUI_DIR}/backends
+            ${IMGUI_DIR}/backends
+            ${CMAKE_SOURCE_DIR}/external/tinyobjloader  
+
 )
+
 
 # Link internal dependencies and external libraries
 target_link_libraries(Viewer

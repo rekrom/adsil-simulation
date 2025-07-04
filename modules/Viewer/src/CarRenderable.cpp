@@ -6,10 +6,10 @@
 namespace viewer
 {
 
-    CarRenderable::CarRenderable(std::shared_ptr<Car> car)
-        : car_(std::move(car))
+    CarRenderable::CarRenderable(std::shared_ptr<Car> car, glm::vec3 carColor)
+        : car_(std::move(car)), carColor_(carColor)
     {
-        setAlpha(0.9);
+        setAlpha(1.0f);
     }
 
     CarRenderable::~CarRenderable()
@@ -20,6 +20,11 @@ namespace viewer
     std::shared_ptr<Car> CarRenderable::getCar() const
     {
         return car_;
+    }
+
+    void CarRenderable::rebuildMesh() // safe public interface to trigger buffer rebuild
+    {
+        createBuffers();
     }
 
     void CarRenderable::cleanup()
@@ -55,6 +60,7 @@ namespace viewer
     {
         createShader();
         createBuffers();
+        // createBuffers2();
 
         // Create DeviceRenderable for each device in the car
 
@@ -73,8 +79,119 @@ namespace viewer
         }
     }
 
+    void CarRenderable::createBuffers2()
+    {
+        // 🧹 Cleanup previous buffers
+        if (vbo_)
+            glDeleteBuffers(1, &vbo_);
+        if (vao_)
+            glDeleteVertexArrays(1, &vao_);
+
+        // 📂 Load model from file
+        std::string base_dir = "bin/resources/models/topolino/";
+        std::string inputfile = base_dir + "Topolino.obj";
+
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        bool ret = tinyobj::LoadObj(
+            &attrib,
+            &shapes,
+            &materials,
+            &warn,
+            &err,
+            inputfile.c_str(),
+            base_dir.c_str(), // resolves mtl + texture paths
+            true              // triangulate faces
+        );
+
+        if (!warn.empty())
+            std::cerr << "tinyobjloader warning: " << warn << std::endl;
+        if (!err.empty())
+            std::cerr << "tinyobjloader error: " << err << std::endl;
+        if (!ret)
+            throw std::runtime_error("Failed to load .obj file: " + inputfile);
+
+        std::vector<float> vertexData; // Interleaved: {x, y, z, r, g, b}
+
+        float scale = 0.01f; // or 0.001f depending on how large the model is
+
+        for (const auto &shape : shapes)
+        {
+            const auto &mesh = shape.mesh;
+
+            size_t index_offset = 0;
+            for (size_t face = 0; face < mesh.num_face_vertices.size(); ++face)
+            {
+                int fv = mesh.num_face_vertices[face];
+                int mat_id = (face < mesh.material_ids.size()) ? mesh.material_ids[face] : -1;
+
+                // 🎨 Default to gray
+                float r = 0.6f, g = 0.6f, b = 0.6f;
+                if (mat_id >= 0 && static_cast<size_t>(mat_id) < materials.size())
+                {
+                    const auto &mat = materials[mat_id];
+                    r = mat.diffuse[0];
+                    g = mat.diffuse[1];
+                    b = mat.diffuse[2];
+                }
+
+                for (int v = 0; v < fv; ++v)
+                {
+                    const auto &idx = mesh.indices[index_offset + v];
+                    size_t vIdx = 3 * idx.vertex_index;
+                    if (vIdx + 2 >= attrib.vertices.size())
+                        continue;
+
+                    float vx = attrib.vertices[vIdx + 0] * scale;
+                    float vy = attrib.vertices[vIdx + 1] * scale;
+                    float vz = attrib.vertices[vIdx + 2] * scale;
+
+                    vertexData.push_back(vx);
+                    vertexData.push_back(vy);
+                    vertexData.push_back(vz);
+                    vertexData.push_back(r);
+                    vertexData.push_back(g);
+                    vertexData.push_back(b);
+                }
+
+                index_offset += fv;
+            }
+        }
+
+        // 📦 Save vertex count
+        vertexCount_ = static_cast<GLsizei>(vertexData.size() / 6);
+        std::cout << "[vertex count] " << vertexCount_ << std::endl;
+
+        if (vertexCount_ == 0)
+            throw std::runtime_error("Model contains no valid vertex data: " + inputfile);
+
+        // 🧠 Upload to GPU
+        glGenVertexArrays(1, &vao_);
+        glGenBuffers(1, &vbo_);
+
+        glBindVertexArray(vao_);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0); // Position
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float))); // Color
+        glEnableVertexAttribArray(1);
+
+        glBindVertexArray(0);
+    }
+
     void CarRenderable::createBuffers()
     {
+        if (vbo_)
+            glDeleteBuffers(1, &vbo_);
+        if (vao_)
+            glDeleteVertexArrays(1, &vao_);
+
         float r = carColor_.r;
         float g = carColor_.g;
         float b = carColor_.b;
@@ -129,6 +246,8 @@ namespace viewer
             -width / 2, +height / 2, +length / 2, r, g, b,
             -width / 2, +height / 2, -length / 2, r, g, b,
             -width / 2, -height / 2, -length / 2, r, g, b};
+
+        vertexCount_ = static_cast<GLsizei>(sizeof(cubeVertices) / 6);
 
         glGenVertexArrays(1, &vao_);
         glGenBuffers(1, &vbo_);
@@ -191,6 +310,14 @@ namespace viewer
 
         glDeleteShader(vs);
         glDeleteShader(fs);
+
+        // Cache uniform locations
+        uniforms_.model = glGetUniformLocation(shader_, "model");
+        uniforms_.view = glGetUniformLocation(shader_, "view");
+        uniforms_.projection = glGetUniformLocation(shader_, "projection");
+        uniforms_.useUniformColor = glGetUniformLocation(shader_, "useUniformColor");
+        uniforms_.uniformColor = glGetUniformLocation(shader_, "uniformColor");
+        uniforms_.alpha = glGetUniformLocation(shader_, "alpha");
     }
 
     void CarRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
@@ -203,19 +330,20 @@ namespace viewer
 
         glUseProgram(shader_);
 
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniform1f(uniforms_.alpha, alpha_);
 
         bool useUniform = false;                                // Set true for override
         glm::vec3 highlightColor = glm::vec3(1.0f, 1.0f, 0.0f); // yellow
-
-        glUniform1i(glGetUniformLocation(shader_, "useUniformColor"), static_cast<GLint>(useUniform));
-        glUniform3fv(glGetUniformLocation(shader_, "uniformColor"), 1, glm::value_ptr(highlightColor));
-        glUniform1f(glGetUniformLocation(shader_, "alpha"), alpha_);
+        glUniform1i(uniforms_.useUniformColor, static_cast<GLint>(useUniform));
+        glUniform3fv(uniforms_.uniformColor, 1, glm::value_ptr(highlightColor));
 
         glBindVertexArray(vao_);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertexCount_));
+
         glBindVertexArray(0);
 
         // Render all devices on the car
@@ -240,6 +368,15 @@ namespace viewer
     glm::vec3 CarRenderable::getCenter() const
     {
         return car_->getPosition().toGlmVec3(); // Or however you access position
+    }
+
+    void CarRenderable::setVisible(bool visible)
+    {
+        visible_ = visible;
+    }
+    bool CarRenderable::isVisible() const
+    {
+        return visible_;
     }
 
 } // namespace viewer

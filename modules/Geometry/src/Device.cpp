@@ -2,16 +2,15 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
-constexpr float DEG_TO_RAD = static_cast<float>(M_PI) / 180.0f;
-constexpr float RAD_TO_DEG = 180.0f / static_cast<float>(M_PI);
 
 Device::Device(const DeviceConfig &config)
     : transformNode_(std::make_shared<spatial::TransformNode>(config.transform)),
-      vertical_fov_deg_(config.vertical_fov_deg),
-      horizontal_fov_deg_(config.horizontal_fov_deg),
-      vertical_fov_rad_(config.vertical_fov_deg * DEG_TO_RAD),
-      horizontal_fov_rad_(config.horizontal_fov_deg * DEG_TO_RAD),
-      name_(config.name) {}
+      vertical_fov_rad_(RotationUtils::deg2rad(config.vertical_fov_deg)),
+      horizontal_fov_rad_(RotationUtils::deg2rad(config.horizontal_fov_deg)),
+      name_(config.name)
+{
+    range_ = 20.0f;
+}
 
 std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
 {
@@ -61,6 +60,13 @@ const Vector &Device::getOrientation() const
     return transformNode_->getLocalTransform().getOrientation();
 }
 
+void Device::setOrientation(const Vector &newOrientation)
+{
+    Transform t = getTransformNode()->getLocalTransform();
+    t.setOrientation(newOrientation); // assumes rpy = (roll, pitch, yaw)
+    getTransformNode()->setLocalTransform(t);
+}
+
 std::shared_ptr<spatial::TransformNode> Device::getTransformNode() const
 {
     return transformNode_;
@@ -78,35 +84,54 @@ void Device::setOrigin(const Point &newOrigin)
     transformNode_->setLocalTransform(t);
 }
 
-const Vector Device::getDirection() const
+float Device::getHorizontalFovDeg() const
 {
-    return transformNode_->getLocalTransform().get3DDirectionVector();
+    return RotationUtils::rad2deg(horizontal_fov_rad_);
 }
 
-void Device::setDirection(const Vector &newDirection)
+void Device::setHorizontalFovDeg(float horizontalFovDeg)
 {
-    Transform t = transformNode_->getLocalTransform();
-    t.set3DDirectionVector(newDirection);
-    transformNode_->setLocalTransform(t);
+    horizontal_fov_rad_ = RotationUtils::deg2rad(horizontalFovDeg);
 }
 
-const float &Device::getVerticalFovDeg() const
+float Device::getVerticalFovDeg() const
 {
-    return vertical_fov_deg_;
+    return RotationUtils::rad2deg(vertical_fov_rad_);
 }
 
-void Device::setVerticalFovDeg(const float &verticalFovDeg)
+void Device::setVerticalFovDeg(float verticalFovDeg)
 {
-    vertical_fov_rad_ = verticalFovDeg * DEG_TO_RAD;
+    vertical_fov_rad_ = RotationUtils::deg2rad(verticalFovDeg);
 }
 
-const float &Device::getHorizontalFovDeg() const
+float Device::getHorizontalFovRad() const
 {
-    return horizontal_fov_deg_;
+    return horizontal_fov_rad_;
 }
-void Device::setHorizontalFovDeg(const float &horizontalFovDeg)
+
+void Device::setHorizontalFovRad(float horizontalFovRad)
 {
-    horizontal_fov_rad_ = horizontalFovDeg * DEG_TO_RAD;
+    horizontal_fov_rad_ = horizontalFovRad;
+}
+
+float Device::getVerticalFovRad() const
+{
+    return vertical_fov_rad_;
+}
+
+void Device::setVerticalFovRad(float verticalFovRad)
+{
+    vertical_fov_rad_ = verticalFovRad;
+}
+
+const float &Device::getRange() const
+{
+    return range_;
+}
+
+void Device::setRange(float newRange)
+{
+    range_ = newRange;
 }
 
 std::string Device::toString() const
@@ -114,7 +139,7 @@ std::string Device::toString() const
     std::ostringstream oss;
     oss << "Device(origin=" << transformNode_->getLocalTransform().getPosition().toString()
         << ", direction=" << transformNode_->getLocalTransform().get3DDirectionVector().toString()
-        << ", vFOV=" << vertical_fov_deg_
-        << ", hFOV=" << horizontal_fov_deg_ << ")";
+        << ", vFOV=" << RotationUtils::rad2deg(vertical_fov_rad_)
+        << ", hFOV=" << RotationUtils::rad2deg(horizontal_fov_rad_) << ")";
     return oss.str();
 }

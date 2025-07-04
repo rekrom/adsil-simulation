@@ -9,6 +9,7 @@
 #include <viewer/implementations/Renderable.hpp>
 #include <viewer/implementations/CarRenderable.hpp>
 #include <viewer/implementations/DeviceRenderable.hpp>
+#include <viewer/imgui/CarInspectorPanel.hpp>
 
 namespace viewer
 {
@@ -21,7 +22,10 @@ namespace viewer
         void beginFrame();
         void endFrame();
 
-        void drawUI(const std::vector<std::shared_ptr<Renderable>> &renderables);
+        void drawUI(const std::vector<std::shared_ptr<Entity>> &entities);
+
+    private:
+        imgui::CarInspectorPanel carInspector_;
     };
 
 } // namespace viewer

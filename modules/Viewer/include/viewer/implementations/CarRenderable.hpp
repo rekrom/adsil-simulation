@@ -8,14 +8,15 @@
 #include <vector>
 #include <glad/glad.h>
 #include <glm/gtx/quaternion.hpp>
+#include <tiny_obj_loader.h>
+#include <filesystem>
 
 namespace viewer
 {
-
     class CarRenderable : public Renderable
     {
     public:
-        explicit CarRenderable(std::shared_ptr<Car> car);
+        explicit CarRenderable(std::shared_ptr<Car> car, glm::vec3 carColor);
         ~CarRenderable() override;
 
         void initGL() override;
@@ -23,15 +24,24 @@ namespace viewer
         void cleanup() override;
 
         std::shared_ptr<Car> getCar() const;
+        void rebuildMesh(); // safe public interface to trigger buffer rebuild
+        void setVisible(bool visible);
+        bool isVisible() const;
+
+    public:
+        size_t vertexCount_ = 0;
 
     private:
         std::shared_ptr<Car> car_;
 
-        glm::vec3 carColor_ = glm::vec3(0.2f, 0.6f, 0.9f); // example blue-ish color
+        glm::vec3 carColor_; // example blue-ish color
+        bool visible_{true};
 
         std::vector<std::unique_ptr<DeviceRenderable>> txRenderables_;
         std::vector<std::unique_ptr<DeviceRenderable>> rxRenderables_;
         void renderDevices(const glm::mat4 &view, const glm::mat4 &projection);
+
+        void createBuffers2();
 
     protected:
         void createShader() override;

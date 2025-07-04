@@ -32,7 +32,7 @@ namespace viewer
 
         if (showFoV_)
         {
-            fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, device_->getHorizontalFovDeg(), device_->getVerticalFovDeg(), 20, 0.25f);
+            fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, 0.25f);
             fovRenderable_->initGL();
         }
     }
@@ -182,6 +182,10 @@ namespace viewer
         glLinkProgram(shader_);
         glDeleteShader(vs);
         glDeleteShader(fs);
+
+        uniforms_.model = glGetUniformLocation(shader_, "model");
+        uniforms_.view = glGetUniformLocation(shader_, "view");
+        uniforms_.projection = glGetUniformLocation(shader_, "projection");
     }
 
     void DeviceRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
@@ -195,13 +199,9 @@ namespace viewer
 
         glUseProgram(shader_);
 
-        GLint modelLoc = glGetUniformLocation(shader_, "model");
-        GLint viewLoc = glGetUniformLocation(shader_, "view");
-        GLint projLoc = glGetUniformLocation(shader_, "projection");
-
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Draw cube with indices
         glBindVertexArray(vao_);

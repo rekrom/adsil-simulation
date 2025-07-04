@@ -45,8 +45,6 @@ namespace viewer
 
         glfwMakeContextCurrent(window_);
 
-        imguiLayer_.init(window_);
-
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             throw std::runtime_error("Failed to initialize GLAD");
@@ -62,6 +60,8 @@ namespace viewer
         glDepthMask(GL_TRUE); // Depth buffer should be writable!
 
         setupCallbacks(); // Add this line just before returning
+
+        imguiLayer_.init(window_);
     }
 
     void OpenGLViewer::updateDeltaTime()
@@ -156,7 +156,7 @@ namespace viewer
             imguiLayer_.beginFrame();
 
             // GUI interaction logic
-            imguiLayer_.drawUI(renderables_);
+            imguiLayer_.drawUI(entities_);
             glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

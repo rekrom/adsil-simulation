@@ -11,9 +11,6 @@ namespace viewer
     {
     public:
         FoVPyramidRenderable(std::shared_ptr<Device> device,
-                             float fovHoriDeg,
-                             float fovVertDeg,
-                             float range,
                              float alpha);
 
         ~FoVPyramidRenderable();
@@ -26,10 +23,6 @@ namespace viewer
         void updateVertices();
 
         std::shared_ptr<Device> device_;
-        float fovHoriDeg_;
-        float fovVertDeg_;
-        float range_;
-
         glm::vec3 color_; // determined from device type
 
     protected:

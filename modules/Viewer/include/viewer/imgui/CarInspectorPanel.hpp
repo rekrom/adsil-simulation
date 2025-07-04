@@ -1,0 +1,36 @@
+#pragma once
+
+#include <memory>
+#include <vector>
+#include "imgui.h"
+#include <core/Car.hpp>
+#include <geometry/implementations/Device.hpp>
+#include <core/RotationUtils.hpp>
+#include <viewer/implementations/CarRenderable.hpp>
+#include <viewer/entities/CarEntity.hpp>
+#include <viewer/entities/DeviceEntity.hpp>
+
+namespace viewer::imgui
+{
+    class CarInspectorPanel
+    {
+    public:
+        // void draw(const std::shared_ptr<Car> &car, const std::shared_ptr<CarRenderable> &carRenderable);
+        void draw(const std::shared_ptr<CarEntity> &carEntity);
+
+    private:
+        // void drawTransformSection(const std::shared_ptr<Car> &car);
+        // void drawDimensionSection(const std::shared_ptr<Car> &car, const std::shared_ptr<CarRenderable> &carRenderable);
+        // void drawDeviceListSection(const std::shared_ptr<Car> &car);
+        // void drawDeviceInspector(const std::shared_ptr<Device> &device);
+
+        void drawTransformSection(const std::shared_ptr<Car> &car);
+        void drawDimensionSection(const std::shared_ptr<CarEntity> &carEntity);
+        void drawDeviceListSection(const std::shared_ptr<viewer::CarEntity> &carEntity);
+        void drawDeviceInspector(const std::shared_ptr<DeviceEntity> &deviceEntity);
+
+        bool showTransmitters_ = true;
+        bool showReceivers_ = true;
+    };
+
+} // namespace viewer

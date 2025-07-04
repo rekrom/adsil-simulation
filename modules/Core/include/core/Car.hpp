@@ -36,11 +36,21 @@ public:
     Vector getOrientation() const;
     CarDimension getDimension() const;
 
+    void setPosition(const Point &position);
+    void setOrientation(const Vector &rpy); // roll, pitch, yaw in radians
+    void setDimension(const CarDimension &dim);
+
+    const std::string &getName() const { return name_; }
+
+public:
+    static constexpr CarDimension DefaultCarDimension{2.53f, 1.39f, 1.52f};
+
 private:
     std::vector<std::shared_ptr<Device>> transmitters_;
     std::vector<std::shared_ptr<Device>> receivers_;
     std::vector<Point> trajectory_;
     CarDimension dimension;
+    std::string name_;
 
 private:
     Transform getDeviceWorldTransform(const Device &device) const;

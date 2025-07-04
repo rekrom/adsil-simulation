@@ -9,6 +9,7 @@
 // 3. Diğer includes
 #include <viewer/interfaces/Camera.hpp>
 #include <viewer/implementations/Renderable.hpp>
+#include <viewer/entities/Entity.hpp>
 #include <viewer/implementations/ImGuiLayer.hpp>
 #include <vector>
 #include <string>
@@ -55,5 +56,6 @@ namespace viewer
         float lastFrame_;
 
         std::vector<std::shared_ptr<Renderable>> renderables_;
+        std::vector<std::shared_ptr<Entity>> entities_;
     };
 }

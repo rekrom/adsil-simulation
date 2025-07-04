@@ -2,6 +2,7 @@
 
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
+#include <core/RotationUtils.hpp>
 #include <spatial/implementations/TransformNode.hpp>
 #include <core/PointCloud.hpp>
 #include <string>
@@ -33,20 +34,25 @@ public:
     const Vector &getOrientation() const;
     void setOrientation(const Vector &newOrientation);
 
-    const Vector getDirection() const;
-    void setDirection(const Vector &newDirection);
+    const float &getRange() const;
+    void setRange(float newRange);
 
-    const float &getVerticalFovDeg() const;
-    void setVerticalFovDeg(const float &verticalFovDeg);
+    // Degrees
+    float getVerticalFovDeg() const;
+    void setVerticalFovDeg(float verticalFovDeg);
+    float getHorizontalFovDeg() const;
+    void setHorizontalFovDeg(float horizontalFovDeg);
 
-    const float &getHorizontalFovDeg() const;
-    void setHorizontalFovDeg(const float &horizontalFovDeg);
+    // Radians
+    float getHorizontalFovRad() const;
+    void setHorizontalFovRad(float horizontalFovRad);
+    float getVerticalFovRad() const;
+    void setVerticalFovRad(float verticalFovRad);
 
 private:
     std::shared_ptr<spatial::TransformNode> transformNode_;
-    float vertical_fov_deg_;
-    float horizontal_fov_deg_;
     float vertical_fov_rad_;
     float horizontal_fov_rad_;
+    float range_;
     std::string name_;
 };

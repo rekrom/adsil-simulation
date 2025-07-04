@@ -9,14 +9,8 @@ namespace viewer
 {
 
     FoVPyramidRenderable::FoVPyramidRenderable(std::shared_ptr<Device> device,
-                                               float fovHoriDeg,
-                                               float fovVertDeg,
-                                               float range,
                                                float alpha)
-        : device_(std::move(device)),
-          fovHoriDeg_(fovHoriDeg),
-          fovVertDeg_(fovVertDeg),
-          range_(range)
+        : device_(std::move(device))
     {
         // Default color: blue for TX, red for RX (can be overridden)
         color_ = glm::vec3(1.0f, 0.2f, 0.2f);
@@ -91,6 +85,12 @@ namespace viewer
 
         glDeleteShader(vs);
         glDeleteShader(fs);
+
+        uniforms_.model = glGetUniformLocation(shader_, "model");
+        uniforms_.view = glGetUniformLocation(shader_, "view");
+        uniforms_.projection = glGetUniformLocation(shader_, "projection");
+        uniforms_.color = glGetUniformLocation(shader_, "color");
+        uniforms_.alpha = glGetUniformLocation(shader_, "alpha");
     }
 
     void FoVPyramidRenderable::createBuffers()
@@ -112,17 +112,18 @@ namespace viewer
 
     void FoVPyramidRenderable::updateVertices()
     {
-        float fovH = glm::radians(fovHoriDeg_);
-        float fovV = glm::radians(fovVertDeg_);
+        float fovH = device_->getHorizontalFovRad();
+        float fovV = device_->getVerticalFovRad();
+        float range = device_->getRange();
 
-        float halfW = range_ * tan(fovH / 2.0f);
-        float halfH = range_ * tan(fovV / 2.0f);
+        float halfW = range * tan(fovH / 2.0f);
+        float halfH = range * tan(fovV / 2.0f);
 
         glm::vec3 apex(0.0f, 0.0f, 0.0f);
-        glm::vec3 v1(-halfW, halfH, range_);
-        glm::vec3 v2(halfW, halfH, range_);
-        glm::vec3 v3(halfW, -halfH, range_);
-        glm::vec3 v4(-halfW, -halfH, range_);
+        glm::vec3 v1(-halfW, halfH, range);
+        glm::vec3 v2(halfW, halfH, range);
+        glm::vec3 v3(halfW, -halfH, range);
+        glm::vec3 v4(-halfW, -halfH, range);
 
         std::vector<glm::vec3> triangleVertices = {
             apex, v1, v2, // front face
@@ -154,8 +155,8 @@ namespace viewer
 
         // --- Wireframe pass (black) ---
         glm::vec3 wireColor(0.0f, 0.0f, 0.0f); // black
-        glUniform3fv(glGetUniformLocation(shader_, "color"), 1, glm::value_ptr(wireColor));
-        glUniform1f(glGetUniformLocation(shader_, "alpha"), 0.85f);
+        glUniform3fv(uniforms_.color, 1, glm::value_ptr(wireColor));
+        glUniform1f(uniforms_.alpha, 0.85f);
 
         glEnable(GL_POLYGON_OFFSET_LINE);
         glPolygonOffset(-1.0f, -1.0f);
@@ -169,12 +170,12 @@ namespace viewer
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // --- Solid faces pass (red) ---
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, glm::value_ptr(projection));
 
-        glUniform3fv(glGetUniformLocation(shader_, "color"), 1, glm::value_ptr(color_)); // red
-        glUniform1f(glGetUniformLocation(shader_, "alpha"), alpha_);
+        glUniform3fv(uniforms_.color, 1, glm::value_ptr(color_)); // red
+        glUniform1f(uniforms_.alpha, alpha_);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 18);

@@ -8,6 +8,18 @@ namespace viewer
 
     class Renderable : public IRenderable
     {
+        struct StandardUniformLocations
+        {
+            GLint model = -1;
+            GLint view = -1;
+            GLint projection = -1;
+            GLint alpha = -1;
+
+            GLint color = -1;
+            GLint useUniformColor = -1;
+            GLint uniformColor = -1;
+        };
+
     public:
         Renderable();
         virtual ~Renderable();
@@ -23,6 +35,8 @@ namespace viewer
         GLuint vbo_ = 0;
         GLuint ebo_ = 0;
         GLuint shader_ = 0;
+
+        StandardUniformLocations uniforms_;
 
     protected:
         virtual void createBuffers(); // optionally overridden

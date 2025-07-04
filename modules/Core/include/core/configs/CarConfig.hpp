@@ -5,14 +5,14 @@
 #include <vector>
 #include <memory>
 
-struct CarDimension
+struct CarDimension final
 {
     float length;
     float width;
     float height;
-    CarDimension(float l, float w, float h) : length(l), width(w), height(h)
-    {
-    }
+
+    constexpr CarDimension(float l = 0.0f, float w = 0.0f, float h = 0.0f)
+        : length(l), width(w), height(h) {}
 };
 
 struct CarConfig

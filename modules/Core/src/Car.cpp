@@ -99,10 +99,28 @@ Vector Car::getOrientation() const
 {
     return getTransformNode()->getGlobalTransform().getOrientation();
 }
+void Car::setPosition(const Point &position)
+{
+    Transform t = getTransformNode()->getLocalTransform();
+    t.setPosition(position);
+    getTransformNode()->setLocalTransform(t);
+}
+
+void Car::setOrientation(const Vector &rpy)
+{
+    Transform t = getTransformNode()->getLocalTransform();
+    t.setOrientation(rpy); // assumes rpy = (roll, pitch, yaw)
+    getTransformNode()->setLocalTransform(t);
+}
 
 CarDimension Car::getDimension() const
 {
     return dimension;
+}
+
+void Car::setDimension(const CarDimension &newCarDimension)
+{
+    dimension = newCarDimension;
 }
 
 std::shared_ptr<spatial::TransformNode> Car::getTransformNode() const
