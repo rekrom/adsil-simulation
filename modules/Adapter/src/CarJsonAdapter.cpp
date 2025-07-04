@@ -30,6 +30,12 @@ namespace adapter
         }
         j["receivers"] = rxArr;
 
+        CarDimension dim = car.getDimension();
+        j["dimension"] = {
+            {"length", dim.length},
+            {"width", dim.width},
+            {"height", dim.height}};
+
         return j;
     }
 
