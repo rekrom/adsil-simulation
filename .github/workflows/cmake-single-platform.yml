@@ -21,6 +21,9 @@ jobs:
       - name: Force update submodules
         run: git submodule update --init --recursive --depth 1
 
+      - name: List extern contents
+        run: ls -l external/
+
       - name: Install dependencies
         run: |
           sudo apt update
