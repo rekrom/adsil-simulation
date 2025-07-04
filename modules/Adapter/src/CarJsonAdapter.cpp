@@ -11,7 +11,7 @@ namespace adapter
     nlohmann::json CarJsonAdapter::toJson(const Car &car) const
     {
         nlohmann::json j;
-        j["position"] = pointAdapter_.toJson(car.getPosition());
+        j["origin"] = pointAdapter_.toJson(car.getPosition());
         j["orientation"] = vectorAdapter_.toJson(car.getOrientation());
 
         // transmitters dizisi
@@ -29,6 +29,12 @@ namespace adapter
             rxArr.push_back(deviceAdapter_.toJson(*rx));
         }
         j["receivers"] = rxArr;
+
+        CarDimension dim = car.getDimension();
+        j["dimension"] = {
+            {"length", dim.length},
+            {"width", dim.width},
+            {"height", dim.height}};
 
         return j;
     }

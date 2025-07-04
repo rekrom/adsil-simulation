@@ -18,9 +18,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Force update submodules
-        run: git submodule update --init --recursive --depth 1
-
       - name: List extern contents
         run: ls -l external/
 
