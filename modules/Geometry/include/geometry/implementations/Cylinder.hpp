@@ -1,23 +1,24 @@
 #pragma once
 
-#include <geometry/interfaces/IShape.hpp>
+#include <geometry/implementations/ShapeBase.hpp>
+#include <geometry/configs/CylinderConfig.hpp>
 #include <core/Point.hpp>
 #include <core/PointCloud.hpp>
 #include <core/Vector.hpp>
 
-class Cylinder : public IShape
+class Cylinder : public ShapeBase
 {
 public:
-    Cylinder(const Point &origin, float height, float radius, const Vector &orientation);
+    Cylinder(const Transform &transform, float height, float radius);
 
     std::shared_ptr<PointCloud> surfaceMesh(int quality = 16) const override;
     std::vector<Point> wireframe() const override;
 
     std::string toString() const override;
 
+    float getRadius();
+    float getHeight();
+
 private:
-    Point origin_;
-    float height_;
-    float radius_;
-    Vector orientation_;
+    CylinderDimension cylinderDimension;
 };

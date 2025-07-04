@@ -13,6 +13,5 @@ std::shared_ptr<IShape> ShapeFactory::createCylinder(const CylinderConfig &confi
 {
     Transform transform(config.origin, config.orientation);
 
-    // return std::make_shared<Cylinder>(transform, config.height, config.radius);
-    return std::make_shared<Cylinder>(config.origin, config.height, config.radius, config.orientation);
+    return std::make_shared<Cylinder>(transform, config.height, config.radius);
 }

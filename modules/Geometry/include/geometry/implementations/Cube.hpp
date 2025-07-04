@@ -2,6 +2,7 @@
 
 #include <geometry/interfaces/IShape.hpp>
 #include <geometry/implementations/ShapeBase.hpp>
+#include <geometry/configs/CubeConfig.hpp>
 
 #include <spatial/implementations/Transform.hpp>
 #include <core/PointCloud.hpp>
@@ -17,8 +18,11 @@ public:
 
     std::string toString() const override;
 
+    CubeDimension getDimension();
+
 private:
     float dimension_;
+    CubeDimension cubeDimension_;
     std::vector<Point> generateFace(
         const Vector &center,
         const Vector &u,
