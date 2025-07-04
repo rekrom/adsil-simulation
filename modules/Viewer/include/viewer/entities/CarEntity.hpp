@@ -27,6 +27,10 @@ namespace viewer
             return car_ ? car_->getName() : "Unnamed Car";
         }
 
+        bool isTransparent() const;
+
+        glm::vec3 getCenter() const;
+
         std::shared_ptr<Car> getCar() const;
         std::shared_ptr<CarRenderable> getRenderable() const;
 

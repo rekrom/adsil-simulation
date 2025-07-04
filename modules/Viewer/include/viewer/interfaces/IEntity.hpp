@@ -19,6 +19,10 @@ public:
 
     virtual glm::vec3 getColor() const { return glm::vec3(1.0f); } // default white
 
+    virtual bool isTransparent() const = 0;
+
+    virtual glm::vec3 getCenter() const = 0;
+
     // Optional: for debug, scene selection, etc.
     virtual std::string getName() const = 0;
 };

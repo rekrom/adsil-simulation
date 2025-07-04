@@ -28,7 +28,6 @@ target_include_directories(Viewer
             ${IMGUI_DIR}
             ${IMGUI_DIR}/backends
             ${CMAKE_SOURCE_DIR}/external/tinyobjloader  
-
 )
 
 

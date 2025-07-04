@@ -128,7 +128,6 @@ namespace viewer
 
     glm::vec3 GroundRenderable::getCenter() const
     {
-        glm::vec3 center(0, 0, 0);
-        return center;
+        return transformNode_->getGlobalTransform().getPosition().toGlmVec3();
     }
 }
