@@ -26,8 +26,8 @@ namespace viewer
 
         float getAlpha() const;
         void setAlpha(float alpha);
-        bool isTransparent() const;
-        virtual glm::vec3 getCenter() const = 0;
+        bool isTransparent() const;              // todo: deprectaed
+        virtual glm::vec3 getCenter() const = 0; // todo: deprecated
 
     protected:
         float alpha_;

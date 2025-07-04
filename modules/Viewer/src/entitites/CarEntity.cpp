@@ -44,6 +44,16 @@ namespace viewer
             rx->cleanup();
     }
 
+    bool CarEntity::isTransparent() const
+    {
+        return renderable_->isTransparent();
+    }
+
+    glm::vec3 CarEntity::getCenter() const
+    {
+        return renderable_->getCar()->getPosition().toGlmVec3();
+    }
+
     std::shared_ptr<Car> CarEntity::getCar() const
     {
         return car_;

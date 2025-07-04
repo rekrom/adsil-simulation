@@ -37,6 +37,11 @@ namespace viewer
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
+    void ImGuiLayer::drawViewerPanel(Camera &camera, RenderingMode &mode, int &fps)
+    {
+        viewerInspector_.draw(camera, mode, fps);
+    }
+
     void ImGuiLayer::drawUI(const std::vector<std::shared_ptr<Entity>> &entities)
     {
         for (const auto &entity : entities)

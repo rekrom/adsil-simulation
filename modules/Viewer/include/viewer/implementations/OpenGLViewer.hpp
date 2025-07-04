@@ -15,6 +15,7 @@
 #include <string>
 #include <memory>
 #include <chrono>
+#include <viewer/common/RenderingTypes.hpp> // instead of defining the enum
 
 namespace viewer
 {
@@ -28,7 +29,11 @@ namespace viewer
 
         void run(); // Main rendering loop
 
-        void addRenderable(const std::shared_ptr<Renderable> &r);
+        void addEntity(const std::shared_ptr<Entity> &e);
+
+        void setRenderingMode(RenderingMode mode);
+
+        RenderingMode getRenderingMode() const;
 
     private:
         void init(int width = 1280, int height = 720, const std::string &title = "OpenGL Viewer");
@@ -39,11 +44,16 @@ namespace viewer
         void processInput(float deltaTime);
         void updateDeltaTime();
 
+        glm::mat4 getProjectionMatrix() const;
+        void updateFPSCounter();
+        int getFPS();
+
     private:
         GLFWwindow *window_;
         int width_;
         int height_;
         std::string title_;
+        RenderingMode renderingMode_;
 
         ImGuiLayer imguiLayer_;
         Camera camera_;
@@ -54,6 +64,8 @@ namespace viewer
 
         float deltaTime_;
         float lastFrame_;
+
+        int displayedFPS_ = 0;
 
         std::vector<std::shared_ptr<Renderable>> renderables_;
         std::vector<std::shared_ptr<Entity>> entities_;

@@ -82,26 +82,26 @@ int main()
     // // VIEWER START
     viewer::OpenGLViewer viewer(1280, 720, "ADSIL Analyzer - OpenGL");
 
-    auto ground = std::make_shared<viewer::GroundRenderable>();
-    viewer.addRenderable(ground);
+    auto axisEntity = std::make_shared<viewer::AxisEntity>();
+    viewer.addEntity(axisEntity); // Assuming `addEntity` works on IEntity*
 
-    auto axis = std::make_shared<viewer::AxisRenderable>();
-    viewer.addRenderable(axis);
+    auto groundEntity = std::make_shared<viewer::GroundEntity>();
+    viewer.addEntity(groundEntity); // Assuming `addEntity` works on IEntity*
 
-    auto cube = ShapeFactory::createCube({Point(-0.0f, 0.0f, 15.0f),
-                                          1.0f,
-                                          Vector(0, 0, 0)});
-    auto mesh = cube->surfaceMesh(2048 * 16);
-    auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(mesh);
-    cubeRenderable->setColor(glm::vec3(0.5f, 0.5f, 0.5f)); // isteğe göre
-    cubeRenderable->setVisible(true);                      // sadece test için görünür yap
-    viewer.addRenderable(cubeRenderable);
+    // auto cube = ShapeFactory::createCube({Point(-0.0f, 0.0f, 15.0f),
+    //                                       1.0f,
+    //                                       Vector(0, 0, 0)});
+    // auto mesh = cube->surfaceMesh(2048 * 16);
+    // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(mesh);
+    // cubeRenderable->setColor(glm::vec3(0.5f, 0.5f, 0.5f)); // isteğe göre
+    // cubeRenderable->setVisible(true);                      // sadece test için görünür yap
+    // viewer.addRenderable(cubeRenderable);
 
     auto carPtr = std::make_shared<Car>(carAdapter->fromJson(car_json)); // create shared_ptr from it
     auto carEntity = std::make_shared<viewer::CarEntity>(carPtr, glm::vec3(0.2f, 0.6f, 0.9f));
 
     // Register renderables (all of them) into viewer
-    viewer.addRenderable(carEntity->getRenderable());
+    viewer.addEntity(carEntity);
 
     // auto cubeRenderable = std::make_shared<viewer::PointCloudRenderable>(ShapeFactory::createCube({Point(0, 0, 0), 0.5f, Vector(0, 0, 0)}).get()->surfaceMesh());
     // cubeRenderable->setColor(glm::vec3(0.2f, 0.8f, 1.0f)); // isteğe göre

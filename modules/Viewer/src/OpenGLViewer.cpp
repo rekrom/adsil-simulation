@@ -14,13 +14,13 @@ namespace viewer
                                                                                ),
           lastX_(width / 2.0f), lastY_(height / 2.0f),
           firstMouse_(true), rightMousePressed_(false),
-          deltaTime_(0.0f), lastFrame_(0.0f)
+          deltaTime_(0.0f), lastFrame_(0.0f), renderingMode_(viewer::RenderingMode::Perspective)
     {
     }
 
     OpenGLViewer::~OpenGLViewer()
     {
-        renderables_.clear();
+        entities_.clear();
         cleanup();
     }
 
@@ -132,6 +132,15 @@ namespace viewer
         viewer->camera_.processMouseScroll(yoffset); });
     }
 
+    void OpenGLViewer::setRenderingMode(RenderingMode mode)
+    {
+        renderingMode_ = mode;
+    }
+    RenderingMode OpenGLViewer::getRenderingMode() const
+    {
+        return renderingMode_;
+    }
+
     void OpenGLViewer::run()
     {
         try
@@ -143,8 +152,8 @@ namespace viewer
             std::cerr << "Initialization error: " << e.what() << std::endl;
             return;
         }
-        for (auto &r : renderables_)
-            r->initGL();
+        for (auto &e : entities_)
+            e->initGL();
 
         while (!glfwWindowShouldClose(window_))
         {
@@ -156,6 +165,7 @@ namespace viewer
             imguiLayer_.beginFrame();
 
             // GUI interaction logic
+            imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
             imguiLayer_.drawUI(entities_);
             glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -169,39 +179,63 @@ namespace viewer
         }
     }
 
-    void OpenGLViewer::render()
+    glm::mat4 OpenGLViewer::getProjectionMatrix() const
     {
-        static int frameCount = 0;
+        float aspect = static_cast<float>(width_) / height_;
+        if (renderingMode_ == RenderingMode::Perspective)
+        {
+            return glm::perspective(glm::radians(camera_.getFov()), aspect, 0.1f, 1000.0f);
+        }
+        else
+        {
+            float orthoScale = camera_.getFov(); // You may rename this
+            return glm::ortho(-orthoScale * aspect, orthoScale * aspect,
+                              -orthoScale, orthoScale,
+                              0.1f, 1000.0f);
+        }
+    }
+    void OpenGLViewer::updateFPSCounter()
+    {
+        static int frameCount_ = 0;
         static double lastTime = glfwGetTime();
 
-        ++frameCount;
+        ++frameCount_;
         double currentTime = glfwGetTime();
         if (currentTime - lastTime >= 1.0)
         {
             // std::cout << "FPS: " << frameCount << std::endl;
-            frameCount = 0;
+            displayedFPS_ = frameCount_;
+
+            frameCount_ = 0;
             lastTime = currentTime;
         }
+    }
+
+    int OpenGLViewer::getFPS()
+    {
+        return displayedFPS_;
+    }
+
+    void OpenGLViewer::render()
+    {
+        updateFPSCounter();
 
         glm::mat4 view = camera_.getViewMatrix();
-        glm::mat4 projection = glm::perspective(
-            glm::radians(camera_.getFov()),
-            static_cast<float>(width_) / height_,
-            0.1f, 1000.0f);
+        glm::mat4 projection = getProjectionMatrix();
 
-        std::vector<std::shared_ptr<Renderable>> opaque;
-        std::vector<std::shared_ptr<Renderable>> transparent;
+        std::vector<std::shared_ptr<Entity>> opaque;
+        std::vector<std::shared_ptr<Entity>> transparent;
 
-        for (auto &r : renderables_)
+        for (auto &e : entities_)
         {
-            if (r->isTransparent())
-                transparent.push_back(r);
+            if (e->isTransparent())
+                transparent.push_back(e);
             else
-                opaque.push_back(r);
+                opaque.push_back(e);
         }
 
         std::sort(transparent.begin(), transparent.end(),
-                  [this](const std::shared_ptr<Renderable> &a, const std::shared_ptr<Renderable> &b)
+                  [this](const std::shared_ptr<Entity> &a, const std::shared_ptr<Entity> &b)
                   {
                       glm::vec3 camPos = camera_.getPosition();
                       glm::vec3 aPos = a->getCenter(); // You'll implement this
@@ -209,24 +243,24 @@ namespace viewer
                       return glm::distance(camPos, aPos) > glm::distance(camPos, bPos); // back-to-front
                   });
 
-        for (auto &r : opaque)
-            r->render(view, projection);
+        for (auto &e : opaque)
+            e->render(view, projection);
 
         glDepthMask(GL_FALSE); // ⛔ prevent depth writes
-        for (auto &r : transparent)
-            r->render(view, projection);
+        for (auto &e : transparent)
+            e->render(view, projection);
         glDepthMask(GL_TRUE); // ✅ restore
     }
 
     void OpenGLViewer::cleanup()
     {
         // 1. renderables_ temizlenmeli
-        for (auto &r : renderables_)
+        for (auto &e : entities_)
         {
-            r->cleanup(); // OpenGL context hâlâ aktifken
+            e->cleanup(); // OpenGL context hâlâ aktifken
         }
 
-        renderables_.clear(); // ardından shared_ptr’lar yok edilir
+        entities_.clear(); // ardından shared_ptr’lar yok edilir
 
         imguiLayer_.shutdown();
 
@@ -237,8 +271,9 @@ namespace viewer
         }
     }
 
-    void OpenGLViewer::addRenderable(const std::shared_ptr<Renderable> &r)
+    void OpenGLViewer::addEntity(const std::shared_ptr<Entity> &e)
     {
-        renderables_.push_back(r);
+        entities_.push_back(e);
     }
+
 }

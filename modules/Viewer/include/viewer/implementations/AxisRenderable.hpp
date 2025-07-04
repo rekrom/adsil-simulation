@@ -14,12 +14,12 @@ namespace viewer
         void initGL() override; // creates buffers & shader
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
+        glm::vec3 getCenter() const override;
 
     private:
     protected:
         void createShader() override;
         void createBuffers() override;
-        glm::vec3 getCenter() const override;
     };
 
 }
