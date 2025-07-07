@@ -11,6 +11,7 @@ foreach(TEST_FILE ${TEST_SOURCES})
     target_include_directories(${TEST_TARGET} PRIVATE
         ${CMAKE_SOURCE_DIR}/modules/Adapter/include
         ${CMAKE_SOURCE_DIR}/modules/Core/include
+        ${CMAKE_SOURCE_DIR}/modules/Utils/include
         ${CMAKE_SOURCE_DIR}/external/nlohmann_json/single_include
     )
 

@@ -5,7 +5,6 @@
 
 namespace adapter
 {
-
     class AdapterManager
     {
     public:
