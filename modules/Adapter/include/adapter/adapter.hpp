@@ -5,3 +5,4 @@
 #include "implementations/implementations.hpp"
 
 #include "JsonAdapterRegistry.hpp"
+#include "AdapterManager.hpp"
