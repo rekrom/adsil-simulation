@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/Alias.hpp>
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
 #include <core/RotationUtils.hpp>
@@ -8,8 +9,9 @@
 #include <string>
 #include <memory>
 #include <geometry/configs/DeviceConfig.hpp>
+#include <spatial/implementations/HasTransformNodeBase.hpp>
 
-class Device
+class Device : public spatial::HasTransformNodeBase
 {
 public:
     Device(const DeviceConfig &config);
@@ -19,14 +21,6 @@ public:
     std::string toString() const;
 
     const std::string &getName() const { return name_; }
-
-    Transform getGlobalTransform();
-
-    const Transform &getTransform() const;
-    void setTransform(const Transform &newTransform);
-
-    std::shared_ptr<spatial::TransformNode> getTransformNode() const;
-    void setTransformNode(std::shared_ptr<spatial::TransformNode> transformNode);
 
     const Point &getOrigin() const;
     void setOrigin(const Point &newOrigin);
@@ -50,7 +44,6 @@ public:
     void setVerticalFovRad(float verticalFovRad);
 
 private:
-    std::shared_ptr<spatial::TransformNode> transformNode_;
     float vertical_fov_rad_;
     float horizontal_fov_rad_;
     float range_;

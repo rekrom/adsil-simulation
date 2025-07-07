@@ -37,18 +37,18 @@ Car::Car(const CarConfig &config)
     trajectory_.push_back(getPosition());
 }
 
-std::vector<std::shared_ptr<Device>> Car::getTransmitters() const
+SharedVec<Device> Car::getTransmitters() const
 {
     return transmitters_;
 }
-std::vector<std::shared_ptr<Device>> Car::getReceivers() const
+SharedVec<Device> Car::getReceivers() const
 {
     return receivers_;
 }
 
-std::vector<std::shared_ptr<Device>> Car::getAllDevices() const
+SharedVec<Device> Car::getAllDevices() const
 {
-    std::vector<std::shared_ptr<Device>> all = transmitters_;
+    SharedVec<Device> all = transmitters_;
     all.insert(all.end(), receivers_.begin(), receivers_.end());
     return all;
 }
@@ -87,14 +87,11 @@ void Car::rotateYaw(float angleDeg)
     transformNode_->setLocalTransform(localTransform);
 }
 
-Transform Car::getTransform() const
-{
-    return getTransformNode()->getGlobalTransform();
-}
 Point Car::getPosition() const
 {
     return getTransformNode()->getGlobalTransform().getPosition();
 }
+
 Vector Car::getOrientation() const
 {
     return getTransformNode()->getGlobalTransform().getOrientation();
@@ -123,11 +120,6 @@ void Car::setDimension(const CarDimension &newCarDimension)
     dimension = newCarDimension;
 }
 
-std::shared_ptr<spatial::TransformNode> Car::getTransformNode() const
-{
-    return transformNode_;
-}
-
 // void Car::setTransformNode(std::shared_ptr<spatial::TransformNode> transformNode)
 // {
 //     transformNode_ = std::move(transformNode);
@@ -147,8 +139,7 @@ Transform Car::getDeviceWorldTransform(const Device &device) const
 {
     if (!device.getTransformNode())
     {
-        // fallback: return device's local transform
-        return device.getTransform();
+        return device.getTransformNode()->getLocalTransform();
     }
     return device.getTransformNode()->getGlobalTransform();
 }

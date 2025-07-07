@@ -42,7 +42,7 @@ namespace viewer
         viewerInspector_.draw(camera, mode, fps);
     }
 
-    void ImGuiLayer::drawUI(const std::vector<std::shared_ptr<Entity>> &entities)
+    void ImGuiLayer::drawUI(const SharedVec<Entity> &entities)
     {
         for (const auto &entity : entities)
         {

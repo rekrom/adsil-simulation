@@ -67,7 +67,7 @@ namespace viewer
 
         int displayedFPS_ = 0;
 
-        std::vector<std::shared_ptr<Renderable>> renderables_;
-        std::vector<std::shared_ptr<Entity>> entities_;
+        SharedVec<Renderable> renderables_;
+        SharedVec<Entity> entities_;
     };
 }

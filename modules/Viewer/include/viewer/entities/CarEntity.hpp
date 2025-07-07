@@ -34,8 +34,8 @@ namespace viewer
         std::shared_ptr<Car> getCar() const;
         std::shared_ptr<CarRenderable> getRenderable() const;
 
-        const std::vector<std::shared_ptr<DeviceEntity>> &getTxEntities() const;
-        const std::vector<std::shared_ptr<DeviceEntity>> &getRxEntities() const;
+        const SharedVec<DeviceEntity> &getTxEntities() const;
+        const SharedVec<DeviceEntity> &getRxEntities() const;
 
         void setFoVVisible(bool enable);
         void setColor(glm::vec3 newColor); // Also updates device colors
@@ -43,8 +43,8 @@ namespace viewer
     private:
         std::shared_ptr<Car> car_;
         std::shared_ptr<CarRenderable> renderable_;
-        std::vector<std::shared_ptr<DeviceEntity>> txEntities_;
-        std::vector<std::shared_ptr<DeviceEntity>> rxEntities_;
+        SharedVec<DeviceEntity> txEntities_;
+        SharedVec<DeviceEntity> rxEntities_;
         glm::vec3 color_;
     };
 }

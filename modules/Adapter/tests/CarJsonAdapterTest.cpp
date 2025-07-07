@@ -19,7 +19,7 @@ void testCarJsonAdapter()
 
     auto node = std::make_shared<spatial::TransformNode>(Transform(origin, orientation));
 
-    std::vector<std::shared_ptr<Device>> transmitters;
+    SharedVec<Device> transmitters;
     transmitters.push_back(std::make_shared<Device>(DeviceConfig{
         Transform(Point(0.0f, 0.0f, 0.0f),
                   Vector(-0.7071067f, 0.7071067f, 0.0f)),
@@ -29,7 +29,7 @@ void testCarJsonAdapter()
                   Vector(0.7071067f, -0.7071067f, 0.0f)),
         20.0f, 20.0f, "TX2"}));
 
-    std::vector<std::shared_ptr<Device>> receivers;
+    SharedVec<Device> receivers;
     receivers.push_back(std::make_shared<Device>(DeviceConfig{
         Transform(Point(1000.0f, 0.0f, 0.0f),
                   Vector(0.0f, 1.0f, 0.0f)),

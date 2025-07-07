@@ -18,13 +18,13 @@ struct CarDimension final
 struct CarConfig
 {
     std::shared_ptr<spatial::TransformNode> transformNode;
-    std::vector<std::shared_ptr<Device>> transmitters;
-    std::vector<std::shared_ptr<Device>> receivers;
+    SharedVec<Device> transmitters;
+    SharedVec<Device> receivers;
     CarDimension dimension;
 
     CarConfig(std::shared_ptr<spatial::TransformNode> node,
-              const std::vector<std::shared_ptr<Device>> &tx,
-              const std::vector<std::shared_ptr<Device>> &rx, CarDimension dims)
+              const SharedVec<Device> &tx,
+              const SharedVec<Device> &rx, CarDimension dims)
         : transformNode(std::move(node)), transmitters(tx), receivers(rx), dimension(dims)
     {
         assert(transformNode && "CarConfig requires valid transformNode");

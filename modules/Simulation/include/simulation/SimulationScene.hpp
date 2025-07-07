@@ -5,6 +5,7 @@
 #include <geometry/implementations/ShapeBase.hpp>
 #include <core/PointCloud.hpp>
 #include <core/Car.hpp>
+#include <core/Alias.hpp>
 
 #include <vector>
 #include <memory>
@@ -21,9 +22,9 @@ public:
     const std::shared_ptr<Car> &getCar() const;
     void setCar(std::shared_ptr<Car> car);
 
-    const std::vector<std::shared_ptr<Device>> &getTransmitters() const;
-    const std::vector<std::shared_ptr<Device>> &getReceivers() const;
-    const std::vector<std::shared_ptr<ShapeBase>> &getShapes() const;
+    const SharedVec<Device> &getTransmitters() const;
+    const SharedVec<Device> &getReceivers() const;
+    const SharedVec<ShapeBase> &getShapes() const;
 
     bool hasCar() const;
 
@@ -32,5 +33,5 @@ public:
 
 private:
     std::shared_ptr<Car> car_;
-    std::vector<std::shared_ptr<ShapeBase>> shapes_;
+    SharedVec<ShapeBase> shapes_;
 };

@@ -64,12 +64,12 @@ namespace viewer
         return renderable_;
     }
 
-    const std::vector<std::shared_ptr<DeviceEntity>> &CarEntity::getTxEntities() const
+    const SharedVec<DeviceEntity> &CarEntity::getTxEntities() const
     {
         return txEntities_;
     }
 
-    const std::vector<std::shared_ptr<DeviceEntity>> &CarEntity::getRxEntities() const
+    const SharedVec<DeviceEntity> &CarEntity::getRxEntities() const
     {
         return rxEntities_;
     }

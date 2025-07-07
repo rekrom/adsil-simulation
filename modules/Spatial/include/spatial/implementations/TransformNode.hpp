@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/Alias.hpp>
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>
@@ -29,7 +30,7 @@ namespace spatial
         // Children management
         void addChild(std::shared_ptr<TransformNode> child);
         void removeChild(std::shared_ptr<TransformNode> child);
-        const std::vector<std::shared_ptr<TransformNode>> &getChildren() const;
+        const SharedVec<TransformNode> &getChildren() const;
 
     private:
         // Cached global transform and dirty flag for lazy updates
@@ -43,7 +44,7 @@ namespace spatial
         std::weak_ptr<TransformNode> parent_;
 
         // Children nodes
-        std::vector<std::shared_ptr<TransformNode>> children_;
+        SharedVec<TransformNode> children_;
 
         // Internal method to update global transform if dirty
         void updateGlobalTransform() const;
