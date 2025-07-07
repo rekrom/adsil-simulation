@@ -3,6 +3,8 @@ file(GLOB_RECURSE ADAPTER_HEADERS "include/**/*.hpp")
 
 add_library(Adapter STATIC ${ADAPTER_SOURCES} ${ADAPTER_HEADERS})
 
+enable_compiler_warnings(Adapter)
+
 add_subdirectory(tests)
 
 target_include_directories(Adapter PUBLIC

@@ -3,8 +3,11 @@ project(adsil_analyzer)
 
 enable_testing()  
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set output directory for the executable
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # External dependencies
 find_package(OpenGL REQUIRED)
@@ -14,6 +17,10 @@ find_package(glm REQUIRED)
 # GLAD as static lib
 add_library(glad STATIC external/glad/src/glad.c)
 target_include_directories(glad PUBLIC external/glad/include)
+
+# Add custom CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(CompilerWarnings)
 
 # Automatically add all modules
 file(GLOB MODULE_DIRS RELATIVE "${CMAKE_SOURCE_DIR}/modules" "${CMAKE_SOURCE_DIR}/modules/*")

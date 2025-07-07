@@ -80,12 +80,12 @@ std::vector<Point> Cube::wireframe() const
 std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, const Vector &v, int n) const
 {
     std::vector<Point> points;
-    float step = dimension_ / (n - 1);
+    float step = dimension_ / static_cast<float>(n - 1);
     for (int i = 0; i < n; ++i)
     {
         for (int j = 0; j < n; ++j)
         {
-            Vector offset = u * (-dimension_ / 2 + i * step) + v * (-dimension_ / 2 + j * step);
+            Vector offset = u * (-dimension_ / 2 + static_cast<float>(i) * step) + v * (-dimension_ / 2 + static_cast<float>(j) * step);
             Vector rotated = RotationUtils::rotateRPY(center + offset, transform_.getOrientation());
             points.emplace_back(
                 transform_.getPosition().x() + rotated.x(),

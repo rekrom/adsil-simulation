@@ -2,6 +2,7 @@ file(GLOB_RECURSE SIMULATION_SOURCES "src/*.cpp")
 file(GLOB_RECURSE SIMULATION_HEADERS "include/**/*.hpp")
 
 add_library(Simulation STATIC ${SIMULATION_SOURCES} ${SIMULATION_HEADERS})
+enable_compiler_warnings(Simulation)
 
 target_include_directories(Simulation PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include

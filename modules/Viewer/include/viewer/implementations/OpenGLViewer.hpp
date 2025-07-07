@@ -53,18 +53,15 @@ namespace viewer
         int width_;
         int height_;
         std::string title_;
-        RenderingMode renderingMode_;
-
-        ImGuiLayer imguiLayer_;
         Camera camera_;
         float lastX_;
         float lastY_;
         bool firstMouse_;
         bool rightMousePressed_;
-
         float deltaTime_;
         float lastFrame_;
-
+        RenderingMode renderingMode_;
+        ImGuiLayer imguiLayer_;
         int displayedFPS_ = 0;
 
         SharedVec<Renderable> renderables_;

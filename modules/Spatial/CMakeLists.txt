@@ -4,6 +4,7 @@ file(GLOB_RECURSE SPATIAL_HEADERS "include/**/*.hpp")
 
 # Create static library
 add_library(Spatial STATIC ${SPATIAL_SOURCES} ${SPATIAL_HEADERS})
+enable_compiler_warnings(Spatial)
 
 # Public headers for consumers of Spatial
 target_include_directories(Spatial

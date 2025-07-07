@@ -17,7 +17,9 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     {
         for (int i = 0; i < circRes; ++i)
         {
-            float angle = 2 * M_PI * i / circRes;
+            constexpr float PI = static_cast<float>(M_PI);
+            float angle = 2.0f * PI * static_cast<float>(i) / static_cast<float>(circRes);
+
             Vector local(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), z);
             Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
             cloud->addPoint(Point(
@@ -30,13 +32,15 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     // Side surface
     for (int i = 0; i < circRes; ++i)
     {
-        float angle = 2 * M_PI * i / circRes;
+        constexpr float PI = static_cast<float>(M_PI);
+        float angle = 2.0f * PI * static_cast<float>(i) / static_cast<float>(circRes);
+
         Vector base(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), -halfHeight);
         Vector top(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), +halfHeight);
 
         for (int j = 0; j < heightRes; ++j)
         {
-            float t = static_cast<float>(j) / (heightRes - 1);
+            float t = static_cast<float>(j) / static_cast<float>(heightRes - 1);
             Vector local = base + (top - base) * t;
             Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
             cloud->addPoint(Point(
@@ -54,14 +58,15 @@ std::vector<Point> Cylinder::wireframe() const
     std::vector<Point> framePoints;
 
     int segments = 16;
-    float angleStep = 2 * M_PI / segments;
+    constexpr float PI = static_cast<float>(M_PI);
+    float angleStep = 2.0f * PI / static_cast<float>(segments);
     float halfHeight = cylinderDimension.height_ / 2.0f;
 
     for (int i = 0; i < segments; ++i)
     {
-        float angle = i * angleStep;
-        float x = cylinderDimension.radius_ * cos(angle);
-        float y = cylinderDimension.radius_ * sin(angle);
+        float angle = static_cast<float>(i) * angleStep;
+        float x = cylinderDimension.radius_ * cosf(angle);
+        float y = cylinderDimension.radius_ * sinf(angle);
 
         Vector bottomLocal(x, y, -halfHeight);
         Vector topLocal(x, y, +halfHeight);

@@ -1,9 +1,11 @@
 #include "main.hpp"
 #include <iostream>
+#include <filesystem>
 
 int main()
 {
     // adapter initializations
+    std::cout << "Current path is " << std::filesystem::current_path() << std::endl;
     adapter::AdapterManager adapters;
     auto car = adapters.fromJson<std::shared_ptr<Car>>("bin/resources/car.json");
     auto scene = adapters.fromJson<std::shared_ptr<SimulationScene>>("bin/resources/objects.json");
@@ -20,6 +22,8 @@ int main()
     // // VIEWER START
     viewer::OpenGLViewer viewer(1280, 720, "ADSIL Analyzer - OpenGL");
 
+    SharedVec<viewer::Entity> entities;
+
     auto axisEntity = std::make_shared<viewer::AxisEntity>();
     viewer.addEntity(axisEntity); // Assuming `addEntity` works on IEntity*
 
@@ -35,7 +39,18 @@ int main()
     {
         auto shapeEntity = std::make_shared<viewer::ShapeEntity>(shape);
         viewer.addEntity(shapeEntity);
+        // entities.push_back(shapeEntity);
     }
+
+    // entities.push_back(axisEntity);
+    // entities.push_back(groundEntity);
+    // entities.push_back(carEntity);
+
+    // for (auto entity : entities)
+    // {
+    //     std::cout << entity->getName() << std::endl;
+    // }
+
     std::cout << "[INFO] Entities loaded." << std::endl;
 
     viewer.run();

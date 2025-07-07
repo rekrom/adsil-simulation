@@ -23,8 +23,8 @@ public:
     void moveForward(float step = 100.0f);
     void rotateYaw(float angleDeg);
 
-    SharedVec<Device> getTransmitters() const;
-    SharedVec<Device> getReceivers() const;
+    const SharedVec<Device> &getTransmitters() const;
+    const SharedVec<Device> &getReceivers() const;
     SharedVec<Device> getAllDevices() const;
 
     const std::vector<Point> &getTrajectory() const;

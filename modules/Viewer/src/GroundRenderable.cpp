@@ -108,7 +108,7 @@ namespace viewer
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindVertexArray(vao_);
-        glDrawArrays(GL_LINES, 0, vertexCount_);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertexCount_));
         glBindVertexArray(0);
     }
 

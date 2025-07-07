@@ -1,12 +1,10 @@
 file(GLOB_RECURSE APP_SOURCES "*.cpp")
 file(GLOB_RECURSE APP_HEADERS "*.hpp")
-project(adsil_analyzer)
 
-# Set output directory for the executable
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
 add_executable(${PROJECT_NAME} ${APP_SOURCES} ${APP_HEADERS})
+
 
 # GLAD
 target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/glad/src/glad.c)

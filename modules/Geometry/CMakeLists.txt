@@ -2,6 +2,7 @@ file(GLOB_RECURSE GEOMETRY_SOURCES "src/*.cpp")
 file(GLOB_RECURSE GEOMETRY_HEADERS "include/**/*.hpp")
 
 add_library(Geometry STATIC ${GEOMETRY_SOURCES} ${GEOMETRY_HEADERS})
+enable_compiler_warnings(Geometry)
 
 target_include_directories(Geometry PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include

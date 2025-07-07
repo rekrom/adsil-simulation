@@ -22,8 +22,8 @@ namespace viewer
 
     private:
         std::shared_ptr<PointCloud> pointCloud_;
-        glm::vec3 color_{1.0f, 1.0f, 1.0f}; // default white
         bool visible_{true};
+        glm::vec3 color_{1.0f, 1.0f, 1.0f}; // default white
 
     protected:
         void createShader() override;

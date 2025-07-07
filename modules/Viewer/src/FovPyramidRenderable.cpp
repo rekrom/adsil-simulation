@@ -116,8 +116,8 @@ namespace viewer
         float fovV = device_->getVerticalFovRad();
         float range = device_->getRange();
 
-        float halfW = range * tan(fovH / 2.0f);
-        float halfH = range * tan(fovV / 2.0f);
+        float halfW = range * tanf(fovH / 2.0f);
+        float halfH = range * tanf(fovV / 2.0f);
 
         glm::vec3 apex(0.0f, 0.0f, 0.0f);
         glm::vec3 v1(-halfW, halfH, range);

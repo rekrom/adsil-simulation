@@ -4,7 +4,7 @@
 namespace adapter
 {
     SceneJsonAdapter::SceneJsonAdapter()
-        : carAdapter_(), pointAdapter_(), shapeAdapter_()
+        : carAdapter_(), shapeAdapter_(), pointAdapter_()
     {
     }
 
