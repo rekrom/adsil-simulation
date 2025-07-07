@@ -15,6 +15,7 @@ target_link_libraries(Adapter
     Spatial
     Geometry
     Simulation
+    Utils
 
 )
 
