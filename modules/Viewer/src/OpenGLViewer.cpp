@@ -6,15 +6,21 @@
 namespace viewer
 {
     OpenGLViewer::OpenGLViewer(int width, int height, const std::string &title)
-        : width_(width), height_(height), title_(title), window_(nullptr), camera_(
+        : window_(nullptr), width_(width), height_(height), title_(title), camera_(
                                                                                glm::vec3(0.0f, 20.0f, 5.0f), // position
                                                                                glm::vec3(0.0f, 1.0f, 0.0f),  // up direction
                                                                                90.0f,                        // yaw (looking toward -Z)
                                                                                -89.0f                        // pitch
                                                                                ),
-          lastX_(width / 2.0f), lastY_(height / 2.0f),
+          lastX_(static_cast<float>(width) / 2.0f), lastY_(static_cast<float>(height) / 2.0f),
           firstMouse_(true), rightMousePressed_(false),
-          deltaTime_(0.0f), lastFrame_(0.0f), renderingMode_(viewer::RenderingMode::Perspective)
+          deltaTime_(0.0f), lastFrame_(0.0f),
+          renderingMode_(viewer::RenderingMode::Perspective),
+          imguiLayer_(),    // ✅ açıkça ekle
+          displayedFPS_(0), // ✅ tekrar ekle (netlik için)
+          renderables_(),   // ✅ boş başlat
+          entities_()       // ✅ boş başlat
+
     {
     }
 
@@ -66,7 +72,7 @@ namespace viewer
 
     void OpenGLViewer::updateDeltaTime()
     {
-        float currentFrame = glfwGetTime();
+        float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime_ = currentFrame - lastFrame_;
         lastFrame_ = currentFrame;
     }
@@ -98,15 +104,15 @@ namespace viewer
 
         if (viewer->firstMouse_)
         {
-            viewer->lastX_ = xpos;
-            viewer->lastY_ = ypos;
+            viewer->lastX_ = static_cast<float>(xpos);
+            viewer->lastY_ = static_cast<float>(ypos);
             viewer->firstMouse_ = false;
         }
 
-        float xoffset = xpos - viewer->lastX_;
-        float yoffset = viewer->lastY_ - ypos;
-        viewer->lastX_ = xpos;
-        viewer->lastY_ = ypos;
+        float xoffset = static_cast<float>(xpos) - viewer->lastX_;
+        float yoffset = viewer->lastY_ - static_cast<float>(ypos);
+        viewer->lastX_ = static_cast<float>(xpos);
+        viewer->lastY_ = static_cast<float>(ypos);
 
         viewer->camera_.processMouseMovement(xoffset, yoffset); });
 
@@ -129,7 +135,7 @@ namespace viewer
         glfwSetScrollCallback(window_, [](GLFWwindow *win, double, double yoffset)
                               {
         auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        viewer->camera_.processMouseScroll(yoffset); });
+        viewer->camera_.processMouseScroll(static_cast<float>(yoffset)); });
     }
 
     void OpenGLViewer::setRenderingMode(RenderingMode mode)
@@ -184,7 +190,7 @@ namespace viewer
 
     glm::mat4 OpenGLViewer::getProjectionMatrix() const
     {
-        float aspect = static_cast<float>(width_) / height_;
+        float aspect = static_cast<float>(width_) / static_cast<float>(height_);
         if (renderingMode_ == RenderingMode::Perspective)
         {
             return glm::perspective(glm::radians(camera_.getFov()), aspect, 0.1f, 1000.0f);

@@ -5,6 +5,7 @@
 #include <spatial/implementations/Transform.hpp>
 #include <spatial/implementations/HasTransformNodeBase.hpp>
 #include <geometry/interfaces/IShape.hpp>
+#include <iostream>
 
 class ShapeBase : public IShape, public spatial::HasTransformNodeBase
 {
@@ -21,7 +22,10 @@ public:
     void setOrigin(const Point &origin) { transform_.setPosition(origin); }
     void setOrientation(const Vector &orientation) { transform_.setOrientation(orientation); }
 
-    const std::string &getName() const { return name_; }
+    const std::string &getName() const
+    {
+        return name_;
+    }
     void setName(const std::string &name) { name_ = name; }
 
 protected:

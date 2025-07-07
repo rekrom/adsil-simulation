@@ -2,6 +2,7 @@ file(GLOB_RECURSE UTILS_SOURCES "src/*.cpp")
 file(GLOB_RECURSE UTILS_HEADERS "include/**/*.hpp")
 
 add_library(Utils STATIC ${UTILS_SOURCES} ${UTILS_HEADERS})
+enable_compiler_warnings(Utils)
 
 target_include_directories(Utils PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include

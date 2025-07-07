@@ -6,11 +6,11 @@ namespace spatial
 
     // Constructor: default local transform (identity)
     TransformNode::TransformNode()
-        : localTransform_(Transform()), dirty_(true) {}
+        : cachedGlobalTransform_(), dirty_(true), localTransform_(Transform()) {}
 
     // Constructor: initialize with given local transform
     TransformNode::TransformNode(const Transform &localTransform)
-        : localTransform_(localTransform), dirty_(true)
+        : cachedGlobalTransform_(), dirty_(true), localTransform_(localTransform)
     {
         // std::cout << localTransform_.get3DDirectionVector().toString() << std::endl;
     }

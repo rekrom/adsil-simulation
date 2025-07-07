@@ -37,11 +37,11 @@ Car::Car(const CarConfig &config)
     trajectory_.push_back(getPosition());
 }
 
-SharedVec<Device> Car::getTransmitters() const
+const SharedVec<Device> &Car::getTransmitters() const
 {
     return transmitters_;
 }
-SharedVec<Device> Car::getReceivers() const
+const SharedVec<Device> &Car::getReceivers() const
 {
     return receivers_;
 }

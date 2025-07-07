@@ -19,7 +19,7 @@ namespace viewer
 
     private:
         std::shared_ptr<spatial::HasTransformNodeBase> transformNode_;
-        int vertexCount_{0};
+        size_t vertexCount_{0};
 
     protected:
         void createShader() override;

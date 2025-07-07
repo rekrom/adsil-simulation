@@ -123,7 +123,7 @@ namespace viewer
         glUniform3fv(uniforms_.uniformColor, 1, &color_[0]);
 
         glBindVertexArray(vao_);
-        glDrawArrays(GL_POINTS, 0, vertexCount_);
+        glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertexCount_));
         glBindVertexArray(0);
     }
 

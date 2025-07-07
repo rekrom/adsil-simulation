@@ -55,17 +55,17 @@ const Vector Transform::get3DDirectionVector() const
     float sYaw = std::sin(yaw);
 
     // Dönüş matrisi elemanları (Z-Y-X sırayla Euler açılarından)
-    float m00 = cYaw * cPitch;
+    // float m00 = cYaw * cPitch;
     float m01 = cYaw * sPitch * sRoll - sYaw * cRoll;
-    float m02 = cYaw * sPitch * cRoll + sYaw * sRoll;
+    // float m02 = cYaw * sPitch * cRoll + sYaw * sRoll;
 
-    float m10 = sYaw * cPitch;
+    // float m10 = sYaw * cPitch;
     float m11 = sYaw * sPitch * sRoll + cYaw * cRoll;
-    float m12 = sYaw * sPitch * cRoll - cYaw * sRoll;
+    // float m12 = sYaw * sPitch * cRoll - cYaw * sRoll;
 
-    float m20 = -sPitch;
+    // float m20 = -sPitch;
     float m21 = cPitch * sRoll;
-    float m22 = cPitch * cRoll;
+    // float m22 = cPitch * cRoll;
 
     // İleri yön vektörü lokal (0, 1, 0)
     // Dünya koordinatlarına dönüşüm:

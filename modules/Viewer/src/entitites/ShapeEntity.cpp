@@ -4,16 +4,12 @@
 namespace viewer
 {
 
-    ShapeEntity::ShapeEntity(std::shared_ptr<ShapeBase> shape, const std::string &name, const glm::vec3 &color)
-        : shape_(std::move(shape)), name_(name), color_(color)
+    ShapeEntity::ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color) : shape_(shape), color_(color)
     {
-        std::cout << "[DEBUG] ShapeEntity '" << name_ << "' created." << std::endl;
     }
 
     void ShapeEntity::initGL()
     {
-        std::cout << "[DEBUG] ShapeEntity::initGL() for " << name_ << std::endl;
-
         shapeRenderable_ = std::make_unique<ShapeRenderable>(shape_, color_);
         shapeRenderable_->initGL(); // likely crash happens here
     }
@@ -49,7 +45,7 @@ namespace viewer
 
     std::string ShapeEntity::getName() const
     {
-        return name_;
+        return shape_->getName();
     }
 
 }
