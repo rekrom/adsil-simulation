@@ -1,7 +1,7 @@
 #include <geometry/factories/DeviceFactory.hpp>
 #include <geometry/configs/DeviceConfig.hpp>
 
-std::vector<std::shared_ptr<Device>> DeviceFactory::createDevices(
+SharedVec<Device> DeviceFactory::createDevices(
     const std::string &namePrefix,
     const std::vector<Point> &origins,
     const std::vector<Vector> &directions,
@@ -9,7 +9,7 @@ std::vector<std::shared_ptr<Device>> DeviceFactory::createDevices(
     const std::vector<float> &horizontal_fovs,
     LogCallback onCreate)
 {
-    std::vector<std::shared_ptr<Device>> devices;
+    SharedVec<Device> devices;
 
     for (std::size_t i = 0; i < directions.size(); ++i)
     {
@@ -32,7 +32,7 @@ std::vector<std::shared_ptr<Device>> DeviceFactory::createDevices(
     return devices;
 }
 
-std::vector<std::shared_ptr<Device>> DeviceFactory::createTransmitters(
+SharedVec<Device> DeviceFactory::createTransmitters(
     const std::vector<Point> &origins,
     const std::vector<Vector> &directions,
     const std::vector<float> &vertical_fovs,
@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<Device>> DeviceFactory::createTransmitters(
     return createDevices("t", origins, directions, vertical_fovs, horizontal_fovs, onCreate);
 }
 
-std::vector<std::shared_ptr<Device>> DeviceFactory::createReceivers(
+SharedVec<Device> DeviceFactory::createReceivers(
     const std::vector<Point> &origins,
     const std::vector<Vector> &directions,
     const std::vector<float> &vertical_fovs,

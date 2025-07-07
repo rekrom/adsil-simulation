@@ -13,7 +13,7 @@ class DeviceFactory
 public:
     using LogCallback = std::function<void(const Device &)>;
 
-    static std::vector<std::shared_ptr<Device>> createDevices(
+    static SharedVec<Device> createDevices(
         const std::string &namePrefix,
         const std::vector<Point> &origins,
         const std::vector<Vector> &directions,
@@ -22,14 +22,14 @@ public:
         LogCallback onCreate = nullptr);
 
     // Wrappers for clarity
-    static std::vector<std::shared_ptr<Device>> createTransmitters(
+    static SharedVec<Device> createTransmitters(
         const std::vector<Point> &origins,
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,
         LogCallback onCreate = nullptr);
 
-    static std::vector<std::shared_ptr<Device>> createReceivers(
+    static SharedVec<Device> createReceivers(
         const std::vector<Point> &origins,
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,

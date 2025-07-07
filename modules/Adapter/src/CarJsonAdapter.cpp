@@ -48,14 +48,14 @@ namespace adapter
         // std::cout << "[CAR] " << v.toString() << std::endl;
         auto node = std::make_shared<spatial::TransformNode>(Transform(p, v_rad));
 
-        std::vector<std::shared_ptr<Device>> tx;
+        SharedVec<Device> tx;
         for (const auto &txJson : j.at("transmitters"))
         {
             Device d = deviceAdapter_.fromJson(txJson);
             tx.push_back(std::make_shared<Device>(std::move(d)));
         }
 
-        std::vector<std::shared_ptr<Device>> rx;
+        SharedVec<Device> rx;
         for (const auto &rxJson : j.at("receivers"))
         {
             Device d = deviceAdapter_.fromJson(rxJson);

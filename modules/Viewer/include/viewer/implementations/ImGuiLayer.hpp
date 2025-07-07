@@ -25,7 +25,7 @@ namespace viewer
 
         void drawViewerPanel(Camera &camera, RenderingMode &mode, int &fps);
 
-        void drawUI(const std::vector<std::shared_ptr<Entity>> &entities);
+        void drawUI(const SharedVec<Entity> &entities);
 
     private:
         imgui::CarInspectorPanel carInspector_;

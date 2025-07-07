@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/Alias.hpp>
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
 #include <spatial/implementations/TransformNode.hpp>
@@ -22,16 +23,13 @@ public:
     void moveForward(float step = 100.0f);
     void rotateYaw(float angleDeg);
 
-    std::vector<std::shared_ptr<Device>> getTransmitters() const;
-    std::vector<std::shared_ptr<Device>> getReceivers() const;
-    std::vector<std::shared_ptr<Device>> getAllDevices() const;
+    SharedVec<Device> getTransmitters() const;
+    SharedVec<Device> getReceivers() const;
+    SharedVec<Device> getAllDevices() const;
 
     const std::vector<Point> &getTrajectory() const;
     std::string toString() const;
 
-    std::shared_ptr<spatial::TransformNode> getTransformNode() const override;
-
-    Transform getTransform() const;
     Point getPosition() const;
     Vector getOrientation() const;
     CarDimension getDimension() const;
@@ -46,8 +44,8 @@ public:
     static constexpr CarDimension DefaultCarDimension{2.53f, 1.39f, 1.52f};
 
 private:
-    std::vector<std::shared_ptr<Device>> transmitters_;
-    std::vector<std::shared_ptr<Device>> receivers_;
+    SharedVec<Device> transmitters_;
+    SharedVec<Device> receivers_;
     std::vector<Point> trajectory_;
     CarDimension dimension;
     std::string name_;

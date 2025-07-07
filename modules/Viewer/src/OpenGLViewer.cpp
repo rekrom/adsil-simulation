@@ -226,8 +226,8 @@ namespace viewer
         glm::mat4 view = camera_.getViewMatrix();
         glm::mat4 projection = getProjectionMatrix();
 
-        std::vector<std::shared_ptr<Entity>> opaque;
-        std::vector<std::shared_ptr<Entity>> transparent;
+        SharedVec<Entity> opaque;
+        SharedVec<Entity> transparent;
 
         for (auto &e : entities_)
         {

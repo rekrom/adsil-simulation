@@ -86,7 +86,7 @@ namespace spatial
         }
     }
 
-    const std::vector<std::shared_ptr<TransformNode>> &TransformNode::getChildren() const
+    const SharedVec<TransformNode> &TransformNode::getChildren() const
     {
         return children_;
     }

@@ -17,19 +17,19 @@ const std::shared_ptr<Car> &SimulationScene::getCar() const
     return car_;
 }
 
-const std::vector<std::shared_ptr<Device>> &SimulationScene::getTransmitters() const
+const SharedVec<Device> &SimulationScene::getTransmitters() const
 {
     assert(car_ && "car_ must be set before accessing transmitters");
     return car_->getTransmitters();
 }
 
-const std::vector<std::shared_ptr<Device>> &SimulationScene::getReceivers() const
+const SharedVec<Device> &SimulationScene::getReceivers() const
 {
     assert(car_ && "car_ must be set before accessing receivers");
     return car_->getReceivers();
 }
 
-const std::vector<std::shared_ptr<ShapeBase>> &SimulationScene::getShapes() const
+const SharedVec<ShapeBase> &SimulationScene::getShapes() const
 {
     return shapes_;
 }

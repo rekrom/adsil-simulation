@@ -4,11 +4,12 @@
 #include <iostream>
 
 Device::Device(const DeviceConfig &config)
-    : transformNode_(std::make_shared<spatial::TransformNode>(config.transform)),
-      vertical_fov_rad_(RotationUtils::deg2rad(config.vertical_fov_deg)),
+    : vertical_fov_rad_(RotationUtils::deg2rad(config.vertical_fov_deg)),
       horizontal_fov_rad_(RotationUtils::deg2rad(config.horizontal_fov_deg)),
       name_(config.name)
 {
+    setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
+
     range_ = 20.0f;
 }
 
@@ -35,21 +36,6 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
     return visible;
 }
 
-Transform Device::getGlobalTransform()
-{
-    return transformNode_->getGlobalTransform();
-}
-
-const Transform &Device::getTransform() const
-{
-    return transformNode_->getLocalTransform();
-}
-
-void Device::setTransform(const Transform &newTransform)
-{
-    transformNode_->setLocalTransform(newTransform);
-}
-
 const Point &Device::getOrigin() const
 {
     return transformNode_->getLocalTransform().getPosition();
@@ -65,16 +51,6 @@ void Device::setOrientation(const Vector &newOrientation)
     Transform t = getTransformNode()->getLocalTransform();
     t.setOrientation(newOrientation); // assumes rpy = (roll, pitch, yaw)
     getTransformNode()->setLocalTransform(t);
-}
-
-std::shared_ptr<spatial::TransformNode> Device::getTransformNode() const
-{
-    return transformNode_;
-}
-
-void Device::setTransformNode(std::shared_ptr<spatial::TransformNode> transformNode)
-{
-    transformNode_ = std::move(transformNode);
 }
 
 void Device::setOrigin(const Point &newOrigin)

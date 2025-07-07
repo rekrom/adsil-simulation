@@ -1,5 +1,5 @@
 #pragma once
-
+#include <core/Alias.hpp>
 #include <adapter/interfaces/IJsonAdapter.hpp>
 #include <core/Car.hpp>
 #include <adapter/implementations/PointJsonAdapter.hpp>
