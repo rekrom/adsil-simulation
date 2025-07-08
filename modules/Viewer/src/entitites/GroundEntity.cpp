@@ -1,6 +1,6 @@
 // GroundEntity.cpp
 #include <viewer/entities/GroundEntity.hpp>
-
+#include <iostream>
 namespace viewer
 {
     GroundEntity::GroundEntity()

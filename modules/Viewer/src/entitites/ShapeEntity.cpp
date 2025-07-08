@@ -4,24 +4,24 @@
 namespace viewer
 {
 
-    ShapeEntity::ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color) : shape_(shape), color_(color)
+    ShapeEntity::ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color) : shape_(shape), renderable_(std::make_shared<ShapeRenderable>(shape_, color_)), color_(color)
     {
     }
 
     void ShapeEntity::initGL()
     {
-        shapeRenderable_ = std::make_unique<ShapeRenderable>(shape_, color_);
-        shapeRenderable_->initGL(); // likely crash happens here
+        renderable_->initGL(); // likely crash happens here
     }
 
     void ShapeEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        shapeRenderable_->render(view, projection);
+        renderable_->render(view, projection);
     }
 
     void ShapeEntity::cleanup()
     {
-        shapeRenderable_->cleanup();
+        if (renderable_)
+            renderable_->cleanup();
     }
 
     glm::vec3 ShapeEntity::getColor() const
@@ -33,7 +33,7 @@ namespace viewer
     {
         if (shape_)
         {
-            return shapeRenderable_->getCenter();
+            return renderable_->getCenter();
         }
         return glm::vec3(0.0f);
     }

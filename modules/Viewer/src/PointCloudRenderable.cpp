@@ -9,7 +9,7 @@ namespace viewer
 
     PointCloudRenderable::~PointCloudRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void PointCloudRenderable::cleanup()

@@ -37,3 +37,4 @@ foreach(app_dir ${APP_DIRS})
         add_subdirectory("apps/${app_dir}")
     endif()
 endforeach()
+

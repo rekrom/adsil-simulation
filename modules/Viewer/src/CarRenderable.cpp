@@ -14,7 +14,7 @@ namespace viewer
 
     CarRenderable::~CarRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     std::shared_ptr<Car> CarRenderable::getCar() const

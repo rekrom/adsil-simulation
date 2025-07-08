@@ -19,7 +19,7 @@ namespace viewer
 
     FoVPyramidRenderable::~FoVPyramidRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void FoVPyramidRenderable::initGL()

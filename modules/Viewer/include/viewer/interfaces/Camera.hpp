@@ -17,6 +17,8 @@ public:
     void processMouseScroll(float yOffset);
 
     glm::vec3 getPosition() const;
+    bool getIsLocked() const;
+    void setIsLocked(bool isLocked);
     float getFov() const;
 
     std::string toString() const;
@@ -33,4 +35,6 @@ private:
     float yaw_;
     float pitch_;
     float fov_;
+
+    bool isLocked_;
 };

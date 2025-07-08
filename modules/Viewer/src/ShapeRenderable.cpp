@@ -13,7 +13,7 @@ namespace viewer
 
     ShapeRenderable::~ShapeRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void ShapeRenderable::initGL()

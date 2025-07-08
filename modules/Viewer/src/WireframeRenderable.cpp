@@ -10,6 +10,11 @@ namespace viewer
 
     WireframeRenderable::~WireframeRenderable()
     {
+        // cleanup();
+    }
+
+    void WireframeRenderable::cleanup()
+    {
         glDeleteVertexArrays(1, &vao_);
         glDeleteBuffers(1, &vbo_);
         glDeleteProgram(shader_);

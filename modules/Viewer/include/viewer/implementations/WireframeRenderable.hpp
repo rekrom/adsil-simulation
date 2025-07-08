@@ -16,6 +16,7 @@ namespace viewer
 
         void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
+        void cleanup() override;
 
     private:
         std::vector<Point> lines_;

@@ -65,14 +65,25 @@ void Car::moveTo(const Point &newPosition)
 void Car::moveForward(float step)
 {
     Vector orientation = getOrientation();
-    float yaw = orientation.z();
 
-    float dx = std::sin(yaw) * step;
-    float dy = std::cos(yaw) * step;
-    float dz = 0.0f;
+    // TODO: check with mustafa
+    float pitch = orientation.x();
+    float yaw = orientation.y();
+    // float roll = orientation.z(); // not needed for forward
 
+    float x = std::cos(pitch) * std::sin(yaw);
+    float y = std::sin(pitch);
+    float z = std::cos(pitch) * std::cos(yaw);
+
+    Vector forward(x, y, z);
+    forward = forward.normalized();
+
+    // Scale by step size
+    Vector displacement = forward * step;
+
+    // Get current position and move
     Point currentPos = getPosition();
-    moveTo(Point(currentPos.x() + dx, currentPos.y() + dy, currentPos.z() + dz));
+    moveTo(currentPos + displacement);
 }
 
 void Car::rotateYaw(float angleDeg)
@@ -81,7 +92,7 @@ void Car::rotateYaw(float angleDeg)
 
     auto localTransform = transformNode_->getLocalTransform();
     Vector ori = localTransform.getOrientation();
-    ori = ori + Vector(0.f, 0.f, angleRad); // Assuming operator+ is rotation addition
+    ori = ori + Vector(0.f, angleRad, 0.f); // Modify yaw (Y axis)
     localTransform.setOrientation(ori);
 
     transformNode_->setLocalTransform(localTransform);

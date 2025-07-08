@@ -1,5 +1,5 @@
 #include <viewer/entities/DeviceEntity.hpp>
-
+#include <iostream>
 namespace viewer
 {
     DeviceEntity::DeviceEntity(std::shared_ptr<Device> device, glm::vec3 color, bool visible)

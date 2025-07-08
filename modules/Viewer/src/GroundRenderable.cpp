@@ -8,7 +8,7 @@ namespace viewer
 
     GroundRenderable::~GroundRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void GroundRenderable::initGL()

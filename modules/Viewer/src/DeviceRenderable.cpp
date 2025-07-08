@@ -17,12 +17,7 @@ namespace viewer
 
     DeviceRenderable::~DeviceRenderable()
     {
-        glDeleteVertexArrays(1, &vao_);
-        glDeleteBuffers(1, &vbo_);
-        glDeleteVertexArrays(1, &arrowVAO_);
-        glDeleteBuffers(1, &arrowVBO_);
-        glDeleteProgram(shader_);
-        cleanup();
+        // cleanup();
     }
 
     void DeviceRenderable::initGL()

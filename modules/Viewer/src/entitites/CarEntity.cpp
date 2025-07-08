@@ -1,12 +1,10 @@
 #include <viewer/entities/CarEntity.hpp>
-
+#include <iostream>
 namespace viewer
 {
     CarEntity::CarEntity(std::shared_ptr<Car> car, glm::vec3 color)
-        : car_(std::move(car)), color_(color)
+        : car_(std::move(car)), renderable_(std::make_shared<CarRenderable>(car_, color_)), color_(color)
     {
-        renderable_ = std::make_shared<CarRenderable>(car_, color_);
-
         for (const auto &tx : car_->getTransmitters())
             txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0f, 0.0f, 0.0f))); // red for TX
 
@@ -38,8 +36,10 @@ namespace viewer
     {
         if (renderable_)
             renderable_->cleanup();
+
         for (auto &tx : txEntities_)
             tx->cleanup();
+
         for (auto &rx : rxEntities_)
             rx->cleanup();
     }

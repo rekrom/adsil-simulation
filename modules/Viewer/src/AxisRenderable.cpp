@@ -33,7 +33,7 @@ namespace viewer
 
     AxisRenderable::~AxisRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void AxisRenderable::cleanup()
