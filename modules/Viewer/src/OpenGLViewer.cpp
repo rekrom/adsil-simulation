@@ -2,6 +2,7 @@
 
 #include <viewer/implementations/OpenGLViewer.hpp>
 #include <iostream>
+#include <viewer/implementations/InputManager.hpp> // to construct it
 
 namespace viewer
 {
@@ -18,16 +19,28 @@ namespace viewer
           renderingMode_(viewer::RenderingMode::Perspective),
           imguiLayer_(),    // ✅ açıkça ekle
           displayedFPS_(0), // ✅ tekrar ekle (netlik için)
-          renderables_(),   // ✅ boş başlat
-          entities_()       // ✅ boş başlat
-
+          entities_(),      // ✅ boş başlat
+          inputManager_(std::make_shared<input::InputManager>())
     {
     }
 
     OpenGLViewer::~OpenGLViewer()
     {
-        entities_.clear();
-        cleanup();
+        std::cout << "[DESTRUCTOR] OpenGLViewer" << std::endl;
+        // cleanup();
+    }
+
+    void OpenGLViewer::initGraphics()
+    {
+        init(width_, height_, title_);
+    }
+
+    void OpenGLViewer::initEntities()
+    {
+        for (auto &e : entities_)
+        {
+            e->initGL();
+        }
     }
 
     void OpenGLViewer::init(int width, int height, const std::string &title)
@@ -76,20 +89,36 @@ namespace viewer
         deltaTime_ = currentFrame - lastFrame_;
         lastFrame_ = currentFrame;
     }
+
     void OpenGLViewer::processInput(float dt)
     {
-        if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
+
+        if (inputManager_->isKeyPressed(GLFW_KEY_ESCAPE))
+            glfwSetWindowShouldClose(window_, true);
+        if (inputManager_->isKeyPressed(GLFW_KEY_W))
             camera_.processKeyboard('W', dt);
-        if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_S))
             camera_.processKeyboard('S', dt);
-        if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_A))
             camera_.processKeyboard('A', dt);
-        if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_D))
             camera_.processKeyboard('D', dt);
-        if (glfwGetKey(window_, GLFW_KEY_Q) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_Q))
             camera_.processKeyboard('Q', dt);
-        if (glfwGetKey(window_, GLFW_KEY_E) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_E))
             camera_.processKeyboard('E', dt);
+        if (inputManager_->isKeyJustPressed(GLFW_KEY_L))
+            camera_.processKeyboard('L', dt);
+
+        if (inputManager_->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            glm::vec2 delta = inputManager_->getMouseDelta();
+            camera_.processMouseMovement(delta.x, delta.y);
+        }
+
+        glm::vec2 scroll = inputManager_->getScrollDelta();
+        if (scroll.y != 0.0f)
+            camera_.processMouseScroll(scroll.y);
     }
 
     void OpenGLViewer::setupCallbacks()
@@ -98,50 +127,37 @@ namespace viewer
 
         glfwSetCursorPosCallback(window_, [](GLFWwindow *win, double xpos, double ypos)
                                  {
-        auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        if (!viewer->rightMousePressed_)
-            return;
-
-        if (viewer->firstMouse_)
-        {
-            viewer->lastX_ = static_cast<float>(xpos);
-            viewer->lastY_ = static_cast<float>(ypos);
-            viewer->firstMouse_ = false;
-        }
-
-        float xoffset = static_cast<float>(xpos) - viewer->lastX_;
-        float yoffset = viewer->lastY_ - static_cast<float>(ypos);
-        viewer->lastX_ = static_cast<float>(xpos);
-        viewer->lastY_ = static_cast<float>(ypos);
-
-        viewer->camera_.processMouseMovement(xoffset, yoffset); });
+        auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+        if (viewer && viewer->inputManager_) {
+            viewer->inputManager_->onCursorPosCallback(xpos, ypos);
+        } });
 
         glfwSetMouseButtonCallback(window_, [](GLFWwindow *win, int button, int action, int)
                                    {
-        auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)
-        {
-            if (action == GLFW_PRESS)
-            {
-                viewer->rightMousePressed_ = true;
-                viewer->firstMouse_ = true;
-            }
-            else if (action == GLFW_RELEASE)
-            {
-                viewer->rightMousePressed_ = false;
-            }
-        } });
+    auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+    if (viewer && viewer->inputManager_) {
+        viewer->inputManager_->onMouseButtonCallback(button, action);
+    } });
 
-        glfwSetScrollCallback(window_, [](GLFWwindow *win, double, double yoffset)
+        glfwSetScrollCallback(window_, [](GLFWwindow *win, double xoffset, double yoffset)
                               {
-        auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        viewer->camera_.processMouseScroll(static_cast<float>(yoffset)); });
+    auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+    if (viewer && viewer->inputManager_) {
+        viewer->inputManager_->onScrollCallback(xoffset, yoffset);
+    } });
+        glfwSetKeyCallback(window_, [](GLFWwindow *win, int key, int scancode, int action, int mods)
+                           {
+        auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+        if (viewer && viewer->inputManager_) {
+            viewer->inputManager_->onKeyCallback(key, scancode, action, mods);
+        } });
     }
 
     void OpenGLViewer::setRenderingMode(RenderingMode mode)
     {
         renderingMode_ = mode;
     }
+
     RenderingMode OpenGLViewer::getRenderingMode() const
     {
         return renderingMode_;
@@ -160,32 +176,19 @@ namespace viewer
         }
         for (auto &e : entities_)
         {
-            std::cout << "[DEBUG] Calling initGL for: " << e->getName() << std::endl;
             e->initGL();
         }
 
         while (!glfwWindowShouldClose(window_))
         {
 
-            updateDeltaTime();
-            processInput(deltaTime_);
-
-            // Start new ImGui frame
-            imguiLayer_.beginFrame();
-
-            // GUI interaction logic
-            imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
-            imguiLayer_.drawUI(entities_);
-            glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             render();
-
-            // End and render ImGui
-            imguiLayer_.endFrame();
-            glfwSwapBuffers(window_);
-            glfwPollEvents();
         }
+    }
+
+    bool OpenGLViewer::shouldClose() const
+    {
+        return glfwWindowShouldClose(window_);
     }
 
     glm::mat4 OpenGLViewer::getProjectionMatrix() const
@@ -203,6 +206,7 @@ namespace viewer
                               0.1f, 1000.0f);
         }
     }
+
     void OpenGLViewer::updateFPSCounter()
     {
         static int frameCount_ = 0;
@@ -225,8 +229,27 @@ namespace viewer
         return displayedFPS_;
     }
 
+    float OpenGLViewer::getDeltaTime() const
+    {
+        return deltaTime_;
+    }
+
     void OpenGLViewer::render()
     {
+        updateDeltaTime();
+        inputManager_->update();
+        processInput(deltaTime_);
+
+        // Start new ImGui frame
+        imguiLayer_.beginFrame();
+
+        // GUI interaction logic
+        imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
+        imguiLayer_.drawUI(entities_);
+        glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        ///////// render start here
         updateFPSCounter();
 
         glm::mat4 view = camera_.getViewMatrix();
@@ -259,11 +282,18 @@ namespace viewer
         for (auto &e : transparent)
             e->render(view, projection);
         glDepthMask(GL_TRUE); // ✅ restore
+
+        // /// render ends here
+
+        // End and render ImGui
+        imguiLayer_.endFrame();
+        glfwSwapBuffers(window_);
+        glfwPollEvents();
     }
 
     void OpenGLViewer::cleanup()
     {
-        // 1. renderables_ temizlenmeli
+        // 1. entities_ temizlenmeli
         for (auto &e : entities_)
         {
             e->cleanup(); // OpenGL context hâlâ aktifken
@@ -276,13 +306,20 @@ namespace viewer
         if (window_)
         {
             glfwDestroyWindow(window_);
-            glfwTerminate();
+            window_ = nullptr;
+
+            glfwTerminate(); // Only once per process; OK here unless you have multiple windows
         }
     }
 
     void OpenGLViewer::addEntity(const std::shared_ptr<Entity> &e)
     {
         entities_.push_back(e);
+    }
+
+    void OpenGLViewer::setEntities(SharedVec<Entity> e)
+    {
+        entities_ = e;
     }
 
 }

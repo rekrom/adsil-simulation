@@ -23,6 +23,12 @@ namespace viewer::imgui
     {
         if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
         {
+            bool isLocked = camera.getIsLocked();
+            if (ImGui::Checkbox("Lock", &isLocked))
+            {
+                camera.setIsLocked(isLocked);
+            }
+
             glm::vec3 pos = camera.getPosition();
             if (ImGui::DragFloat3("Position", &pos[0], 0.1f))
             {

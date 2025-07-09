@@ -4,3 +4,4 @@
 #include "PointCloud.hpp"
 #include "Vector.hpp"
 #include "RotationUtils.hpp"
+#include "ResourceLocator.hpp"

@@ -19,9 +19,16 @@ namespace viewer
 
     void ImGuiLayer::shutdown()
     {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
+        if (ImGui::GetCurrentContext() != nullptr)
+        {
+            ImGui_ImplOpenGL3_Shutdown();
+            ImGui_ImplGlfw_Shutdown();
+            ImGui::DestroyContext();
+        }
+        else
+        {
+            std::cerr << "[WARN] ImGui shutdown called without valid context." << std::endl;
+        }
     }
 
     void ImGuiLayer::beginFrame()

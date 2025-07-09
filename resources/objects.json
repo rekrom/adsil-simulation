@@ -29,36 +29,5 @@
             "dimension": 3.0
         }
     ],
-    "cylinders": [
-        {
-            "name": "cylinder1",
-            "origin": {
-                "x": 5.0,
-                "y": 0.0,
-                "z": -10.0
-            },
-            "orientation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "height": 3.0,
-            "radius": 2.0
-        },
-        {
-            "name": "cylinder2",
-            "origin": {
-                "x": -5.0,
-                "y": 0.0,
-                "z": -10.0
-            },
-            "orientation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "height": 6.0,
-            "radius": 3.0
-        }
-    ]
+    "cylinders": []
 }

@@ -1,0 +1,18 @@
+Checks: >
+  clang-analyzer-*,
+  modernize-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-owning-memory,
+  -readability-identifier-length,
+  -modernize-use-trailing-return-type
+
+WarningsAsErrors: ""
+HeaderFilterRegex: ".*"
+FormatStyle: file
+CheckOptions:
+  - key: modernize-use-trailing-return-type.IgnoreMacros
+    value: "1"

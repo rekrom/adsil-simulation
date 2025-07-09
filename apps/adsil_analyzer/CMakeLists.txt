@@ -32,3 +32,4 @@ add_custom_command(
             $<TARGET_FILE_DIR:adsil_analyzer>/resources
     COMMENT "Copying resources folder to binary output directory"
 )
+

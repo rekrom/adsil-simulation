@@ -1,6 +1,6 @@
 // GroundEntity.cpp
 #include <viewer/entities/GroundEntity.hpp>
-
+#include <iostream>
 namespace viewer
 {
     GroundEntity::GroundEntity()
@@ -10,7 +10,12 @@ namespace viewer
 
     void GroundEntity::initGL()
     {
-        renderable_->initGL();
+        // std::cout << "initGl started for [GroundEntity]" << std::endl;
+
+        if (renderable_)
+            renderable_->initGL();
+        else
+            std::cout << "renderable not found for [GroundEntity]" << std::endl;
     }
 
     void GroundEntity::render(const glm::mat4 &view, const glm::mat4 &projection)

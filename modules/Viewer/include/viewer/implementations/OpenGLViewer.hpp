@@ -11,6 +11,7 @@
 #include <viewer/implementations/Renderable.hpp>
 #include <viewer/entities/Entity.hpp>
 #include <viewer/implementations/ImGuiLayer.hpp>
+#include <viewer/interfaces/IInputManager.hpp>
 #include <vector>
 #include <string>
 #include <memory>
@@ -31,14 +32,26 @@ namespace viewer
 
         void addEntity(const std::shared_ptr<Entity> &e);
 
+        void setEntities(SharedVec<Entity> e);
+
         void setRenderingMode(RenderingMode mode);
 
         RenderingMode getRenderingMode() const;
 
-    private:
-        void init(int width = 1280, int height = 720, const std::string &title = "OpenGL Viewer");
+        Camera &getCamera() { return camera_; }
+
+        float getDeltaTime() const;
+
         void render(); // Placeholder: actual rendering logic goes here
         void cleanup();
+        bool shouldClose() const;
+        void initGraphics();
+        void initEntities();
+
+        std::shared_ptr<input::IInputManager> getInputManager() const { return inputManager_; }
+
+    private:
+        void init(int width = 1280, int height = 720, const std::string &title = "OpenGL Viewer");
 
         void setupCallbacks();
         void processInput(float deltaTime);
@@ -64,7 +77,8 @@ namespace viewer
         ImGuiLayer imguiLayer_;
         int displayedFPS_ = 0;
 
-        SharedVec<Renderable> renderables_;
         SharedVec<Entity> entities_;
+
+        std::shared_ptr<input::IInputManager> inputManager_;
     };
 }

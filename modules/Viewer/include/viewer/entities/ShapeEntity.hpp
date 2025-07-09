@@ -26,7 +26,7 @@ namespace viewer
 
     private:
         std::shared_ptr<ShapeBase> shape_;
-        std::shared_ptr<ShapeRenderable> shapeRenderable_;
+        std::shared_ptr<ShapeRenderable> renderable_;
         glm::vec3 color_;
     };
 

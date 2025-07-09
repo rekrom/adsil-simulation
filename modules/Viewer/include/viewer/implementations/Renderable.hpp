@@ -2,6 +2,8 @@
 
 #include <viewer/interfaces/IRenderable.hpp>
 #include <glad/glad.h>
+#include <viewer/shaders/ShaderUtils.hpp>
+#include <core/ResourceLocator.hpp>
 
 namespace viewer
 {

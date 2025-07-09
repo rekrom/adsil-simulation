@@ -13,55 +13,21 @@ namespace viewer
 
     ShapeRenderable::~ShapeRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void ShapeRenderable::initGL()
     {
         createShader();
         createBuffers();
+        // std::cout << "[ShapeRenderable] initGL done!" << std::endl;
     }
 
     void ShapeRenderable::createShader()
     {
-        const char *vSrc = R"(
-        #version 330 core
-        layout(location = 0) in vec3 aPos;
+        // std::cout << "[ShapeRenderable] Compiling shaders..." << std::endl;
 
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        void main() {
-            gl_Position = projection * view * model * vec4(aPos, 1.0);
-        })";
-
-        const char *fSrc = R"(
-        #version 330 core
-        uniform vec3 uniformColor;
-        uniform float alpha;
-
-        out vec4 FragColor;
-
-        void main() {
-            FragColor = vec4(uniformColor, alpha);
-        })";
-
-        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, 1, &vSrc, nullptr);
-        glCompileShader(vs);
-
-        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, 1, &fSrc, nullptr);
-        glCompileShader(fs);
-
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vs);
-        glAttachShader(shader_, fs);
-        glLinkProgram(shader_);
-
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("shape");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");
         uniforms_.view = glGetUniformLocation(shader_, "view");
@@ -101,8 +67,6 @@ namespace viewer
         glEnableVertexAttribArray(0);
 
         glBindVertexArray(0);
-
-        std::cout << "[ShapeRenderable] Initialized with " << vertexCount_ << " vertices." << std::endl;
     }
 
     void ShapeRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)

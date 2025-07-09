@@ -1,6 +1,6 @@
 // AxisEntity.cpp
 #include <viewer/entities/AxisEntity.hpp>
-
+#include <iostream>
 namespace viewer
 {
     AxisEntity::AxisEntity()
@@ -10,7 +10,12 @@ namespace viewer
 
     void AxisEntity::initGL()
     {
-        renderable_->initGL();
+        // std::cout << "initGl started for [AxisEntity]" << std::endl;
+
+        if (renderable_)
+            renderable_->initGL();
+        else
+            std::cout << "renderable not found for [AxisEntity]" << std::endl;
     }
 
     void AxisEntity::render(const glm::mat4 &view, const glm::mat4 &projection)

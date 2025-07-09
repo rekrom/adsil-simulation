@@ -9,7 +9,7 @@ namespace viewer
 
     PointCloudRenderable::~PointCloudRenderable()
     {
-        cleanup();
+        // cleanup();
     }
 
     void PointCloudRenderable::cleanup()
@@ -37,39 +37,9 @@ namespace viewer
 
     void PointCloudRenderable::createShader()
     {
-        const char *vertexShaderSource = R"(
-        #version 330 core
-        layout(location = 0) in vec3 aPos;
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-        void main() {
-            gl_Position = projection * view * model * vec4(aPos, 1.0);
-            gl_PointSize = 14.0;
-        })";
+        std::cout << "[PointCloudRenderable] Compiling shaders..." << std::endl;
 
-        const char *fragmentShaderSource = R"(
-        #version 330 core
-        out vec4 FragColor;
-        uniform vec3 uColor;
-        void main() {
-            FragColor = vec4(uColor, 1.0);
-        })";
-
-        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, 1, &vertexShaderSource, nullptr);
-        glCompileShader(vs);
-
-        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, 1, &fragmentShaderSource, nullptr);
-        glCompileShader(fs);
-
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vs);
-        glAttachShader(shader_, fs);
-        glLinkProgram(shader_);
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("point_cloud");
     }
 
     void PointCloudRenderable::createBuffers()
