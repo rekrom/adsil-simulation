@@ -1,5 +1,5 @@
 #include <viewer/implementations/InputManager.hpp>
-
+#include <iostream>
 namespace viewer::input
 {
 
@@ -8,13 +8,12 @@ namespace viewer::input
         previousKeys_ = currentKeys_;
         previousMouseButtons_ = currentMouseButtons_;
 
-        mouseDelta_ = currentMousePos_ - lastMousePos_;
+        glm::vec2 rawDelta = currentMousePos_ - lastMousePos_;
+        mouseDelta_ = glm::vec2(rawDelta.x, -rawDelta.y); // ⬅️ flip Y
         lastMousePos_ = currentMousePos_;
-
-        scrollOffset_ = glm::vec2(0.0f); // reset every frame
     }
 
-    void InputManager::onKeyCallback(int key, int action)
+    void InputManager::onKeyCallback(int key, int, int action, int) // int key, int scancode, int action, int mods
     {
         currentKeys_[key] = (action != GLFW_RELEASE);
     }
@@ -32,6 +31,7 @@ namespace viewer::input
     void InputManager::onScrollCallback(double xoffset, double yoffset)
     {
         scrollOffset_ = glm::vec2(xoffset, yoffset);
+        scrollConsumed_ = false;
     }
 
     bool InputManager::isKeyPressed(int key) const
@@ -69,7 +69,16 @@ namespace viewer::input
 
     glm::vec2 InputManager::getScrollDelta() const
     {
+
+        if (scrollConsumed_)
+            return glm::vec2(0.0f);
+        scrollConsumed_ = true;
         return scrollOffset_;
+    }
+
+    bool InputManager::wasScrollUsed() const
+    {
+        return scrollConsumed_;
     }
 
 } // namespace input

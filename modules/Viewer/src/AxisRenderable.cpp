@@ -3,34 +3,6 @@
 
 namespace viewer
 {
-    /* ---------- GLSL sources ------------------------------------------------ */
-    static const char *vSrc = R"(
-    #version 330 core
-    layout(location=0) in vec3 aPos;
-    layout(location=1) in vec3 aCol;
-
-    uniform mat4 view;
-    uniform mat4 projection;
-
-    out vec3 vCol;
-
-    void main() {
-        gl_Position = projection * view * vec4(aPos, 1.0);
-        vCol = aCol;
-    }
-)";
-
-    static const char *fSrc = R"(
-    #version 330 core
-    in vec3 vCol;
-    out vec4 FragColor;
-
-    void main() {
-        FragColor = vec4(vCol, 1.0);
-    }
-)";
-    /* ------------------------------------------------------------------------ */
-
     AxisRenderable::~AxisRenderable()
     {
         // cleanup();
@@ -50,35 +22,14 @@ namespace viewer
     {
         createShader();
         createBuffers();
+        // std::cout << "[AxisRenderable] initGL done!" << std::endl;
     }
 
     void AxisRenderable::createShader()
     {
-        auto compile = [](GLenum type, const char *src) -> GLuint
-        {
-            GLuint s = glCreateShader(type);
-            glShaderSource(s, 1, &src, nullptr);
-            glCompileShader(s);
-            int ok;
-            glGetShaderiv(s, GL_COMPILE_STATUS, &ok);
-            if (!ok)
-            {
-                char log[512];
-                glGetShaderInfoLog(s, 512, nullptr, log);
-                std::cerr << "Shader compile error:\n"
-                          << log << '\n';
-            }
-            return s;
-        };
-        GLuint vs = compile(GL_VERTEX_SHADER, vSrc);
-        GLuint fs = compile(GL_FRAGMENT_SHADER, fSrc);
+        // std::cout << "[AxisRenderable] Compiling shaders..." << std::endl;
 
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vs);
-        glAttachShader(shader_, fs);
-        glLinkProgram(shader_);
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("axis");
     }
 
     void AxisRenderable::createBuffers()

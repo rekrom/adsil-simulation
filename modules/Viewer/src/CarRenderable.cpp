@@ -10,6 +10,8 @@ namespace viewer
         : car_(std::move(car)), carColor_(carColor)
     {
         setAlpha(1.0f);
+        std::cout << "car renderable ctur" << std::endl;
+        std::cout << "color: " << carColor_.r << " " << carColor_.g << " " << carColor_.b << std::endl;
     }
 
     CarRenderable::~CarRenderable()
@@ -77,6 +79,7 @@ namespace viewer
             rxRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(1.0f, 0.0f, 0.0f)));
             rxRenderables_.back()->initGL();
         }
+        // std::cout << "[CarRenderable] initGL done!" << std::endl;
     }
 
     void CarRenderable::createBuffers2()
@@ -195,6 +198,7 @@ namespace viewer
         float r = carColor_.r;
         float g = carColor_.g;
         float b = carColor_.b;
+        std::cout << "car color rgb(" << r << ", " << g << ", " << b << ")" << std::endl;
         CarDimension dimension = car_->getDimension();
         float length = dimension.length, width = dimension.width, height = dimension.height;
 
@@ -267,49 +271,9 @@ namespace viewer
 
     void CarRenderable::createShader()
     {
-        const char *vSrc = R"(
-        #version 330 core
-        layout(location = 0) in vec3 aPos;
-        layout(location = 1) in vec3 aColor;
-        out vec3 vColor;
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-        void main() {
-            vColor = aColor;
-            gl_Position = projection * view * model * vec4(aPos, 1.0);
-        }
-    )";
+        // std::cout << "[CarRenderable] Compiling shaders..." << std::endl;
 
-        const char *fSrc = R"(
-        #version 330 core
-        in vec3 vColor;
-        out vec4 FragColor;
-        uniform bool useUniformColor;
-        uniform vec3 uniformColor;
-        uniform float alpha;
-        void main() 
-        {
-            vec3 finalColor = useUniformColor ? uniformColor : vColor;
-            FragColor = vec4(finalColor, alpha);
-        }
-    )";
-
-        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, 1, &vSrc, nullptr);
-        glCompileShader(vs);
-
-        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, 1, &fSrc, nullptr);
-        glCompileShader(fs);
-
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vs);
-        glAttachShader(shader_, fs);
-        glLinkProgram(shader_);
-
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("car");
 
         // Cache uniform locations
         uniforms_.model = glGetUniformLocation(shader_, "model");

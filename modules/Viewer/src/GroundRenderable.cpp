@@ -2,6 +2,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <iostream>
+#include <viewer/shaders/ShaderUtils.hpp>
 
 namespace viewer
 {
@@ -15,48 +16,14 @@ namespace viewer
     {
         createShader();
         createBuffers();
+        // std::cout << "[GroundRenderable] initGL done!" << std::endl;
     }
 
     void GroundRenderable::createShader()
     {
-        const char *vertexShaderSource = R"(
-        #version 330 core
-        layout (location = 0) in vec3 aPos;
+        // std::cout << "[GroundRenderable] Compiling shaders..." << std::endl;
 
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        void main()
-        {
-            gl_Position = projection * view * vec4(aPos, 1.0);
-        }
-    )";
-
-        const char *fragmentShaderSource = R"(
-        #version 330 core
-        out vec4 FragColor;
-
-        void main()
-        {
-            FragColor = vec4(0.5, 0.5, 0.5, 1.0); // Light gray
-        }
-    )";
-
-        GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-        glCompileShader(vertexShader);
-
-        GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-        glCompileShader(fragmentShader);
-
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vertexShader);
-        glAttachShader(shader_, fragmentShader);
-        glLinkProgram(shader_);
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("ground");
     }
 
     void GroundRenderable::createBuffers()

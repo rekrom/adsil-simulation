@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include <core/Car.hpp>
+#include <core/ResourceLocator.hpp>
 #include <simulation/SimulationScene.hpp>
 #include <viewer/implementations/OpenGLViewer.hpp>
 #include <viewer/entities/entities.hpp>

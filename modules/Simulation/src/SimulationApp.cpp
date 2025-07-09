@@ -10,14 +10,12 @@ namespace simulation
 {
     void SimulationApp::init()
     {
+        core::ResourceLocator::setBasePath(BASE_RESOURCE_DIR);
+
         adapters = std::make_unique<adapter::AdapterManager>();
 
-        std::filesystem::path resource = BASE_RESOURCE_DIR;
-        std::string car_path = (resource / "car.json").string();
-        std::string objects_path = (resource / "objects.json").string();
-
-        car_ = adapters->fromJson<std::shared_ptr<Car>>(car_path);
-        scene_ = adapters->fromJson<std::shared_ptr<SimulationScene>>(objects_path);
+        car_ = adapters->fromJson<std::shared_ptr<Car>>(core::ResourceLocator::getJsonPath("car.json"));
+        scene_ = adapters->fromJson<std::shared_ptr<SimulationScene>>(core::ResourceLocator::getJsonPath("objects.json"));
 
         if (!scene_ || !car_)
             throw std::runtime_error("Missing essential simulation components.");

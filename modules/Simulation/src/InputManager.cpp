@@ -9,11 +9,11 @@ namespace simulation
                                     Camera &camera)
     {
         GLFWwindow *window = glfwGetCurrentContext();
-        if (camera.getIsLocked())
-        {
-            std::cout << "camera is locked" << std::endl;
-            return;
-        }
+        // if (camera.getIsLocked())
+        // {
+        //     std::cout << "camera is locked" << std::endl;
+        //     return;
+        // }
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {

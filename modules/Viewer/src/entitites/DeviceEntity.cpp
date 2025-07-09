@@ -20,8 +20,12 @@ namespace viewer
 
     void DeviceEntity::initGL()
     {
+        // std::cout << "initGl started for [DeviceEntity]" << std::endl;
+
         if (renderable_)
             renderable_->initGL();
+        else
+            std::cout << "renderable not found for [DeviceEntity]" << std::endl;
     }
 
     void DeviceEntity::cleanup()

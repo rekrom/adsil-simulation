@@ -39,7 +39,6 @@ namespace viewer
     {
         for (auto &e : entities_)
         {
-            std::cout << "[DEBUG] Calling initGL for: " << e->getName() << std::endl;
             e->initGL();
         }
     }
@@ -93,20 +92,33 @@ namespace viewer
 
     void OpenGLViewer::processInput(float dt)
     {
-        if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
+
+        if (inputManager_->isKeyPressed(GLFW_KEY_ESCAPE))
+            glfwSetWindowShouldClose(window_, true);
+        if (inputManager_->isKeyPressed(GLFW_KEY_W))
             camera_.processKeyboard('W', dt);
-        if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_S))
             camera_.processKeyboard('S', dt);
-        if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_A))
             camera_.processKeyboard('A', dt);
-        if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_D))
             camera_.processKeyboard('D', dt);
-        if (glfwGetKey(window_, GLFW_KEY_Q) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_Q))
             camera_.processKeyboard('Q', dt);
-        if (glfwGetKey(window_, GLFW_KEY_E) == GLFW_PRESS)
+        if (inputManager_->isKeyPressed(GLFW_KEY_E))
             camera_.processKeyboard('E', dt);
-        if (glfwGetKey(window_, GLFW_KEY_L) == GLFW_PRESS)
+        if (inputManager_->isKeyJustPressed(GLFW_KEY_L))
             camera_.processKeyboard('L', dt);
+
+        if (inputManager_->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            glm::vec2 delta = inputManager_->getMouseDelta();
+            camera_.processMouseMovement(delta.x, delta.y);
+        }
+
+        glm::vec2 scroll = inputManager_->getScrollDelta();
+        if (scroll.y != 0.0f)
+            camera_.processMouseScroll(scroll.y);
     }
 
     void OpenGLViewer::setupCallbacks()
@@ -115,44 +127,30 @@ namespace viewer
 
         glfwSetCursorPosCallback(window_, [](GLFWwindow *win, double xpos, double ypos)
                                  {
-        auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        if (!viewer->rightMousePressed_)
-            return;
-
-        if (viewer->firstMouse_)
-        {
-            viewer->lastX_ = static_cast<float>(xpos);
-            viewer->lastY_ = static_cast<float>(ypos);
-            viewer->firstMouse_ = false;
-        }
-
-        float xoffset = static_cast<float>(xpos) - viewer->lastX_;
-        float yoffset = viewer->lastY_ - static_cast<float>(ypos);
-        viewer->lastX_ = static_cast<float>(xpos);
-        viewer->lastY_ = static_cast<float>(ypos);
-
-        viewer->camera_.processMouseMovement(xoffset, yoffset); });
+        auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+        if (viewer && viewer->inputManager_) {
+            viewer->inputManager_->onCursorPosCallback(xpos, ypos);
+        } });
 
         glfwSetMouseButtonCallback(window_, [](GLFWwindow *win, int button, int action, int)
                                    {
-        auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)
-        {
-            if (action == GLFW_PRESS)
-            {
-                viewer->rightMousePressed_ = true;
-                viewer->firstMouse_ = true;
-            }
-            else if (action == GLFW_RELEASE)
-            {
-                viewer->rightMousePressed_ = false;
-            }
-        } });
+    auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+    if (viewer && viewer->inputManager_) {
+        viewer->inputManager_->onMouseButtonCallback(button, action);
+    } });
 
-        glfwSetScrollCallback(window_, [](GLFWwindow *win, double, double yoffset)
+        glfwSetScrollCallback(window_, [](GLFWwindow *win, double xoffset, double yoffset)
                               {
-        auto *viewer = static_cast<OpenGLViewer *>(glfwGetWindowUserPointer(win));
-        viewer->camera_.processMouseScroll(static_cast<float>(yoffset)); });
+    auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+    if (viewer && viewer->inputManager_) {
+        viewer->inputManager_->onScrollCallback(xoffset, yoffset);
+    } });
+        glfwSetKeyCallback(window_, [](GLFWwindow *win, int key, int scancode, int action, int mods)
+                           {
+        auto* viewer = static_cast<OpenGLViewer*>(glfwGetWindowUserPointer(win));
+        if (viewer && viewer->inputManager_) {
+            viewer->inputManager_->onKeyCallback(key, scancode, action, mods);
+        } });
     }
 
     void OpenGLViewer::setRenderingMode(RenderingMode mode)
@@ -178,7 +176,6 @@ namespace viewer
         }
         for (auto &e : entities_)
         {
-            std::cout << "[DEBUG] Calling initGL for: " << e->getName() << std::endl;
             e->initGL();
         }
 
@@ -240,6 +237,7 @@ namespace viewer
     void OpenGLViewer::render()
     {
         updateDeltaTime();
+        inputManager_->update();
         processInput(deltaTime_);
 
         // Start new ImGui frame

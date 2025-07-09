@@ -3,8 +3,10 @@
 namespace viewer
 {
     CarEntity::CarEntity(std::shared_ptr<Car> car, glm::vec3 color)
-        : car_(std::move(car)), renderable_(std::make_shared<CarRenderable>(car_, color_)), color_(color)
+        : car_(std::move(car)), renderable_(std::make_shared<CarRenderable>(car_, color)), color_(color)
     {
+        std::cout << "car entity ctur" << std::endl;
+        std::cout << "color: " << color_.r << " " << color_.g << " " << color_.b << std::endl;
         for (const auto &tx : car_->getTransmitters())
             txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0f, 0.0f, 0.0f))); // red for TX
 
@@ -14,8 +16,12 @@ namespace viewer
 
     void CarEntity::initGL()
     {
+        // std::cout << "initGl started for [CarEntity]" << std::endl;
+
         if (renderable_)
             renderable_->initGL();
+        else
+            std::cout << "renderable not found for [CarEntity]" << std::endl;
         for (auto &tx : txEntities_)
             tx->initGL();
         for (auto &rx : rxEntities_)

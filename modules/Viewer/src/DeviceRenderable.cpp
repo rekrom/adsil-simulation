@@ -30,6 +30,7 @@ namespace viewer
             fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, 0.25f);
             fovRenderable_->initGL();
         }
+        // std::cout << "[DeviceRenderable] initGL done!" << std::endl;
     }
 
     void DeviceRenderable::createBuffers()
@@ -142,41 +143,9 @@ namespace viewer
 
     void DeviceRenderable::createShader()
     {
-        const char *vSrc = R"(
-        #version 330 core
-        layout(location = 0) in vec3 aPos;
-        layout(location = 1) in vec3 aColor;
-        out vec3 vColor;
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-        void main() {
-            vColor = aColor;
-            gl_Position = projection * view * model * vec4(aPos, 1.0);
-        })";
+        // std::cout << "[DeviceRenderable] Compiling shaders..." << std::endl;
 
-        const char *fSrc = R"(
-        #version 330 core
-        in vec3 vColor;
-        out vec4 FragColor;
-        void main() {
-            FragColor = vec4(vColor, 1.0);
-        })";
-
-        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, 1, &vSrc, nullptr);
-        glCompileShader(vs);
-
-        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, 1, &fSrc, nullptr);
-        glCompileShader(fs);
-
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vs);
-        glAttachShader(shader_, fs);
-        glLinkProgram(shader_);
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("device");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");
         uniforms_.view = glGetUniformLocation(shader_, "view");

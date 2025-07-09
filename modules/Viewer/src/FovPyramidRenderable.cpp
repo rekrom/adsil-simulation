@@ -30,61 +30,9 @@ namespace viewer
 
     void FoVPyramidRenderable::createShader()
     {
-        const char *vSrc = R"(
-        #version 330 core
-        layout(location = 0) in vec3 aPos;
+        // std::cout << "[FoVPyramidRenderable] Compiling shaders..." << std::endl;
 
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        void main() {
-            gl_Position = projection * view * model * vec4(aPos, 1.0);
-        }
-    )";
-
-        const char *fSrc = R"(
-        #version 330 core
-        uniform vec3 color;
-        out vec4 FragColor;
-        uniform float alpha;
-        void main() {
-            FragColor = vec4(color, alpha);
-        }
-    )";
-
-        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs, 1, &vSrc, nullptr);
-        glCompileShader(vs);
-        GLint success;
-        glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            char infoLog[512];
-            glGetShaderInfoLog(vs, 512, nullptr, infoLog);
-            std::cerr << "Vertex shader compile error:\n"
-                      << infoLog << std::endl;
-        }
-
-        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs, 1, &fSrc, nullptr);
-        glCompileShader(fs);
-        glGetProgramiv(shader_, GL_LINK_STATUS, &success);
-        if (!success)
-        {
-            char infoLog[512];
-            glGetProgramInfoLog(shader_, 512, nullptr, infoLog);
-            std::cerr << "Shader program link error:\n"
-                      << infoLog << std::endl;
-        }
-
-        shader_ = glCreateProgram();
-        glAttachShader(shader_, vs);
-        glAttachShader(shader_, fs);
-        glLinkProgram(shader_);
-
-        glDeleteShader(vs);
-        glDeleteShader(fs);
+        shader_ = shader::ShaderUtils::createProgramFromFiles("fov_pyramid");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");
         uniforms_.view = glGetUniformLocation(shader_, "view");

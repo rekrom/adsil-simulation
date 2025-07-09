@@ -4,7 +4,7 @@
 #include <string>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-    : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0f)
+    : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0f), isLocked_(false)
 {
     updateCameraVectors();
 }
@@ -25,8 +25,8 @@ void Camera::processKeyboard(char direction, float deltaTime)
     {
         isLocked_ = !isLocked_;
     }
-    if (!isLocked_)
-        return;
+    // if (!isLocked_)
+    //     return;
     float velocity = 10.0f * deltaTime;
     if (direction == 'W')
         position_ += front_ * velocity;
