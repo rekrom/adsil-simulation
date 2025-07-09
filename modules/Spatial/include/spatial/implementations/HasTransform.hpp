@@ -1,15 +1,15 @@
-// HasTransformNodeBase.hpp
+// HasTransform.hpp
 #pragma once
 
-#include <spatial/interfaces/IHasTransformNode.hpp>
+#include <spatial/interfaces/interfaces.hpp>
 #include <spatial/implementations/TransformNode.hpp>
 
 namespace spatial
 {
-    class HasTransformNodeBase : public IHasTransformNode
+    class HasTransform : public ITransform
     {
     public:
-        virtual ~HasTransformNodeBase() = default;
+        virtual ~HasTransform() = default;
 
         std::shared_ptr<TransformNode> getTransformNode() const override
         {

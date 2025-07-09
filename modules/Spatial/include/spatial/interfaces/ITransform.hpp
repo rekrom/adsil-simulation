@@ -5,10 +5,10 @@
 
 namespace spatial
 {
-    class IHasTransformNode
+    class ITransform
     {
     public:
-        virtual ~IHasTransformNode() = default;
+        virtual ~ITransform() = default;
 
         virtual std::shared_ptr<TransformNode> getTransformNode() const = 0;
         virtual Transform getGlobalTransform() const = 0;
