@@ -14,31 +14,31 @@ bool floatEqual(float a, float b, float epsilon = 1e-5f)
 
 void testCarJsonAdapter()
 {
-    Point origin(0.0f, 0.0f, 0.0f);
-    Vector orientation(0.0f, 0.0f, 0.0f);
+    Point origin(0.0F, 0.0F, 0.0F);
+    Vector orientation(0.0F, 0.0F, 0.0F);
 
     auto node = std::make_shared<spatial::TransformNode>(Transform(origin, orientation));
 
     SharedVec<Device> transmitters;
     transmitters.push_back(std::make_shared<Device>(DeviceConfig{
-        Transform(Point(0.0f, 0.0f, 0.0f),
-                  Vector(-0.7071067f, 0.7071067f, 0.0f)),
-        20.0f, 20.0f, "TX1"}));
+        Transform(Point(0.0F, 0.0F, 0.0F),
+                  Vector(-0.7071067F, 0.7071067F, 0.0F)),
+        20.0F, 20.0F, "TX1"}));
     transmitters.push_back(std::make_shared<Device>(DeviceConfig{
-        Transform(Point(0.0f, 0.0f, 0.0f),
-                  Vector(0.7071067f, -0.7071067f, 0.0f)),
-        20.0f, 20.0f, "TX2"}));
+        Transform(Point(0.0F, 0.0F, 0.0F),
+                  Vector(0.7071067F, -0.7071067F, 0.0F)),
+        20.0F, 20.0F, "TX2"}));
 
     SharedVec<Device> receivers;
     receivers.push_back(std::make_shared<Device>(DeviceConfig{
-        Transform(Point(1000.0f, 0.0f, 0.0f),
-                  Vector(0.0f, 1.0f, 0.0f)),
-        20.0f, 20.0f, "RX1"}));
+        Transform(Point(1000.0F, 0.0F, 0.0F),
+                  Vector(0.0F, 1.0F, 0.0F)),
+        20.0F, 20.0F, "RX1"}));
     receivers.push_back(std::make_shared<Device>(DeviceConfig{
-        Transform(Point(-1000.0f, 0.0f, 0.0f),
-                  Vector(0.0f, 1.0f, 0.0f)),
-        20.0f, 20.0f, "RX2"}));
-    CarDimension dim(1.0f, 1.0f, 1.0f);
+        Transform(Point(-1000.0F, 0.0F, 0.0F),
+                  Vector(0.0F, 1.0F, 0.0F)),
+        20.0F, 20.0F, "RX2"}));
+    CarDimension dim(1.0F, 1.0F, 1.0F);
     CarConfig config(node, transmitters, receivers, dim);
     std::shared_ptr<Car> car = std::make_shared<Car>(config);
     CarJsonAdapter adapter;

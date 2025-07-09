@@ -11,7 +11,7 @@ namespace viewer
     class DeviceEntity
     {
     public:
-        explicit DeviceEntity(std::shared_ptr<Device> device, glm::vec3 color = {1.0f, 1.0f, 1.0f}, bool visible = true);
+        explicit DeviceEntity(std::shared_ptr<Device> device, glm::vec3 color = {1.0F, 1.0F, 1.0F}, bool visible = true);
 
         std::shared_ptr<Device> getDevice() const;
         std::shared_ptr<DeviceRenderable> getRenderable() const;

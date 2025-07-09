@@ -13,7 +13,7 @@ namespace viewer
         : device_(std::move(device))
     {
         // Default color: blue for TX, red for RX (can be overridden)
-        color_ = glm::vec3(1.0f, 0.2f, 0.2f);
+        color_ = glm::vec3(1.0F, 0.2f, 0.2f);
         setAlpha(alpha);
     }
 
@@ -64,10 +64,10 @@ namespace viewer
         float fovV = device_->getVerticalFovRad();
         float range = device_->getRange();
 
-        float halfW = range * tanf(fovH / 2.0f);
-        float halfH = range * tanf(fovV / 2.0f);
+        float halfW = range * tanf(fovH / 2.0F);
+        float halfH = range * tanf(fovV / 2.0F);
 
-        glm::vec3 apex(0.0f, 0.0f, 0.0f);
+        glm::vec3 apex(0.0F, 0.0F, 0.0F);
         glm::vec3 v1(-halfW, halfH, range);
         glm::vec3 v2(halfW, halfH, range);
         glm::vec3 v3(halfW, -halfH, range);
@@ -102,17 +102,17 @@ namespace viewer
         glUseProgram(shader_);
 
         // --- Wireframe pass (black) ---
-        glm::vec3 wireColor(0.0f, 0.0f, 0.0f); // black
+        glm::vec3 wireColor(0.0F, 0.0F, 0.0F); // black
         glUniform3fv(uniforms_.color, 1, glm::value_ptr(wireColor));
         glUniform1f(uniforms_.alpha, 0.85f);
 
         glEnable(GL_POLYGON_OFFSET_LINE);
-        glPolygonOffset(-1.0f, -1.0f);
+        glPolygonOffset(-1.0F, -1.0F);
 
         glLineWidth(1.5f);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawArrays(GL_TRIANGLES, 0, 18); // same triangles, just outlined
-        glLineWidth(1.0f);
+        glLineWidth(1.0F);
 
         glDisable(GL_POLYGON_OFFSET_LINE);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

@@ -8,10 +8,10 @@ namespace viewer
         std::cout << "car entity ctur" << std::endl;
         std::cout << "color: " << color_.r << " " << color_.g << " " << color_.b << std::endl;
         for (const auto &tx : car_->getTransmitters())
-            txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0f, 0.0f, 0.0f))); // red for TX
+            txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0F, 0.0F, 0.0F))); // red for TX
 
         for (const auto &rx : car_->getReceivers())
-            rxEntities_.emplace_back(std::make_shared<DeviceEntity>(rx, glm::vec3(0.0f, 1.0f, 0.0f))); // green for RX
+            rxEntities_.emplace_back(std::make_shared<DeviceEntity>(rx, glm::vec3(0.0F, 1.0F, 0.0F))); // green for RX
     }
 
     void CarEntity::initGL()

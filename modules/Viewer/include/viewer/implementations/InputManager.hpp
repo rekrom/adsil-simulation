@@ -37,11 +37,11 @@ namespace viewer::input
         std::unordered_map<int, bool> currentMouseButtons_;
         std::unordered_map<int, bool> previousMouseButtons_;
 
-        glm::vec2 lastMousePos_{0.0f};
-        glm::vec2 currentMousePos_{0.0f};
-        glm::vec2 mouseDelta_{0.0f};
+        glm::vec2 lastMousePos_{0.0F};
+        glm::vec2 currentMousePos_{0.0F};
+        glm::vec2 mouseDelta_{0.0F};
 
-        glm::vec2 scrollOffset_{0.0f};
+        glm::vec2 scrollOffset_{0.0F};
         mutable bool scrollConsumed_ = true;
     };
 

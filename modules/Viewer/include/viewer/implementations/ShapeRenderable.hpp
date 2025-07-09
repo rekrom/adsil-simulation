@@ -12,7 +12,7 @@ namespace viewer
     {
     public:
         explicit ShapeRenderable(std::shared_ptr<ShapeBase> shape,
-                                 const glm::vec3 &color = glm::vec3(0.6f, 0.6f, 0.9f));
+                                 const glm::vec3 &color = glm::vec3(0.6F, 0.6F, 0.9F));
         ~ShapeRenderable();
 
         void initGL() override;

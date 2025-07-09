@@ -62,7 +62,7 @@ namespace viewer
         GLint projLoc = glGetUniformLocation(shader_, "projection");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-        glLineWidth(2.5f);
+        glLineWidth(2.5F);
 
         glBindVertexArray(vao_);
         glDrawArrays(GL_LINES, 0, 6);

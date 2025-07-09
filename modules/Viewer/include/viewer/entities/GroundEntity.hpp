@@ -18,7 +18,7 @@ namespace viewer
 
         std::string getName() const override { return "Ground"; }
         bool isTransparent() const override { return renderable_ && renderable_->isTransparent(); }
-        glm::vec3 getCenter() const override { return renderable_ ? renderable_->getCenter() : glm::vec3(0.0f); }
+        glm::vec3 getCenter() const override { return renderable_ ? renderable_->getCenter() : glm::vec3(0.0F); }
 
     private:
         std::shared_ptr<GroundRenderable> renderable_;

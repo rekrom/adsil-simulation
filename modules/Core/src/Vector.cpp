@@ -15,8 +15,8 @@ Vector::~Vector()
 Vector Vector::normalized() const
 {
     float mag = std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
-    if (mag == 0.0f)
-        return Vector(0.0f, 0.0f, 0.0f);
+    if (mag == 0.0F)
+        return Vector(0.0F, 0.0F, 0.0F);
     return Vector(x_ / mag, y_ / mag, z_ / mag);
 }
 

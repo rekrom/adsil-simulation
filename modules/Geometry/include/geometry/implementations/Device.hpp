@@ -9,9 +9,9 @@
 #include <string>
 #include <memory>
 #include <geometry/configs/DeviceConfig.hpp>
-#include <spatial/implementations/HasTransformNodeBase.hpp>
+#include <spatial/implementations/HasTransform.hpp>
 
-class Device : public spatial::HasTransformNodeBase
+class Device : public spatial::HasTransform
 {
 public:
     Device(const DeviceConfig &config);

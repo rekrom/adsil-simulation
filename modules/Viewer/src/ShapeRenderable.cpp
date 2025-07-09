@@ -77,7 +77,7 @@ namespace viewer
         glUseProgram(shader_);
 
         // Set uniforms
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), getCenter()); // center as position
+        glm::mat4 model = glm::translate(glm::mat4(1.0F), getCenter()); // center as position
         glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, &model[0][0]);
         glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, &projection[0][0]);
@@ -105,7 +105,7 @@ namespace viewer
     glm::vec3 ShapeRenderable::getCenter() const
     {
         if (!shape_)
-            return glm::vec3(0.0f);
+            return glm::vec3(0.0F);
 
         auto origin = shape_->getOrigin();
         return glm::vec3(origin.x(), origin.y(), origin.z());

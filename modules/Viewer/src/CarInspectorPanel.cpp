@@ -24,7 +24,7 @@ namespace viewer::imgui
             Point pos = car->getPosition();
             float posArr[3] = {pos.x(), pos.y(), pos.z()};
 
-            if (ImGui::DragFloat3("Position", posArr, 0.1f))
+            if (ImGui::DragFloat3("Position", posArr, 0.1F))
             {
                 car->setPosition(Point(posArr[0], posArr[1], posArr[2]));
             }
@@ -32,7 +32,7 @@ namespace viewer::imgui
             ImGui::SameLine();
             if (ImGui::Button("Reset Pos"))
             {
-                car->setPosition(Point(0.0f, 0.0f, 0.0f));
+                car->setPosition(Point(0.0F, 0.0F, 0.0F));
             }
 
             // Orientation
@@ -42,7 +42,7 @@ namespace viewer::imgui
                 RotationUtils::rad2deg(rpy.y()),
                 RotationUtils::rad2deg(rpy.z())};
 
-            if (ImGui::DragFloat3("Orientation (Roll, Pitch, Yaw)", rpyDeg, 1.0f, -180.0f, 180.0f))
+            if (ImGui::DragFloat3("Orientation (Roll, Pitch, Yaw)", rpyDeg, 1.0F, -180.0F, 180.0F))
             {
                 car->setOrientation(Vector(
                     RotationUtils::deg2rad(rpyDeg[0]),
@@ -53,7 +53,7 @@ namespace viewer::imgui
             ImGui::SameLine();
             if (ImGui::Button("Reset Rot"))
             {
-                car->setOrientation(Vector(0.0f, 0.0f, 0.0f));
+                car->setOrientation(Vector(0.0F, 0.0F, 0.0F));
             }
         }
     }
@@ -68,7 +68,7 @@ namespace viewer::imgui
             CarDimension dim = car->getDimension();
             float size[3] = {dim.length, dim.width, dim.height};
 
-            if (ImGui::DragFloat3("Size (L, W, H)", size, 0.01f, 0.0f, 1000.0f))
+            if (ImGui::DragFloat3("Size (L, W, H)", size, 0.01F, 0.0F, 1000.0F))
             {
                 CarDimension newDim{size[0], size[1], size[2]};
                 car->setDimension(newDim);
@@ -147,15 +147,15 @@ namespace viewer::imgui
         float hFov = deviceEntity->getDevice()->getHorizontalFovDeg();
         float vFov = deviceEntity->getDevice()->getVerticalFovDeg();
 
-        if (ImGui::DragFloat("Horizontal FoV", &hFov, 1.0f, 1.0f, 180.0f))
+        if (ImGui::DragFloat("Horizontal FoV", &hFov, 1.0F, 1.0F, 180.0F))
             deviceEntity->getDevice()->setHorizontalFovDeg(hFov);
 
-        if (ImGui::DragFloat("Vertical FoV", &vFov, 1.0f, 1.0f, 180.0f))
+        if (ImGui::DragFloat("Vertical FoV", &vFov, 1.0F, 1.0F, 180.0F))
             deviceEntity->getDevice()->setVerticalFovDeg(vFov);
 
         Point pos = deviceEntity->getDevice()->getOrigin();
         float posArr[3] = {pos.x(), pos.y(), pos.z()};
-        if (ImGui::DragFloat3("Position", posArr, 0.1f))
+        if (ImGui::DragFloat3("Position", posArr, 0.1F))
             deviceEntity->getDevice()->setOrigin(Point(posArr[0], posArr[1], posArr[2]));
 
         Vector rpy = deviceEntity->getDevice()->getOrientation();
@@ -164,7 +164,7 @@ namespace viewer::imgui
             RotationUtils::rad2deg(rpy.y()),
             RotationUtils::rad2deg(rpy.z())};
 
-        if (ImGui::DragFloat3("Orientation (RPY)", rpyDeg, 1.0f, -180.0f, 180.0f))
+        if (ImGui::DragFloat3("Orientation (RPY)", rpyDeg, 1.0F, -180.0F, 180.0F))
         {
             deviceEntity->getDevice()->setOrientation(Vector(
                 RotationUtils::deg2rad(rpyDeg[0]),
@@ -174,7 +174,7 @@ namespace viewer::imgui
 
         float range = deviceEntity->getDevice()->getRange();
 
-        if (ImGui::DragFloat("Range", &range, 1.0f, 1.0f, 50.0f))
+        if (ImGui::DragFloat("Range", &range, 1.0F, 1.0F, 50.0F))
             deviceEntity->getDevice()->setRange(range);
 
         static bool visible = true; // placeholder state

@@ -7,7 +7,7 @@ struct CylinderDimension final
     float height_;
     float radius_;
 
-    constexpr CylinderDimension(float height = 0.0f, float radius = 0.0f)
+    constexpr CylinderDimension(float height = 0.0F, float radius = 0.0F)
         : height_(height), radius_(radius) {}
 };
 struct CylinderConfig

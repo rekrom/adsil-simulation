@@ -34,5 +34,5 @@ Vector RotationUtils::eulerFromDirection(const Vector &dir)
     float pitch = std::atan2(-normDir.y(), std::sqrt(normDir.x() * normDir.x() + normDir.z() * normDir.z()));
 
     // Roll is assumed zero
-    return Vector(0.0f, pitch, yaw); // roll, pitch, yaw
+    return Vector(0.0F, pitch, yaw); // roll, pitch, yaw
 }

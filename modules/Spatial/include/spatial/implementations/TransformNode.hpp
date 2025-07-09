@@ -13,8 +13,9 @@ namespace spatial
     class TransformNode : public std::enable_shared_from_this<TransformNode>
     {
     public:
-        TransformNode();
-        explicit TransformNode(const Transform &localTransform);
+        TransformNode() = default;
+
+        explicit TransformNode(Transform localTransform);
 
         // Setters and getters for local transform
         void setLocalTransform(const Transform &transform);
@@ -24,12 +25,13 @@ namespace spatial
         Transform getGlobalTransform() const;
 
         // Parent management
-        void setParent(std::shared_ptr<TransformNode> parent);
+        void setParent(const std::shared_ptr<TransformNode> &parent);
         std::shared_ptr<TransformNode> getParent() const;
 
         // Children management
-        void addChild(std::shared_ptr<TransformNode> child);
-        void removeChild(std::shared_ptr<TransformNode> child);
+
+        void addChild(const std::shared_ptr<TransformNode> &child);
+        void removeChild(const std::shared_ptr<TransformNode> &child);
         const SharedVec<TransformNode> &getChildren() const;
 
     private:

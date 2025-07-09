@@ -3,14 +3,9 @@
 #include <iostream>
 namespace spatial
 {
-
-    // Constructor: default local transform (identity)
-    TransformNode::TransformNode()
-        : cachedGlobalTransform_(), dirty_(true), localTransform_(Transform()) {}
-
     // Constructor: initialize with given local transform
-    TransformNode::TransformNode(const Transform &localTransform)
-        : cachedGlobalTransform_(), dirty_(true), localTransform_(localTransform)
+    TransformNode::TransformNode(Transform localTransform)
+        : localTransform_(std::move(localTransform))
     {
         // std::cout << localTransform_.get3DDirectionVector().toString() << std::endl;
     }
@@ -20,7 +15,7 @@ namespace spatial
         localTransform_ = transform;
         dirty_ = true;
         // Mark all children dirty too
-        for (auto &child : children_)
+        for (auto &child : children_) // NOLINT(readability-qualified-auto)
         {
             child->dirty_ = true;
         }
@@ -40,7 +35,7 @@ namespace spatial
         return cachedGlobalTransform_;
     }
 
-    void TransformNode::setParent(std::shared_ptr<TransformNode> parent)
+    void TransformNode::setParent(const std::shared_ptr<TransformNode> &parent)
     {
         // Remove from old parent's children if exists
         if (auto oldParent = parent_.lock())
@@ -64,7 +59,7 @@ namespace spatial
         return parent_.lock();
     }
 
-    void TransformNode::addChild(std::shared_ptr<TransformNode> child)
+    void TransformNode::addChild(const std::shared_ptr<TransformNode> &child)
     {
         if (child)
         {
@@ -72,7 +67,7 @@ namespace spatial
         }
     }
 
-    void TransformNode::removeChild(std::shared_ptr<TransformNode> child)
+    void TransformNode::removeChild(const std::shared_ptr<TransformNode> &child)
     {
         if (child && !children_.empty())
         {
@@ -104,7 +99,7 @@ namespace spatial
         dirty_ = false;
 
         // Propagate dirty flag to children
-        for (auto &child : children_)
+        for (auto &child : children_) // NOLINT(readability-qualified-auto)
         {
             child->dirty_ = true;
         }

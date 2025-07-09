@@ -9,7 +9,7 @@ struct CubeDimension final
     float width;
     float height;
 
-    constexpr CubeDimension(float dim = 0.0f)
+    constexpr CubeDimension(float dim = 0.0F)
         : length(dim), width(dim), height(dim) {}
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <viewer/implementations/Renderable.hpp>
 #include <glad/glad.h>
-#include <spatial/implementations/HasTransformNodeBase.hpp>
+#include <spatial/implementations/HasTransform.hpp>
 
 namespace viewer
 {
@@ -18,7 +18,7 @@ namespace viewer
         glm::vec3 getCenter() const override;
 
     private:
-        std::shared_ptr<spatial::HasTransformNodeBase> transformNode_;
+        std::shared_ptr<spatial::HasTransform> transformNode_;
         size_t vertexCount_{0};
 
     protected:

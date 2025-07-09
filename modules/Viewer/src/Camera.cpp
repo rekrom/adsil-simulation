@@ -4,7 +4,7 @@
 #include <string>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-    : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0f), isLocked_(false)
+    : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0F), isLocked_(false)
 {
     updateCameraVectors();
 }
@@ -16,7 +16,7 @@ glm::mat4 Camera::getViewMatrix() const
 
 glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const
 {
-    return glm::perspective(glm::radians(fov_), aspectRatio, 0.1f, 1000.0f);
+    return glm::perspective(glm::radians(fov_), aspectRatio, 0.1F, 1000.0F);
 }
 
 void Camera::processKeyboard(char direction, float deltaTime)
@@ -25,9 +25,9 @@ void Camera::processKeyboard(char direction, float deltaTime)
     {
         isLocked_ = !isLocked_;
     }
-    // if (!isLocked_)
-    //     return;
-    float velocity = 10.0f * deltaTime;
+    if (!isLocked_)
+        return;
+    float velocity = 10.0F * deltaTime;
     if (direction == 'W')
         position_ += front_ * velocity;
     if (direction == 'S')
@@ -38,36 +38,36 @@ void Camera::processKeyboard(char direction, float deltaTime)
         position_ += right_ * velocity;
     if (direction == 'Q')
     {
-        yaw_ -= 60.f * deltaTime;
+        yaw_ -= 60.F * deltaTime;
         updateCameraVectors();
     }
     if (direction == 'E')
     {
-        yaw_ += 60.f * deltaTime;
+        yaw_ += 60.F * deltaTime;
         updateCameraVectors();
     }
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset)
 {
-    float sensitivity = 0.1f;
+    float sensitivity = 0.1F;
     xOffset *= sensitivity;
     yOffset *= sensitivity;
 
     yaw_ += xOffset;
     pitch_ += yOffset;
 
-    pitch_ = std::clamp(pitch_, -89.0f, 89.0f);
+    pitch_ = std::clamp(pitch_, -89.0F, 89.0F);
     updateCameraVectors();
 }
 
 void Camera::processMouseScroll(float yoffset)
 {
     fov_ -= yoffset;
-    if (fov_ < 1.0f)
-        fov_ = 1.0f;
-    if (fov_ > 90.0f)
-        fov_ = 90.0f;
+    if (fov_ < 1.0F)
+        fov_ = 1.0F;
+    if (fov_ > 90.0F)
+        fov_ = 90.0F;
 }
 
 void Camera::updateCameraVectors()

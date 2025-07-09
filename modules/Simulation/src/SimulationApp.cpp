@@ -33,7 +33,7 @@ namespace simulation
 
         auto axisEntity = std::make_shared<viewer::AxisEntity>();
         auto groundEntity = std::make_shared<viewer::GroundEntity>();
-        auto carEntity = std::make_shared<viewer::CarEntity>(car_, glm::vec3(0.2f, 0.6f, 0.9f));
+        auto carEntity = std::make_shared<viewer::CarEntity>(car_, glm::vec3(0.2F, 0.6F, 0.9F));
 
         entities.push_back(groundEntity);
         entities.push_back(axisEntity);
@@ -80,7 +80,7 @@ namespace simulation
             float deltaTime = viewer_->getDeltaTime();
             update(deltaTime);
             render();
-            // car_->moveForward(0.01f);
+            // car_->moveForward(0.01F);
         }
         viewer_->cleanup();
     }

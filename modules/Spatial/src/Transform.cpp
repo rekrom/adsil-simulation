@@ -2,14 +2,12 @@
 #include <cmath>
 
 Transform::Transform()
-    : position_(), orientation_(0.0f, 0.0f, 0.0f)
+    : orientation_(0.0F, 0.0F, 0.0F)
 {
 }
 
-Transform::Transform(const Point &position, const Vector &orientation)
-    : position_(position), orientation_(orientation)
-{
-}
+Transform::Transform(Point position, Vector orientation)
+    : position_(std::move(position)), orientation_(std::move(orientation)) {}
 
 const Point &Transform::getPosition() const
 {
@@ -39,7 +37,7 @@ void Transform::move(const Vector &delta)
     position_ = position_ + delta;
 }
 
-const Vector Transform::get3DDirectionVector() const
+Vector Transform::get3DDirectionVector() const
 {
     float roll = orientation_.x();
     float pitch = orientation_.y();
@@ -56,22 +54,22 @@ const Vector Transform::get3DDirectionVector() const
 
     // Dönüş matrisi elemanları (Z-Y-X sırayla Euler açılarından)
     // float m00 = cYaw * cPitch;
-    float m01 = cYaw * sPitch * sRoll - sYaw * cRoll;
-    // float m02 = cYaw * sPitch * cRoll + sYaw * sRoll;
+    // float m01 = cYaw * sPitch * sRoll - sYaw * cRoll;
+    float m02 = cYaw * sPitch * cRoll + sYaw * sRoll;
 
     // float m10 = sYaw * cPitch;
-    float m11 = sYaw * sPitch * sRoll + cYaw * cRoll;
-    // float m12 = sYaw * sPitch * cRoll - cYaw * sRoll;
+    // float m11 = sYaw * sPitch * sRoll + cYaw * cRoll;
+    float m12 = sYaw * sPitch * cRoll - cYaw * sRoll;
 
     // float m20 = -sPitch;
-    float m21 = cPitch * sRoll;
-    // float m22 = cPitch * cRoll;
+    // float m21 = cPitch * sRoll;
+    float m22 = cPitch * cRoll;
 
     // İleri yön vektörü lokal (0, 1, 0)
     // Dünya koordinatlarına dönüşüm:
-    float x = m01; // 0 * m00 + 1 * m01 + 0 * m02
-    float y = m11; // 0 * m10 + 1 * m11 + 0 * m12
-    float z = m21; // 0 * m20 + 1 * m21 + 0 * m22
+    float x = m02; // 0 * m00 + 1 * m01 + 0 * m02
+    float y = m12; // 0 * m10 + 1 * m11 + 0 * m12
+    float z = m22; // 0 * m20 + 1 * m21 + 0 * m22
 
     Vector dir(x, y, z);
     return dir.normalized();
@@ -91,7 +89,7 @@ void Transform::set3DDirectionVector(const Vector &dir)
     // Pitch (around X axis): angle from horizontal plane to direction
     float pitch = std::atan2(-normDir.y(), std::sqrt(normDir.x() * normDir.x() + normDir.z() * normDir.z()));
 
-    float roll = 0.0f; // default, unless banking is needed
+    float roll = 0.0F; // default, unless banking is needed
 
     orientation_ = Vector(roll, pitch, yaw);
 }
@@ -99,7 +97,7 @@ void Transform::set3DDirectionVector(const Vector &dir)
 void Transform::rotateYaw(float angleRad)
 {
     Vector ori = orientation_;
-    ori = Vector(ori.x(), ori.y(), ori.z() + angleRad);
+    ori = ori + Vector(0.F, angleRad, 0.F); // ✅ modifying Y (yaw = Y)
     orientation_ = ori;
 }
 
@@ -109,12 +107,12 @@ Transform Transform::operator*(const Transform &other) const
     Point newPos = this->getPosition() + this->getOrientation().rotatePoint(other.getPosition());
     Vector newOri = this->getOrientation() * other.getOrientation(); // Quaternion or equivalent
 
-    return Transform(newPos, newOri);
+    return {newPos, newOri};
 }
 
 glm::mat4 Transform::getModelMatrix() const
 {
-    glm::mat4 m(1.0f);
+    glm::mat4 m(1.0F);
     m = glm::translate(m, position_.toGlmVec3());
     m *= glm::toMat4(orientation_.toGlmQuat());
     return m;
