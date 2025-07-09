@@ -9,7 +9,7 @@ int main()
     // // std::cout << closestPoints->toString() << std::endl;
 
     // // auto closestPointRenderable = std::make_shared<PointCloudRenderable>(closestPoints);
-    // // closestPointRenderable->setColor(glm::vec3(1.0f, 0.0f, 0.5f));
+    // // closestPointRenderable->setColor(glm::vec3(1.0F, 0.0F, 0.5F));
     // // closestPointRenderable->setVisible(true);
     // // viewer.addRenderable(closestPointRenderable);
 

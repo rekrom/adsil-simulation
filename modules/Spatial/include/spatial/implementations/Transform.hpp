@@ -12,24 +12,24 @@ class Transform
 {
 public:
     Transform();
-    Transform(const Point &position, const Vector &orientation);
+    Transform(Point position, Vector orientation); // <<=== Güncellendi
 
-    const Point &getPosition() const;
+    [[nodiscard]] const Point &getPosition() const;
     void setPosition(const Point &position);
 
-    const Vector &getOrientation() const;
+    [[nodiscard]] const Vector &getOrientation() const;
     void setOrientation(const Vector &orientation);
 
     void move(const Vector &delta);
 
-    const Vector get3DDirectionVector() const;
+    [[nodiscard]] Vector get3DDirectionVector() const;
     void set3DDirectionVector(const Vector &dir);
 
     void rotateYaw(float angleRad);
 
     Transform operator*(const Transform &other) const;
 
-    glm::mat4 getModelMatrix() const;
+    [[nodiscard]] glm::mat4 getModelMatrix() const;
 
 private:
     Point position_;

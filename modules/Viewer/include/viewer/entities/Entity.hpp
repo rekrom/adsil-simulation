@@ -13,7 +13,7 @@ namespace viewer
 
         // Provide default fallback behavior
         bool isTransparent() const override { return false; }
-        glm::vec3 getCenter() const override { return glm::vec3(0.0f); }
+        glm::vec3 getCenter() const override { return glm::vec3(0.0F); }
 
     protected:
         bool visible_ = true;

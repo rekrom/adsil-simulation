@@ -11,7 +11,7 @@ struct CarDimension final
     float width;
     float height;
 
-    constexpr CarDimension(float l = 0.0f, float w = 0.0f, float h = 0.0f)
+    constexpr CarDimension(float l = 0.0F, float w = 0.0F, float h = 0.0F)
         : length(l), width(w), height(h) {}
 };
 

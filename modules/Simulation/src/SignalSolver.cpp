@@ -11,8 +11,8 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
 
     // TEST PURPOSES CLEAR THIS AREA
     // allPoints->clear();
-    // allPoints->addPoint(Point(-500 / 1000.0f, 1200 / 1000.0f, 0));
-    // allPoints->addPoint(Point(0, 1200 / 1000.0f, 0));
+    // allPoints->addPoint(Point(-500 / 1000.0F, 1200 / 1000.0F, 0));
+    // allPoints->addPoint(Point(0, 1200 / 1000.0F, 0));
     //
 
     const auto &txs = scene_->getTransmitters();
@@ -25,10 +25,14 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
             // Filter points inside both FOVs
             auto inTxFov = tx->pointsInFov(*allPoints);
             if (!inTxFov || inTxFov->size() == 0)
-                continue;
+                {
+                    continue;
+                }
             auto inRxFov = rx->pointsInFov(*inTxFov);
             if (!inRxFov || inRxFov->size() == 0)
-                continue;
+                {
+                    continue;
+                }
 
             std::vector<Point> points = inRxFov->getPoints();
 

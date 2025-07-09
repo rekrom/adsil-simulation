@@ -2,7 +2,7 @@
 
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.."  # Go to project root
 
 LOG_DIR="tools/logs"
 LOG_FILE="$LOG_DIR/clang-tidy.log"
@@ -21,13 +21,14 @@ STD_INCLUDES=$(echo | g++ -E -x c++ - -v 2>&1 | \
   awk '/#include <...> search starts here:/{flag=1;next}/End of search list/{flag=0}flag' | \
   sed 's/^ /--extra-arg=-isystem/' | paste -sd ' ' -)
 
-# Step 3: Run clang-tidy on each file with logging
-CPP_FILES=$(find modules apps -name '*.cpp')
+# Step 3: Find .cpp files in modules/ and apps/ only (excluding external/)
+CPP_FILES=$(find modules apps -type f -name '*.cpp')
 
+# Step 4: Run clang-tidy on each file with logging
 for file in $CPP_FILES; do
   echo "[clang-tidy] Checking $file ..."
   echo -e "\n\n[FILE] $file" >> "$LOG_FILE"
-  clang-tidy "$file" -p build $STD_INCLUDES "$@" >> "$LOG_FILE" 2>&1
+  clang-tidy "$file" -p build --header-filter='^(modules|apps)/' $STD_INCLUDES "$@" >> "$LOG_FILE" 2>&1
 done
 
 echo "[clang-tidy] Static analysis completed at $(date)"

@@ -14,7 +14,7 @@ void test_JsonAdapterRegistry_with_Point()
     registry.registerAdapter<Point>(std::make_shared<PointJsonAdapter>());
 
     // Orijinal Point objesi
-    Point p1(10.0f, 20.0f, 30.0f);
+    Point p1(10.0F, 20.0F, 30.0F);
 
     // Adapter aracılığıyla JSON'a çevir
     auto *adapter = registry.getAdapter<Point>();

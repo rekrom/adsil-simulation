@@ -13,7 +13,7 @@ namespace viewer
     class ShapeEntity : public Entity
     {
     public:
-        ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color = glm::vec3(0.6f, 0.6f, 0.9f));
+        ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color = glm::vec3(0.6F, 0.6F, 0.9F));
 
         void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;

@@ -10,7 +10,7 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     auto cloud = std::make_shared<PointCloud>();
     int circRes = std::max(8, quality);
     int heightRes = std::max(2, quality / 2);
-    float halfHeight = cylinderDimension.height_ / 2.0f;
+    float halfHeight = cylinderDimension.height_ / 2.0F;
 
     // Top and bottom
     for (float z : {-halfHeight, halfHeight})
@@ -18,7 +18,7 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
         for (int i = 0; i < circRes; ++i)
         {
             constexpr float PI = static_cast<float>(M_PI);
-            float angle = 2.0f * PI * static_cast<float>(i) / static_cast<float>(circRes);
+            float angle = 2.0F * PI * static_cast<float>(i) / static_cast<float>(circRes);
 
             Vector local(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), z);
             Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
@@ -33,7 +33,7 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     for (int i = 0; i < circRes; ++i)
     {
         constexpr float PI = static_cast<float>(M_PI);
-        float angle = 2.0f * PI * static_cast<float>(i) / static_cast<float>(circRes);
+        float angle = 2.0F * PI * static_cast<float>(i) / static_cast<float>(circRes);
 
         Vector base(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), -halfHeight);
         Vector top(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), +halfHeight);
@@ -59,8 +59,8 @@ std::vector<Point> Cylinder::wireframe() const
 
     int segments = 16;
     constexpr float PI = static_cast<float>(M_PI);
-    float angleStep = 2.0f * PI / static_cast<float>(segments);
-    float halfHeight = cylinderDimension.height_ / 2.0f;
+    float angleStep = 2.0F * PI / static_cast<float>(segments);
+    float halfHeight = cylinderDimension.height_ / 2.0F;
 
     for (int i = 0; i < segments; ++i)
     {

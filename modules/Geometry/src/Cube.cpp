@@ -8,7 +8,7 @@ Cube::Cube(const Transform &transform, float dimension, std::string name)
 std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
 {
     auto cloud = std::make_shared<PointCloud>();
-    float half = dimension_ / 2.0f;
+    float half = dimension_ / 2.0F;
     int n = std::max(2, static_cast<int>(std::sqrt(quality)));
 
     std::vector<std::tuple<Vector, Vector, Vector>> faceConfigs = {
@@ -35,7 +35,7 @@ std::vector<Point> Cube::wireframe() const
 {
     std::vector<Point> edges;
     glm::vec3 center = transform_.getPosition().toGlmVec3();
-    float half = dimension_ / 2.0f;
+    float half = dimension_ / 2.0F;
 
     // Cube köşe noktaları
     glm::vec3 corners[8] = {

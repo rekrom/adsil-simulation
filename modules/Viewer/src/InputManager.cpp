@@ -71,7 +71,7 @@ namespace viewer::input
     {
 
         if (scrollConsumed_)
-            return glm::vec2(0.0f);
+            return glm::vec2(0.0F);
         scrollConsumed_ = true;
         return scrollOffset_;
     }

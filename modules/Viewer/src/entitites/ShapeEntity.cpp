@@ -43,7 +43,7 @@ namespace viewer
         {
             return renderable_->getCenter();
         }
-        return glm::vec3(0.0f);
+        return glm::vec3(0.0F);
     }
 
     bool ShapeEntity::isTransparent() const

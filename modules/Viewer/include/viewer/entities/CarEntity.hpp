@@ -14,7 +14,7 @@ namespace viewer
     class CarEntity : public Entity
     {
     public:
-        explicit CarEntity(std::shared_ptr<Car> car, glm::vec3 color = {0.2f, 0.6f, 1.0f});
+        explicit CarEntity(std::shared_ptr<Car> car, glm::vec3 color = {0.2F, 0.6F, 1.0F});
 
         void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;

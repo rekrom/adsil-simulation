@@ -4,7 +4,7 @@ namespace viewer
 {
 
     Renderable::Renderable()
-        : alpha_(1.0f) {}
+        : alpha_(1.0F) {}
 
     Renderable::~Renderable() = default;
 
@@ -20,7 +20,7 @@ namespace viewer
 
     bool Renderable::isTransparent() const
     {
-        return alpha_ < 1.0f;
+        return alpha_ < 1.0F;
     }
 
     void Renderable::createBuffers() {}

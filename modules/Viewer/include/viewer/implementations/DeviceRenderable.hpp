@@ -27,7 +27,7 @@ namespace viewer
         std::shared_ptr<Device> device_;
 
         GLuint arrowVAO_{0}, arrowVBO_{0};
-        glm::vec3 color_ = glm::vec3(1.0f); // varsayılan beyaz renk
+        glm::vec3 color_ = glm::vec3(1.0F); // varsayılan beyaz renk
 
         bool showFoV_ = true;
         std::unique_ptr<FoVPyramidRenderable> fovRenderable_;

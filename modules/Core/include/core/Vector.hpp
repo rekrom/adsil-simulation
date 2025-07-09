@@ -14,38 +14,44 @@ public:
     Vector(float x, float y, float z);
     ~Vector();
 
-    float x() const { return x_; }
-    float y() const { return y_; }
-    float z() const { return z_; }
+    // Rule of Five compliance
+    Vector(const Vector &) = default;
+    Vector &operator=(const Vector &) = default;
+    Vector(Vector &&) = default;
+    Vector &operator=(Vector &&) = default;
 
-    Vector normalized() const;
-    float dot(const Vector &other) const;
-    Vector cross(const Vector &other) const;
-    Point rotatePoint(const Point &point) const;
+    [[nodiscard]] float x() const { return x_; }
+    [[nodiscard]] float y() const { return y_; }
+    [[nodiscard]] float z() const { return z_; }
+
+    [[nodiscard]] Vector normalized() const;
+    [[nodiscard]] float dot(const Vector &other) const;
+    [[nodiscard]] Vector cross(const Vector &other) const;
+    [[nodiscard]] Point rotatePoint(const Point &point) const;
 
     Vector operator+(const Vector &other) const;
     Vector operator-(const Vector &other) const;
     Vector operator*(const Vector &other) const;
     Vector operator*(float scalar) const;
 
-    glm::vec3 toGlmVec3() const
+    [[nodiscard]] glm::vec3 toGlmVec3() const
     {
-        return glm::vec3(x(), y(), z());
+        return {x(), y(), z()};
     }
-    glm::quat toGlmQuat() const
+    [[nodiscard]] glm::quat toGlmQuat() const
     {
         // Assuming angles are in radians
-        glm::quat q = glm::quat(glm::vec3(x(), y(), z())); // glm uses pitch, yaw, roll order internally
-        return q;
+        // NOLINTNEXTLINE(modernize-return-braced-init-list): Explicit constructor call is intended
+        return glm::quat(glm::vec3{x(), y(), z()});
 
         // Alternatively, explicit Euler to quat conversion:
         /*
-        float cy = cos(z() * 0.5f);
-        float sy = sin(z() * 0.5f);
-        float cp = cos(y() * 0.5f);
-        float sp = sin(y() * 0.5f);
-        float cr = cos(x() * 0.5f);
-        float sr = sin(x() * 0.5f);
+        float cy = cos(z() * 0.5F);
+        float sy = sin(z() * 0.5F);
+        float cp = cos(y() * 0.5F);
+        float sp = sin(y() * 0.5F);
+        float cr = cos(x() * 0.5F);
+        float sr = sin(x() * 0.5F);
 
         glm::quat q;
         q.w = cr * cp * cy + sr * sp * sy;
@@ -56,13 +62,17 @@ public:
         */
     }
 
-    static Vector fromGlmQuat(const glm::quat &q)
+    [[nodiscard]] static Vector fromGlmQuat(const glm::quat &q)
     {
         glm::vec3 euler = glm::eulerAngles(q);
-        return Vector(euler.x, euler.y, euler.z);
+        // Access components via indices instead of .x/.y/.z to avoid Clang-Tidy union access warnings.
+        const float x = euler[0];
+        const float y = euler[1];
+        const float z = euler[2];
+        return Vector{x, y, z};
     }
 
-    std::string toString() const;
+    [[nodiscard]] std::string toString() const;
 
 private:
     float x_, y_, z_;

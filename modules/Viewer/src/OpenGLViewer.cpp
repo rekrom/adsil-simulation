@@ -8,14 +8,14 @@ namespace viewer
 {
     OpenGLViewer::OpenGLViewer(int width, int height, const std::string &title)
         : window_(nullptr), width_(width), height_(height), title_(title), camera_(
-                                                                               glm::vec3(0.0f, 20.0f, 5.0f), // position
-                                                                               glm::vec3(0.0f, 1.0f, 0.0f),  // up direction
-                                                                               90.0f,                        // yaw (looking toward -Z)
-                                                                               -89.0f                        // pitch
+                                                                               glm::vec3(0.0F, 20.0F, 5.0F), // position
+                                                                               glm::vec3(0.0F, 1.0F, 0.0F),  // up direction
+                                                                               90.0F,                        // yaw (looking toward -Z)
+                                                                               -89.0F                        // pitch
                                                                                ),
-          lastX_(static_cast<float>(width) / 2.0f), lastY_(static_cast<float>(height) / 2.0f),
+          lastX_(static_cast<float>(width) / 2.0F), lastY_(static_cast<float>(height) / 2.0F),
           firstMouse_(true), rightMousePressed_(false),
-          deltaTime_(0.0f), lastFrame_(0.0f),
+          deltaTime_(0.0F), lastFrame_(0.0F),
           renderingMode_(viewer::RenderingMode::Perspective),
           imguiLayer_(),    // ✅ açıkça ekle
           displayedFPS_(0), // ✅ tekrar ekle (netlik için)
@@ -117,7 +117,7 @@ namespace viewer
         }
 
         glm::vec2 scroll = inputManager_->getScrollDelta();
-        if (scroll.y != 0.0f)
+        if (scroll.y != 0.0F)
             camera_.processMouseScroll(scroll.y);
     }
 
@@ -196,14 +196,14 @@ namespace viewer
         float aspect = static_cast<float>(width_) / static_cast<float>(height_);
         if (renderingMode_ == RenderingMode::Perspective)
         {
-            return glm::perspective(glm::radians(camera_.getFov()), aspect, 0.1f, 1000.0f);
+            return glm::perspective(glm::radians(camera_.getFov()), aspect, 0.1F, 1000.0F);
         }
         else
         {
             float orthoScale = camera_.getFov(); // You may rename this
             return glm::ortho(-orthoScale * aspect, orthoScale * aspect,
                               -orthoScale, orthoScale,
-                              0.1f, 1000.0f);
+                              0.1F, 1000.0F);
         }
     }
 
@@ -246,7 +246,7 @@ namespace viewer
         // GUI interaction logic
         imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
         imguiLayer_.drawUI(entities_);
-        glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        glClearColor(0.1F, 0.1F, 0.15F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ///////// render start here

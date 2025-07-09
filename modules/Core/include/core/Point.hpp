@@ -2,7 +2,6 @@
 #include <core/Vector.hpp>
 #include <string>
 #include <cmath>
-#include <core/Vector.hpp>
 #include <glm/glm.hpp>
 
 class Vector;
@@ -13,16 +12,22 @@ public:
     Point(float x, float y, float z);
     ~Point();
 
-    float x() const { return x_; }
-    float y() const { return y_; }
-    float z() const { return z_; }
+    // Rule of Five compliance
+    Point(const Point &) = default;
+    Point &operator=(const Point &) = default;
+    Point(Point &&) = default;
+    Point &operator=(Point &&) = default;
 
-    float distanceTo(const Point &other) const;
-    Vector toVectorFrom(const Point &origin) const;
+    [[nodiscard]] float x() const { return x_; }
+    [[nodiscard]] float y() const { return y_; }
+    [[nodiscard]] float z() const { return z_; }
 
-    glm::vec3 toGlmVec3() const
+    [[nodiscard]] float distanceTo(const Point &other) const;
+    [[nodiscard]] Vector toVectorFrom(const Point &origin) const;
+
+    [[nodiscard]] glm::vec3 toGlmVec3() const
     {
-        return glm::vec3(x(), y(), z());
+        return {x(), y(), z()};
     }
 
     Point operator+(const Vector &other) const;
@@ -31,7 +36,7 @@ public:
     Point operator+(const Point &other) const;
     Point operator-(const Point &other) const;
 
-    std::string toString() const;
+    [[nodiscard]] std::string toString() const;
 
 private:
     float x_, y_, z_;

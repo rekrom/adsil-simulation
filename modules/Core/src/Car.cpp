@@ -62,41 +62,41 @@ void Car::moveTo(const Point &newPosition)
     trajectory_.push_back(newPosition);
 }
 
-void Car::moveForward(float step)
-{
-    Vector orientation = getOrientation();
+// void Car::moveForward(float step)
+// {
+//     Vector orientation = getOrientation();
 
-    // TODO: check with mustafa
-    float pitch = orientation.x();
-    float yaw = orientation.y();
-    // float roll = orientation.z(); // not needed for forward
+//     // TODO: check with mustafa
+//     float pitch = orientation.x();
+//     float yaw = orientation.y();
+//     // float roll = orientation.z(); // not needed for forward
 
-    float x = std::cos(pitch) * std::sin(yaw);
-    float y = std::sin(pitch);
-    float z = std::cos(pitch) * std::cos(yaw);
+//     float x = std::cos(pitch) * std::sin(yaw);
+//     float y = std::sin(pitch);
+//     float z = std::cos(pitch) * std::cos(yaw);
 
-    Vector forward(x, y, z);
-    forward = forward.normalized();
+//     Vector forward(x, y, z);
+//     forward = forward.normalized();
 
-    // Scale by step size
-    Vector displacement = forward * step;
+//     // Scale by step size
+//     Vector displacement = forward * step;
 
-    // Get current position and move
-    Point currentPos = getPosition();
-    moveTo(currentPos + displacement);
-}
+//     // Get current position and move
+//     Point currentPos = getPosition();
+//     moveTo(currentPos + displacement);
+// }
 
-void Car::rotateYaw(float angleDeg)
-{
-    float angleRad = angleDeg * static_cast<float>(M_PI) / 180.0f;
+// void Car::rotateYaw(float angleDeg)
+// {
+//     float angleRad = angleDeg * static_cast<float>(M_PI) / 180.0F;
 
-    auto localTransform = transformNode_->getLocalTransform();
-    Vector ori = localTransform.getOrientation();
-    ori = ori + Vector(0.f, angleRad, 0.f); // Modify yaw (Y axis)
-    localTransform.setOrientation(ori);
+//     auto localTransform = transformNode_->getLocalTransform();
+//     Vector ori = localTransform.getOrientation();
+//     ori = ori + Vector(0.F, angleRad, 0.F); // Modify yaw (Y axis)
+//     localTransform.setOrientation(ori);
 
-    transformNode_->setLocalTransform(localTransform);
-}
+//     transformNode_->setLocalTransform(localTransform);
+// }
 
 Point Car::getPosition() const
 {

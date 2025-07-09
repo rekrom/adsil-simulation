@@ -9,7 +9,7 @@ namespace viewer
     CarRenderable::CarRenderable(std::shared_ptr<Car> car, glm::vec3 carColor)
         : car_(std::move(car)), carColor_(carColor)
     {
-        setAlpha(1.0f);
+        setAlpha(1.0F);
         std::cout << "car renderable ctur" << std::endl;
         std::cout << "color: " << carColor_.r << " " << carColor_.g << " " << carColor_.b << std::endl;
     }
@@ -71,12 +71,12 @@ namespace viewer
 
         for (const auto &device : car_->getTransmitters())
         {
-            txRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(0.0f, 0.0f, 1.0f)));
+            txRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(0.0F, 0.0F, 1.0F)));
             txRenderables_.back()->initGL();
         }
         for (const auto &device : car_->getReceivers())
         {
-            rxRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(1.0f, 0.0f, 0.0f)));
+            rxRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(1.0F, 0.0F, 0.0F)));
             rxRenderables_.back()->initGL();
         }
         // std::cout << "[CarRenderable] initGL done!" << std::endl;
@@ -119,7 +119,7 @@ namespace viewer
 
         std::vector<float> vertexData; // Interleaved: {x, y, z, r, g, b}
 
-        float scale = 0.01f; // or 0.001f depending on how large the model is
+        float scale = 0.01F; // or 0.001F depending on how large the model is
 
         for (const auto &shape : shapes)
         {
@@ -132,7 +132,7 @@ namespace viewer
                 int mat_id = (face < mesh.material_ids.size()) ? mesh.material_ids[face] : -1;
 
                 // 🎨 Default to gray
-                float r = 0.6f, g = 0.6f, b = 0.6f;
+                float r = 0.6F, g = 0.6F, b = 0.6F;
                 if (mat_id >= 0 && static_cast<size_t>(mat_id) < materials.size())
                 {
                     const auto &mat = materials[mat_id];
@@ -300,7 +300,7 @@ namespace viewer
         glUniform1f(uniforms_.alpha, alpha_);
 
         bool useUniform = false;                                // Set true for override
-        glm::vec3 highlightColor = glm::vec3(1.0f, 1.0f, 0.0f); // yellow
+        glm::vec3 highlightColor = glm::vec3(1.0F, 1.0F, 0.0F); // yellow
         glUniform1i(uniforms_.useUniformColor, static_cast<GLint>(useUniform));
         glUniform3fv(uniforms_.uniformColor, 1, glm::value_ptr(highlightColor));
 

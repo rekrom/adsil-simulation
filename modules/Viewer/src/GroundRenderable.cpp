@@ -35,18 +35,18 @@ namespace viewer
         {
             // Lines parallel to Z axis
             vertices.push_back((float)i);
-            vertices.push_back(0.0f);
+            vertices.push_back(0.0F);
             vertices.push_back((float)-N);
             vertices.push_back((float)i);
-            vertices.push_back(0.0f);
+            vertices.push_back(0.0F);
             vertices.push_back((float)N);
 
             // Lines parallel to X axis
             vertices.push_back((float)-N);
-            vertices.push_back(0.0f);
+            vertices.push_back(0.0F);
             vertices.push_back((float)i);
             vertices.push_back((float)N);
-            vertices.push_back(0.0f);
+            vertices.push_back(0.0F);
             vertices.push_back((float)i);
         }
 

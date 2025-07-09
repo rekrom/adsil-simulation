@@ -3,11 +3,11 @@
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
 #include <spatial/implementations/Transform.hpp>
-#include <spatial/implementations/HasTransformNodeBase.hpp>
+#include <spatial/implementations/HasTransform.hpp>
 #include <geometry/interfaces/IShape.hpp>
 #include <iostream>
 
-class ShapeBase : public IShape, public spatial::HasTransformNodeBase
+class ShapeBase : public IShape, public spatial::HasTransform
 {
 public:
     ShapeBase(const Transform &transform, std::string name)

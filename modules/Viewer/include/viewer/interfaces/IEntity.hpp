@@ -19,7 +19,7 @@ namespace viewer
 
         virtual void update(float) {} // default no-op
 
-        virtual glm::vec3 getColor() const { return glm::vec3(1.0f); } // default white
+        virtual glm::vec3 getColor() const { return glm::vec3(1.0F); } // default white
 
         virtual bool isTransparent() const = 0;
 

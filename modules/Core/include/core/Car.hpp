@@ -5,14 +5,14 @@
 #include <core/Vector.hpp>
 #include <spatial/implementations/TransformNode.hpp>
 #include <core/configs/CarConfig.hpp>
-#include <spatial/implementations/HasTransformNodeBase.hpp>
+#include <spatial/implementations/implementations.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <vector>
 #include <memory>
 #include <string>
 #include <spatial/implementations/Transform.hpp>
 
-class Car : public spatial::HasTransformNodeBase
+class Car : public spatial::HasMovable
 {
 public:
     Car();
@@ -20,8 +20,8 @@ public:
     Car(const CarConfig &config);
 
     void moveTo(const Point &newPosition);
-    void moveForward(float step = 100.0f);
-    void rotateYaw(float angleDeg);
+    // void moveForward(float step = 100.0F);
+    // void rotateYaw(float angleDeg);
 
     const SharedVec<Device> &getTransmitters() const;
     const SharedVec<Device> &getReceivers() const;
@@ -41,7 +41,7 @@ public:
     const std::string &getName() const { return name_; }
 
 public:
-    static constexpr CarDimension DefaultCarDimension{2.53f, 1.39f, 1.52f};
+    static constexpr CarDimension DefaultCarDimension{2.53F, 1.39F, 1.52F};
 
 private:
     SharedVec<Device> transmitters_;

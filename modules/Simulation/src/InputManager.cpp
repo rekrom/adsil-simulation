@@ -9,27 +9,26 @@ namespace simulation
                                     Camera &camera)
     {
         GLFWwindow *window = glfwGetCurrentContext();
-        // if (camera.getIsLocked())
-        // {
-        //     std::cout << "camera is locked" << std::endl;
-        //     return;
-        // }
+        if (camera.getIsLocked())
+        {
+            return;
+        }
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
-            car.moveForward(deltaTime * 10.0f);
+            car.moveForward(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
-            car.moveForward(-deltaTime * 10.0f);
+            car.moveForward(-deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         {
-            car.rotateYaw(deltaTime * 10.0f);
+            car.rotateYaw(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         {
-            car.rotateYaw(-deltaTime * 10.0f);
+            car.rotateYaw(-deltaTime);
         }
 
         // Add camera movement if needed

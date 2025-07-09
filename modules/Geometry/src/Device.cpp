@@ -10,7 +10,7 @@ Device::Device(const DeviceConfig &config)
 {
     setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
 
-    range_ = 20.0f;
+    range_ = 20.0F;
 }
 
 std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
@@ -26,8 +26,8 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
         float horizontal_d_angle = std::atan2(transformNode_->getLocalTransform().get3DDirectionVector().y(), transformNode_->getLocalTransform().get3DDirectionVector().x());
         float vertical_d_angle = std::atan2(transformNode_->getLocalTransform().get3DDirectionVector().y(), transformNode_->getLocalTransform().get3DDirectionVector().z());
         float epsilon = static_cast<float>(1e-7);
-        if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0f)) < epsilon &&
-            (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0f)) < epsilon)
+        if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
+            (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
         {
             visible->addPoint(point);
         }

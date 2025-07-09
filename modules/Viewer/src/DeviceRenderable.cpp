@@ -27,7 +27,7 @@ namespace viewer
 
         if (showFoV_)
         {
-            fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, 0.25f);
+            fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, 0.25F);
             fovRenderable_->initGL();
         }
         // std::cout << "[DeviceRenderable] initGL done!" << std::endl;
@@ -41,51 +41,51 @@ namespace viewer
 
         float cubeVertices[] = {
             // positions          // colors
-            -0.5f,
-            -0.5f,
-            -0.5f,
+            -0.5F,
+            -0.5F,
+            -0.5F,
             r,
             g,
             b,
-            0.5f,
-            -0.5f,
-            -0.5f,
+            0.5F,
+            -0.5F,
+            -0.5F,
             r,
             g,
             b,
-            0.5f,
-            0.5f,
-            -0.5f,
+            0.5F,
+            0.5F,
+            -0.5F,
             r,
             g,
             b,
-            -0.5f,
-            0.5f,
-            -0.5f,
+            -0.5F,
+            0.5F,
+            -0.5F,
             r,
             g,
             b,
-            -0.5f,
-            -0.5f,
-            0.5f,
+            -0.5F,
+            -0.5F,
+            0.5F,
             r,
             g,
             b,
-            0.5f,
-            -0.5f,
-            0.5f,
+            0.5F,
+            -0.5F,
+            0.5F,
             r,
             g,
             b,
-            0.5f,
-            0.5f,
-            0.5f,
+            0.5F,
+            0.5F,
+            0.5F,
             r,
             g,
             b,
-            -0.5f,
-            0.5f,
-            0.5f,
+            -0.5F,
+            0.5F,
+            0.5F,
             r,
             g,
             b,
@@ -124,8 +124,8 @@ namespace viewer
 
         // Arrow buffers (unchanged)
         float arrowVerts[] = {
-            0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-            0.f, 0.f, 0.3f, 1.f, 0.f, 0.f};
+            0.F, 0.F, 0.F, 1.F, 0.F, 0.F,
+            0.F, 0.F, 0.3F, 1.F, 0.F, 0.F};
 
         glGenVertexArrays(1, &arrowVAO_);
         glGenBuffers(1, &arrowVBO_);
