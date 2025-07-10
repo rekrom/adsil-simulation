@@ -2,7 +2,7 @@
 #include <core/RotationUtils.hpp>
 #include <iostream>
 
-Cube::Cube(const Transform &transform, float dimension, std::string name)
+Cube::Cube(const spatial::Transform &transform, float dimension, std::string name)
     : ShapeBase(transform, name), dimension_(dimension), cubeDimension_(dimension) {}
 
 std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const

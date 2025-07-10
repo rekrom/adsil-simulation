@@ -10,11 +10,11 @@
 class ShapeBase : public IShape, public spatial::HasTransform
 {
 public:
-    ShapeBase(const Transform &transform, std::string name)
+    ShapeBase(const spatial::Transform &transform, std::string name)
         : transform_(transform), name_(name) {}
 
-    const Transform &getTransform() const { return transform_; }
-    void setTransform(const Transform &transform) { transform_ = transform; }
+    const spatial::Transform &getTransform() const { return transform_; }
+    void setTransform(const spatial::Transform &transform) { transform_ = transform; }
 
     const Point &getOrigin() const { return transform_.getPosition(); }
     const Vector &getOrientation() const { return transform_.getOrientation(); }
@@ -29,6 +29,6 @@ public:
     void setName(const std::string &name) { name_ = name; }
 
 protected:
-    Transform transform_;
+    spatial::Transform transform_;
     std::string name_;
 };

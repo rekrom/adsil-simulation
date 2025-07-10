@@ -7,8 +7,9 @@ namespace viewer
 {
 
     ShapeRenderable::ShapeRenderable(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color)
-        : shape_(std::move(shape)), color_(color)
+        : shape_(std::move(shape))
     {
+        setColor(color);
     }
 
     ShapeRenderable::~ShapeRenderable()
@@ -84,7 +85,7 @@ namespace viewer
 
         glUniform1f(uniforms_.alpha, alpha_);
         glUniform1i(uniforms_.useUniformColor, true);
-        glUniform3fv(uniforms_.uniformColor, 1, &color_[0]);
+        glUniform3fv(uniforms_.uniformColor, 1, &getColor()[0]);
 
         glBindVertexArray(vao_);
         glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertexCount_));

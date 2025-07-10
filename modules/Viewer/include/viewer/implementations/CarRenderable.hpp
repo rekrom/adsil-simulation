@@ -34,7 +34,6 @@ namespace viewer
     private:
         std::shared_ptr<Car> car_;
 
-        glm::vec3 carColor_; // example blue-ish color
         bool visible_{true};
 
         std::vector<std::unique_ptr<DeviceRenderable>> txRenderables_;

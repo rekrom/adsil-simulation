@@ -11,7 +11,8 @@ namespace viewer
     {
     public:
         FoVPyramidRenderable(std::shared_ptr<Device> device,
-                             float alpha);
+                             glm::vec3 color = glm::vec3{0.8F, 0.1F, 0.1F},
+                             float alpha = 0.25F);
 
         ~FoVPyramidRenderable();
 
@@ -23,7 +24,6 @@ namespace viewer
         void updateVertices();
 
         std::shared_ptr<Device> device_;
-        glm::vec3 color_; // determined from device type
 
     protected:
         void createShader() override;

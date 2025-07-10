@@ -29,7 +29,7 @@ namespace adapter
         float horizontalFov = j.at("horizontal_fov_deg").get<float>();
         std::string name = j.value("name", ""); // Opsiyonel, yoksa boş string
 
-        Transform t(origin, v_rad);
+        spatial::Transform t(origin, v_rad);
         DeviceConfig config{
             t,
             verticalFov,

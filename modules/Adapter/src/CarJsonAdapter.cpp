@@ -45,8 +45,14 @@ namespace adapter
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
         Vector v_rad(RotationUtils::deg2rad(v.x()), RotationUtils::deg2rad(v.y()), RotationUtils::deg2rad(v.z()));
 
+        CarDimension dim(0, 0, 0);
+        auto dims = j.at("dimension");
+        dim.length = dims.at("length");
+        dim.width = dims.at("width");
+        dim.height = dims.at("height");
+
         // std::cout << "[CAR] " << v.toString() << std::endl;
-        auto node = std::make_shared<spatial::TransformNode>(Transform(p, v_rad));
+        auto node = std::make_shared<spatial::TransformNode>(spatial::Transform(p, v_rad));
 
         SharedVec<Device> tx;
         for (const auto &txJson : j.at("transmitters"))
@@ -61,11 +67,6 @@ namespace adapter
             Device d = deviceAdapter_.fromJson(rxJson);
             rx.push_back(std::make_shared<Device>(std::move(d)));
         }
-        CarDimension dim(0, 0, 0);
-        auto dims = j.at("dimension");
-        dim.length = dims.at("length");
-        dim.width = dims.at("width");
-        dim.height = dims.at("height");
 
         CarConfig config(node, tx, rx, dim);
 

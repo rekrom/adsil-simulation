@@ -9,11 +9,13 @@ namespace viewer
 {
 
     FoVPyramidRenderable::FoVPyramidRenderable(std::shared_ptr<Device> device,
+                                               glm::vec3 color,
                                                float alpha)
         : device_(std::move(device))
     {
         // Default color: blue for TX, red for RX (can be overridden)
-        color_ = glm::vec3(1.0F, 0.2f, 0.2f);
+
+        setColor(color);
         setAlpha(alpha);
     }
 

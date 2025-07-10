@@ -5,7 +5,10 @@
 namespace viewer
 {
     PointCloudRenderable::PointCloudRenderable(std::shared_ptr<PointCloud> pointCloud)
-        : pointCloud_(std::move(pointCloud)), visible_(true), color_(1.0F, 1.0F, 1.0F) {}
+        : pointCloud_(std::move(pointCloud))
+    {
+        this->setColor({1.0F, 1.0F, 1.0F});
+    }
 
     PointCloudRenderable::~PointCloudRenderable()
     {
@@ -17,16 +20,6 @@ namespace viewer
         glDeleteVertexArrays(1, &vao_);
         glDeleteBuffers(1, &vbo_);
         glDeleteProgram(shader_);
-    }
-
-    void PointCloudRenderable::setColor(const glm::vec3 &color)
-    {
-        color_ = color;
-    }
-
-    void PointCloudRenderable::setVisible(bool visible)
-    {
-        visible_ = visible;
     }
 
     void PointCloudRenderable::initGL()
@@ -68,7 +61,7 @@ namespace viewer
 
     void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (!visible_ || pointCloud_->getPoints().empty())
+        if (!this->getVisible() || pointCloud_->getPoints().empty())
             return;
 
         glUseProgram(shader_);

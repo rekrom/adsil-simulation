@@ -7,11 +7,9 @@ namespace viewer
 {
 
     CarRenderable::CarRenderable(std::shared_ptr<Car> car, glm::vec3 carColor)
-        : car_(std::move(car)), carColor_(carColor)
+        : car_(std::move(car))
     {
-        setAlpha(1.0F);
-        std::cout << "car renderable ctur" << std::endl;
-        std::cout << "color: " << carColor_.r << " " << carColor_.g << " " << carColor_.b << std::endl;
+        setColor(carColor);
     }
 
     CarRenderable::~CarRenderable()
@@ -64,21 +62,6 @@ namespace viewer
         createBuffers();
         // createBuffers2();
 
-        // Create DeviceRenderable for each device in the car
-
-        txRenderables_.clear();
-        rxRenderables_.clear();
-
-        for (const auto &device : car_->getTransmitters())
-        {
-            txRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(0.0F, 0.0F, 1.0F)));
-            txRenderables_.back()->initGL();
-        }
-        for (const auto &device : car_->getReceivers())
-        {
-            rxRenderables_.push_back(std::make_unique<DeviceRenderable>(device, glm::vec3(1.0F, 0.0F, 0.0F)));
-            rxRenderables_.back()->initGL();
-        }
         // std::cout << "[CarRenderable] initGL done!" << std::endl;
     }
 
@@ -195,10 +178,10 @@ namespace viewer
         if (vao_)
             glDeleteVertexArrays(1, &vao_);
 
+        glm::vec3 carColor_ = this->getColor();
         float r = carColor_.r;
         float g = carColor_.g;
         float b = carColor_.b;
-        std::cout << "car color rgb(" << r << ", " << g << ", " << b << ")" << std::endl;
         CarDimension dimension = car_->getDimension();
         float length = dimension.length, width = dimension.width, height = dimension.height;
 

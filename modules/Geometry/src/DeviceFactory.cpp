@@ -13,7 +13,7 @@ SharedVec<Device> DeviceFactory::createDevices(
 
     for (std::size_t i = 0; i < directions.size(); ++i)
     {
-        Transform t(origins[i], directions[i]);
+        spatial::Transform t(origins[i], directions[i]);
         DeviceConfig config{
             t,
             vertical_fovs[i],

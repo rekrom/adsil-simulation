@@ -5,13 +5,18 @@ namespace viewer
     CarEntity::CarEntity(std::shared_ptr<Car> car, glm::vec3 color)
         : car_(std::move(car)), renderable_(std::make_shared<CarRenderable>(car_, color)), color_(color)
     {
-        std::cout << "car entity ctur" << std::endl;
-        std::cout << "color: " << color_.r << " " << color_.g << " " << color_.b << std::endl;
+
         for (const auto &tx : car_->getTransmitters())
-            txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0F, 0.0F, 0.0F))); // red for TX
+        {
+            std::cout << "tx entity" << std::endl;
+            txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0F, 0.0F, 0.0F)));
+        }
 
         for (const auto &rx : car_->getReceivers())
-            rxEntities_.emplace_back(std::make_shared<DeviceEntity>(rx, glm::vec3(0.0F, 1.0F, 0.0F))); // green for RX
+        {
+            std::cout << "rx entity" << std::endl;
+            rxEntities_.emplace_back(std::make_shared<DeviceEntity>(rx, glm::vec3(0.0F, 0.0F, 1.0F)));
+        } // green for RX
     }
 
     void CarEntity::initGL()
@@ -19,23 +24,39 @@ namespace viewer
         // std::cout << "initGl started for [CarEntity]" << std::endl;
 
         if (renderable_)
+        {
             renderable_->initGL();
+        }
         else
             std::cout << "renderable not found for [CarEntity]" << std::endl;
+
         for (auto &tx : txEntities_)
+        {
             tx->initGL();
+            tx->setFovRenderableColor({0.7F, 0.1F, 0.1F});
+        }
+
         for (auto &rx : rxEntities_)
+        {
             rx->initGL();
+            rx->setFovRenderableColor({0.1F, 0.1F, 0.7F});
+        }
     }
 
     void CarEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
         if (renderable_)
+        {
             renderable_->render(view, projection);
+        }
         for (auto &tx : txEntities_)
+        {
             tx->getRenderable()->render(view, projection);
+        }
         for (auto &rx : rxEntities_)
+        {
             rx->getRenderable()->render(view, projection);
+        }
     }
 
     void CarEntity::cleanup()

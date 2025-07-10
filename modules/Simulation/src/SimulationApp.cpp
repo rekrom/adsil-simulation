@@ -14,7 +14,22 @@ namespace simulation
 
         adapters = std::make_unique<adapter::AdapterManager>();
 
+        auto ground = std::make_shared<spatial::TransformNode>();
+
         car_ = adapters->fromJson<std::shared_ptr<Car>>(core::ResourceLocator::getJsonPath("car.json"));
+
+        // Attach car's transform node as a child of ground
+        ground->addChild(car_->getTransformNode());
+
+        // Calculate height offset
+        float groundHeight = ground->getGlobalTransform().getPosition().y();
+        float carHeight = car_->getDimension().height;
+
+        // Set car's local position on top of ground
+        spatial::Transform carTransform = car_->getTransformNode()->getLocalTransform();
+        carTransform.setPosition(Point(0.0F, groundHeight / 2.0F + carHeight / 2.0F, 0.0F));
+        car_->getTransformNode()->setLocalTransform(carTransform);
+
         scene_ = adapters->fromJson<std::shared_ptr<SimulationScene>>(core::ResourceLocator::getJsonPath("objects.json"));
 
         if (!scene_ || !car_)

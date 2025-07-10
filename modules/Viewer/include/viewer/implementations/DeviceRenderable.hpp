@@ -23,11 +23,13 @@ namespace viewer
         void cleanup() override;
         void enableFoV(bool enable);
 
+        [[nodiscard]] glm::vec3 getFovPyramidColor() const;
+        void setFovPyramidColor(glm::vec3 color);
+
     private:
         std::shared_ptr<Device> device_;
 
         GLuint arrowVAO_{0}, arrowVBO_{0};
-        glm::vec3 color_ = glm::vec3(1.0F); // varsayılan beyaz renk
 
         bool showFoV_ = true;
         std::unique_ptr<FoVPyramidRenderable> fovRenderable_;

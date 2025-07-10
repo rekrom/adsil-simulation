@@ -51,5 +51,5 @@ private:
     std::string name_;
 
 private:
-    Transform getDeviceWorldTransform(const Device &device) const;
+    spatial::Transform getDeviceWorldTransform(const Device &device) const;
 };

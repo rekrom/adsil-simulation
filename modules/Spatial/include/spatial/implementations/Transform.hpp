@@ -8,30 +8,33 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class Transform
+namespace spatial
 {
-public:
-    Transform();
-    Transform(Point position, Vector orientation); // <<=== Güncellendi
+    class Transform
+    {
+    public:
+        Transform();
+        Transform(Point position, Vector orientation); // <<=== Güncellendi
 
-    [[nodiscard]] const Point &getPosition() const;
-    void setPosition(const Point &position);
+        [[nodiscard]] const Point &getPosition() const;
+        void setPosition(const Point &position);
 
-    [[nodiscard]] const Vector &getOrientation() const;
-    void setOrientation(const Vector &orientation);
+        [[nodiscard]] const Vector &getOrientation() const;
+        void setOrientation(const Vector &orientation);
 
-    void move(const Vector &delta);
+        void move(const Vector &delta);
 
-    [[nodiscard]] Vector get3DDirectionVector() const;
-    void set3DDirectionVector(const Vector &dir);
+        [[nodiscard]] Vector get3DDirectionVector() const;
+        void set3DDirectionVector(const Vector &dir);
 
-    void rotateYaw(float angleRad);
+        void rotateYaw(float angleRad);
 
-    Transform operator*(const Transform &other) const;
+        Transform operator*(const Transform &other) const;
 
-    [[nodiscard]] glm::mat4 getModelMatrix() const;
+        [[nodiscard]] glm::mat4 getModelMatrix() const;
 
-private:
-    Point position_;
-    Vector orientation_; // roll (x), pitch (y), yaw (z) — radyan cinsinden
-};
+    private:
+        Point position_;
+        Vector orientation_; // roll (x), pitch (y), yaw (z) — radyan cinsinden
+    };
+}
