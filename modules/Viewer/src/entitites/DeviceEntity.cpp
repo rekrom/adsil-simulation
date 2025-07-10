@@ -42,6 +42,7 @@ namespace viewer
 
     void DeviceEntity::setColor(glm::vec3 color)
     {
+        std::cout << "[devEntity] setColor called" << std::endl;
         color_ = color;
         renderable_ = std::make_shared<DeviceRenderable>(device_, color_);
         renderable_->initGL(); // Re-init GL with new color
@@ -55,4 +56,14 @@ namespace viewer
     {
         return visible_;
     }
+
+    void DeviceEntity::setFovRenderableColor(glm::vec3 color)
+    {
+        renderable_->setFovPyramidColor(color);
+    }
+    glm::vec3 DeviceEntity::getFovRenderableColor() const
+    {
+        return renderable_->getFovPyramidColor();
+    }
+
 }

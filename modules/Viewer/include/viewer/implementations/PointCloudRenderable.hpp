@@ -17,13 +17,8 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        void setColor(const glm::vec3 &color); // optional
-        void setVisible(bool visible);         // toggle display
-
     private:
         std::shared_ptr<PointCloud> pointCloud_;
-        bool visible_{true};
-        glm::vec3 color_{1.0F, 1.0F, 1.0F}; // default white
 
     protected:
         void createShader() override;

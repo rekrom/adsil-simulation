@@ -20,6 +20,8 @@ namespace viewer
         void cleanup();
 
         void setFoVVisible(bool visible);
+        void setFovRenderableColor(glm::vec3 color);
+        glm::vec3 getFovRenderableColor() const;
         void setColor(glm::vec3 color);
         void setVisible(bool visible);
         bool getVisible();

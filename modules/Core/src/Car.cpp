@@ -109,14 +109,14 @@ Vector Car::getOrientation() const
 }
 void Car::setPosition(const Point &position)
 {
-    Transform t = getTransformNode()->getLocalTransform();
+    spatial::Transform t = getTransformNode()->getLocalTransform();
     t.setPosition(position);
     getTransformNode()->setLocalTransform(t);
 }
 
 void Car::setOrientation(const Vector &rpy)
 {
-    Transform t = getTransformNode()->getLocalTransform();
+    spatial::Transform t = getTransformNode()->getLocalTransform();
     t.setOrientation(rpy); // assumes rpy = (roll, pitch, yaw)
     getTransformNode()->setLocalTransform(t);
 }
@@ -146,7 +146,7 @@ std::string Car::toString() const
     return oss.str();
 }
 
-Transform Car::getDeviceWorldTransform(const Device &device) const
+spatial::Transform Car::getDeviceWorldTransform(const Device &device) const
 {
     if (!device.getTransformNode())
     {

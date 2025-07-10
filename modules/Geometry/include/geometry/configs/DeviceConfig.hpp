@@ -7,7 +7,7 @@
 
 struct DeviceConfig
 {
-    Transform transform;
+    spatial::Transform transform;
     float vertical_fov_deg;
     float horizontal_fov_deg;
     std::string name;

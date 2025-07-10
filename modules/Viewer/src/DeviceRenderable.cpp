@@ -11,8 +11,13 @@ namespace viewer
         : device_(std::move(device)) {}
 
     DeviceRenderable::DeviceRenderable(std::shared_ptr<Device> device, glm::vec3 color)
-        : device_(std::move(device)), color_(color)
+        : device_(std::move(device))
     {
+        std::cout << "color(" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
+
+        this->setColor(color);
+
+        fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_);
     }
 
     DeviceRenderable::~DeviceRenderable()
@@ -25,19 +30,17 @@ namespace viewer
         createShader();
         createBuffers();
 
-        if (showFoV_)
-        {
-            fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, 0.25F);
-            fovRenderable_->initGL();
-        }
+        fovRenderable_->initGL();
+
         // std::cout << "[DeviceRenderable] initGL done!" << std::endl;
     }
 
     void DeviceRenderable::createBuffers()
     {
-        float r = color_.r;
-        float g = color_.g;
-        float b = color_.b;
+        glm::vec3 color = getColor();
+        float r = color.r;
+        float g = color.g;
+        float b = color.b;
 
         float cubeVertices[] = {
             // positions          // colors
@@ -187,6 +190,16 @@ namespace viewer
         showFoV_ = enable;
         if (!enable)
             fovRenderable_.reset();
+    }
+
+    glm::vec3 DeviceRenderable::getFovPyramidColor() const
+    {
+        return fovRenderable_->getColor();
+    }
+
+    void DeviceRenderable::setFovPyramidColor(glm::vec3 color)
+    {
+        fovRenderable_->setColor(color);
     }
 
     void DeviceRenderable::cleanup()

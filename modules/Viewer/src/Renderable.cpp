@@ -4,9 +4,19 @@ namespace viewer
 {
 
     Renderable::Renderable()
-        : alpha_(1.0F) {}
+    {
+    }
 
     Renderable::~Renderable() = default;
+
+    bool Renderable::getVisible() const
+    {
+        return isVisible_;
+    }
+    void Renderable::setVisible(bool isVisible)
+    {
+        isVisible_ = isVisible;
+    }
 
     float Renderable::getAlpha() const
     {
@@ -16,6 +26,16 @@ namespace viewer
     void Renderable::setAlpha(float alpha)
     {
         alpha_ = alpha;
+    }
+
+    glm::vec3 Renderable::getColor() const
+    {
+        return color_;
+    }
+
+    void Renderable::setColor(glm::vec3 color)
+    {
+        color_ = color;
     }
 
     bool Renderable::isTransparent() const

@@ -26,7 +26,6 @@ namespace viewer
 
     private:
         std::shared_ptr<ShapeBase> shape_;
-        glm::vec3 color_;
         size_t vertexCount_ = 0;
     };
 

@@ -48,14 +48,14 @@ const Vector &Device::getOrientation() const
 
 void Device::setOrientation(const Vector &newOrientation)
 {
-    Transform t = getTransformNode()->getLocalTransform();
+    spatial::Transform t = getTransformNode()->getLocalTransform();
     t.setOrientation(newOrientation); // assumes rpy = (roll, pitch, yaw)
     getTransformNode()->setLocalTransform(t);
 }
 
 void Device::setOrigin(const Point &newOrigin)
 {
-    Transform t = transformNode_->getLocalTransform();
+    spatial::Transform t = transformNode_->getLocalTransform();
     t.setPosition(newOrigin);
     transformNode_->setLocalTransform(t);
 }

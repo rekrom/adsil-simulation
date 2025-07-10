@@ -26,19 +26,28 @@ namespace viewer
         Renderable();
         virtual ~Renderable();
 
+        bool getVisible() const;
+        void setVisible(bool isVisible);
+
         float getAlpha() const;
         void setAlpha(float alpha);
+
+        glm::vec3 getColor() const;
+        void setColor(glm::vec3 color);
+
         bool isTransparent() const;              // todo: deprectaed
         virtual glm::vec3 getCenter() const = 0; // todo: deprecated
 
     protected:
-        float alpha_;
+        float alpha_{1.0F};
         GLuint vao_ = 0;
         GLuint vbo_ = 0;
         GLuint ebo_ = 0;
         GLuint shader_ = 0;
 
         StandardUniformLocations uniforms_;
+        glm::vec3 color_{0.5F, 0.5F, 0.5F};
+        bool isVisible_{true};
 
     protected:
         virtual void createBuffers(); // optionally overridden
