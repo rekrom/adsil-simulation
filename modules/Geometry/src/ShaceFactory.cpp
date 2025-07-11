@@ -6,13 +6,10 @@
 
 std::shared_ptr<ShapeBase> ShapeFactory::createCube(const CubeConfig &config)
 {
-    spatial::Transform transform(config.origin, config.orientation);
-    return std::make_shared<Cube>(transform, config.dimension, config.name);
+    return std::make_shared<Cube>(config);
 }
 
 std::shared_ptr<ShapeBase> ShapeFactory::createCylinder(const CylinderConfig &config)
 {
-    spatial::Transform transform(config.origin, config.orientation);
-
-    return std::make_shared<Cylinder>(transform, config.height, config.radius, config.name);
+    return std::make_shared<Cylinder>(config);
 }

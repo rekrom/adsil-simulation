@@ -32,7 +32,6 @@ namespace viewer::imgui
             {
                 transform.setPosition(Point(posArr[0], posArr[1], posArr[2]));
                 node->setLocalTransform(transform);
-                std::cout << "Updated position: " << posArr[0] << ", " << posArr[1] << ", " << posArr[2] << std::endl;
             }
 
             ImGui::SameLine();

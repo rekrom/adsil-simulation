@@ -2,8 +2,11 @@
 #include <core/RotationUtils.hpp>
 #include <cmath>
 
-Cylinder::Cylinder(const spatial::Transform &transform, float height, float radius, std::string name)
-    : ShapeBase(transform, name), cylinderDimension(height, radius) {}
+Cylinder::Cylinder(CylinderConfig config)
+    : ShapeBase(config.name), cylinderDimension(config.dimension)
+{
+    setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
+}
 
 std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
 {
@@ -42,11 +45,13 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
         {
             float t = static_cast<float>(j) / static_cast<float>(heightRes - 1);
             Vector local = base + (top - base) * t;
-            Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
+            auto node = getTransformNode();
+            auto transform = node->getGlobalTransform();
+            Vector rotated = RotationUtils::rotateRPY(local, transform.getOrientation());
             cloud->addPoint(Point(
-                transform_.getPosition().x() + rotated.x(),
-                transform_.getPosition().y() + rotated.y(),
-                transform_.getPosition().z() + rotated.z()));
+                transform.getPosition().x() + rotated.x(),
+                transform.getPosition().y() + rotated.y(),
+                transform.getPosition().z() + rotated.z()));
         }
     }
 
@@ -70,18 +75,19 @@ std::vector<Point> Cylinder::wireframe() const
 
         Vector bottomLocal(x, y, -halfHeight);
         Vector topLocal(x, y, +halfHeight);
-
-        Vector bottomRotated = RotationUtils::rotateRPY(bottomLocal, transform_.getOrientation());
-        Vector topRotated = RotationUtils::rotateRPY(topLocal, transform_.getOrientation());
+        auto node = getTransformNode();
+        auto transform = node->getGlobalTransform();
+        Vector bottomRotated = RotationUtils::rotateRPY(bottomLocal, transform.getOrientation());
+        Vector topRotated = RotationUtils::rotateRPY(topLocal, transform.getOrientation());
 
         framePoints.emplace_back(Point(
-            transform_.getPosition().x() + bottomRotated.x(),
-            transform_.getPosition().y() + bottomRotated.y(),
-            transform_.getPosition().z() + bottomRotated.z()));
+            transform.getPosition().x() + bottomRotated.x(),
+            transform.getPosition().y() + bottomRotated.y(),
+            transform.getPosition().z() + bottomRotated.z()));
         framePoints.emplace_back(Point(
-            transform_.getPosition().x() + topRotated.x(),
-            transform_.getPosition().y() + topRotated.y(),
-            transform_.getPosition().z() + topRotated.z()));
+            transform.getPosition().x() + topRotated.x(),
+            transform.getPosition().y() + topRotated.y(),
+            transform.getPosition().z() + topRotated.z()));
     }
 
     return framePoints;

@@ -10,7 +10,7 @@
 class Cube : public ShapeBase
 {
 public:
-    Cube(const spatial::Transform &transform, float dimension, std::string name);
+    Cube(CubeConfig config);
 
     std::shared_ptr<PointCloud> surfaceMesh(int quality = 2048) const override;
 
@@ -21,8 +21,7 @@ public:
     CubeDimension getDimension();
 
 private:
-    float dimension_;
-    CubeDimension cubeDimension_;
+        CubeDimension cubeDimension_;
     std::vector<Point> generateFace(
         const Vector &center,
         const Vector &u,

@@ -2,6 +2,7 @@
 
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
+#include <sstream>
 
 struct CubeDimension final
 {
@@ -11,12 +12,18 @@ struct CubeDimension final
 
     constexpr CubeDimension(float dim = 0.0F)
         : length(dim), width(dim), height(dim) {}
+
+    std::string toString() const
+    {
+        std::ostringstream oss;
+        oss << "CubeDimension(" << length << ", " << width << ", " << height << ")";
+        return oss.str();
+    }
 };
 
 struct CubeConfig
 {
-    Point origin;
-    Vector orientation;
-    float dimension;
+    spatial::Transform transform;
+    CubeDimension dimension;
     std::string name;
 };

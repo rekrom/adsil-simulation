@@ -2,6 +2,8 @@
 
 #include <core/Point.hpp>
 #include <core/Vector.hpp>
+#include <spatial/implementations/Transform.hpp>
+
 struct CylinderDimension final
 {
     float height_;
@@ -12,9 +14,7 @@ struct CylinderDimension final
 };
 struct CylinderConfig
 {
-    Point origin;
-    Vector orientation;
-    float height;
-    float radius;
+    spatial::Transform transform;
+    CylinderDimension dimension;
     std::string name;
 };
