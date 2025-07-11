@@ -108,7 +108,7 @@ namespace viewer
         if (!shape_)
             return glm::vec3(0.0F);
 
-        const auto &globalPos = shape_->getTransformNode()->getGlobalTransform().getPosition();
+        const auto globalPos = shape_->getTransformNode()->getGlobalTransform().getPosition();
         return {globalPos.x(), globalPos.y(), globalPos.z()};
     }
 
