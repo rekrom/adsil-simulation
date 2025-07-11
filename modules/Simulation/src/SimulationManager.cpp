@@ -16,8 +16,6 @@ namespace simulation
 
         scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(core::ResourceLocator::getJsonPath("scene.json"));
 
-        std::cout << "scene shape size: " << scene_->getShapes().size() << std::endl;
-
         if (!scene_ || !scene_->getCar())
             throw std::runtime_error("Missing essential simulation components.");
 

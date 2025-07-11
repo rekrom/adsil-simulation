@@ -48,7 +48,7 @@ std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) co
     auto merged = std::make_shared<PointCloud>();
     for (const auto &shape : shapes_)
     {
-        auto cloud = shape->surfaceMesh(quality);
+        auto cloud = shape->getSurfaceMeshPCD();
         merged->addPoints(cloud->getPoints());
     }
 

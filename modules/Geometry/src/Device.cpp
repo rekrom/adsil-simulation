@@ -6,11 +6,10 @@
 Device::Device(const DeviceConfig &config)
     : vertical_fov_rad_(RotationUtils::deg2rad(config.vertical_fov_deg)),
       horizontal_fov_rad_(RotationUtils::deg2rad(config.horizontal_fov_deg)),
+      range_(config.range),
       name_(config.name)
 {
     setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
-
-    range_ = 20.0F;
 }
 
 std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
@@ -36,6 +35,7 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
         if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
             (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
         {
+            std::cout << getName() << " origin at " << origin.toString() << std::endl;
             visible->addPoint(point);
         }
     }

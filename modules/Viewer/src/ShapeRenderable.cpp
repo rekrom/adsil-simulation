@@ -44,7 +44,7 @@ namespace viewer
         if (!shape_)
             return;
 
-        auto pointCloud = shape_->surfaceMesh(2048); // or wireframe()
+        auto pointCloud = shape_->getSurfaceMeshPCD(); // or wireframe()
         const auto &points = pointCloud->getPoints();
         vertexCount_ = points.size();
 

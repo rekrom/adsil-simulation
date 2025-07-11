@@ -7,6 +7,7 @@ SharedVec<Device> DeviceFactory::createDevices(
     const std::vector<Vector> &directions,
     const std::vector<float> &vertical_fovs,
     const std::vector<float> &horizontal_fovs,
+    const std::vector<float> &ranges,
     LogCallback onCreate)
 {
     SharedVec<Device> devices;
@@ -18,6 +19,7 @@ SharedVec<Device> DeviceFactory::createDevices(
             t,
             vertical_fovs[i],
             horizontal_fovs[i],
+            ranges[i],
             namePrefix + std::to_string(i + 1)};
         auto device = std::make_shared<Device>(config);
 
@@ -37,9 +39,11 @@ SharedVec<Device> DeviceFactory::createTransmitters(
     const std::vector<Vector> &directions,
     const std::vector<float> &vertical_fovs,
     const std::vector<float> &horizontal_fovs,
+    const std::vector<float> &ranges,
+
     LogCallback onCreate)
 {
-    return createDevices("t", origins, directions, vertical_fovs, horizontal_fovs, onCreate);
+    return createDevices("t", origins, directions, vertical_fovs, horizontal_fovs, ranges, onCreate);
 }
 
 SharedVec<Device> DeviceFactory::createReceivers(
@@ -47,7 +51,9 @@ SharedVec<Device> DeviceFactory::createReceivers(
     const std::vector<Vector> &directions,
     const std::vector<float> &vertical_fovs,
     const std::vector<float> &horizontal_fovs,
+    const std::vector<float> &ranges,
+
     LogCallback onCreate)
 {
-    return createDevices("r", origins, directions, vertical_fovs, horizontal_fovs, onCreate);
+    return createDevices("r", origins, directions, vertical_fovs, horizontal_fovs, ranges, onCreate);
 }
