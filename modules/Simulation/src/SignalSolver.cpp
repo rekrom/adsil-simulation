@@ -47,8 +47,8 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
 
             for (const auto &pt : inRxFov->getPoints())
             {
-                float dTx = pt.distanceTo(tx->getOrigin());
-                float dRx = pt.distanceTo(rx->getOrigin());
+                float dTx = pt.distanceTo(tx->getTransformNode()->getGlobalTransform().getPosition());
+                float dRx = pt.distanceTo(rx->getTransformNode()->getGlobalTransform().getPosition());
                 float total = dTx + dRx;
 
                 if (total < minDist)

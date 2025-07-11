@@ -22,12 +22,6 @@ public:
 
     const std::string &getName() const { return name_; }
 
-    const Point &getOrigin() const;
-    void setOrigin(const Point &newOrigin);
-
-    const Vector &getOrientation() const;
-    void setOrientation(const Vector &newOrientation);
-
     const float &getRange() const;
     void setRange(float newRange);
 
