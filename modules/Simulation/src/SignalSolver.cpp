@@ -38,7 +38,6 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
             {
                 continue;
             }
-            std::cout << "after" << std::endl;
 
             std::vector<Point> points = inRxFov->getPoints();
 
@@ -58,7 +57,7 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
                     closest = pt;
                 }
             }
-            std::cout << tx->getName() << "-" << rx->getName() << "\t" << closest.toString() << std::endl;
+            std::cout << tx->getName() << "-" << rx->getName() << "\t" << closest.toString() << "\t tof:" << minDist << std::endl;
             result->addPoint(closest);
         }
     }

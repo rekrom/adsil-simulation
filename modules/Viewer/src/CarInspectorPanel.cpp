@@ -148,15 +148,21 @@ namespace viewer::imgui
         float vFov = deviceEntity->getDevice()->getVerticalFovDeg();
 
         if (ImGui::DragFloat("Horizontal FoV", &hFov, 1.0F, 1.0F, 180.0F))
+        {
             deviceEntity->getDevice()->setHorizontalFovDeg(hFov);
+        }
 
         if (ImGui::DragFloat("Vertical FoV", &vFov, 1.0F, 1.0F, 180.0F))
+        {
             deviceEntity->getDevice()->setVerticalFovDeg(vFov);
+        }
 
         Point pos = deviceEntity->getDevice()->getOrigin();
         float posArr[3] = {pos.x(), pos.y(), pos.z()};
-        if (ImGui::DragFloat3("Position", posArr, 0.1F))
+        if (ImGui::DragFloat3("Position wrt car", posArr, 0.1F))
+        {
             deviceEntity->getDevice()->setOrigin(Point(posArr[0], posArr[1], posArr[2]));
+        }
 
         Vector rpy = deviceEntity->getDevice()->getOrientation();
         float rpyDeg[3] = {

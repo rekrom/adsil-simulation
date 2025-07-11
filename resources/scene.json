@@ -8,7 +8,7 @@
         "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 5.0
+            "z": 0.0
         },
         "dimension": {
             "length": 2.5300,
@@ -16,21 +16,6 @@
             "height": 1.5200
         },
         "receivers": [
-            {
-                "origin": {
-                    "x": -1.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "orientation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "vertical_fov_deg": 10,
-                "horizontal_fov_deg": 20,
-                "name": "rx1"
-            },
             {
                 "origin": {
                     "x": 1.0,
@@ -43,7 +28,24 @@
                     "z": 0.0
                 },
                 "vertical_fov_deg": 10,
-                "horizontal_fov_deg": 20,
+                "horizontal_fov_deg": 170,
+                "range": 5.0,
+                "name": "rx1"
+            },
+            {
+                "origin": {
+                    "x": -1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "vertical_fov_deg": 10,
+                "horizontal_fov_deg": 170,
+                "range": 5.0,
                 "name": "rx2"
             }
         ],
@@ -56,12 +58,29 @@
                 },
                 "orientation": {
                     "x": 0.0,
-                    "y": 0.0,
+                    "y": 22.5,
                     "z": 0.0
                 },
                 "vertical_fov_deg": 10,
-                "horizontal_fov_deg": 10,
+                "horizontal_fov_deg": 45,
+                "range": 5.0,
                 "name": "tx1"
+            },
+            {
+                "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": -22.5,
+                    "z": 0.0
+                },
+                "vertical_fov_deg": 10,
+                "horizontal_fov_deg": 45,
+                "range": 5.0,
+                "name": "tx2"
             }
         ]
     },
@@ -69,30 +88,16 @@
         {
             "name": "cube1",
             "origin": {
-                "x": 2.0,
+                "x": 0.0,
                 "y": 0.0,
-                "z": 6.0
+                "z": 1.7
             },
             "orientation": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0
             },
-            "dimension": 3.0
-        },
-        {
-            "name": "cube2",
-            "origin": {
-                "x": -2.0,
-                "y": 0.0,
-                "z": 6.0
-            },
-            "orientation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "dimension": 3.0
+            "dimension": 1.0
         }
     ],
     "cylinders": []

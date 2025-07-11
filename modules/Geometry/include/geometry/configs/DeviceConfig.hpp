@@ -10,5 +10,6 @@ struct DeviceConfig
     spatial::Transform transform;
     float vertical_fov_deg;
     float horizontal_fov_deg;
+    float range;
     std::string name;
 };

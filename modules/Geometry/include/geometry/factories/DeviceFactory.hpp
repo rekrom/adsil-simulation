@@ -19,6 +19,8 @@ public:
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,
+        const std::vector<float> &ranges,
+
         LogCallback onCreate = nullptr);
 
     // Wrappers for clarity
@@ -27,6 +29,8 @@ public:
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,
+        const std::vector<float> &ranges,
+
         LogCallback onCreate = nullptr);
 
     static SharedVec<Device> createReceivers(
@@ -34,5 +38,7 @@ public:
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,
+        const std::vector<float> &ranges,
+
         LogCallback onCreate = nullptr);
 };

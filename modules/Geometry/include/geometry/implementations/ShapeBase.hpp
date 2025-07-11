@@ -22,6 +22,16 @@ public:
     void setOrigin(const Point &origin) { transform_.setPosition(origin); }
     void setOrientation(const Vector &orientation) { transform_.setOrientation(orientation); }
 
+    std::shared_ptr<PointCloud> getSurfaceMeshPCD() const override
+    {
+        if (!surfaceMeshPcd_ || surfaceMeshPcd_->size() == 0)
+        {
+            surfaceMeshPcd_ = surfaceMesh(meshQuality_);
+        }
+
+        return surfaceMeshPcd_;
+    }
+
     const std::string &getName() const
     {
         return name_;
@@ -31,4 +41,6 @@ public:
 protected:
     spatial::Transform transform_;
     std::string name_;
+    mutable std::shared_ptr<PointCloud> surfaceMeshPcd_; //  since its using by a const method but it modifies a member.
+    int meshQuality_{2048};
 };
