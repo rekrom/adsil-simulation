@@ -111,7 +111,7 @@ namespace viewer
             size_t index_offset = 0;
             for (size_t face = 0; face < mesh.num_face_vertices.size(); ++face)
             {
-                int fv = mesh.num_face_vertices[face];
+                auto fv = mesh.num_face_vertices[face];
                 int mat_id = (face < mesh.material_ids.size()) ? mesh.material_ids[face] : -1;
 
                 // 🎨 Default to gray
@@ -124,7 +124,7 @@ namespace viewer
                     b = mat.diffuse[2];
                 }
 
-                for (int v = 0; v < fv; ++v)
+                for (unsigned int v = 0; v < fv; ++v)
                 {
                     const auto &idx = mesh.indices[index_offset + v];
                     size_t vIdx = 3 * idx.vertex_index;
