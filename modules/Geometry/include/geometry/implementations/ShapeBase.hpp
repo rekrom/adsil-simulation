@@ -10,17 +10,8 @@
 class ShapeBase : public IShape, public spatial::HasTransform
 {
 public:
-    ShapeBase(const spatial::Transform &transform, std::string name)
-        : transform_(transform), name_(name) {}
-
-    const spatial::Transform &getTransform() const { return transform_; }
-    void setTransform(const spatial::Transform &transform) { transform_ = transform; }
-
-    const Point &getOrigin() const { return transform_.getPosition(); }
-    const Vector &getOrientation() const { return transform_.getOrientation(); }
-
-    void setOrigin(const Point &origin) { transform_.setPosition(origin); }
-    void setOrientation(const Vector &orientation) { transform_.setOrientation(orientation); }
+    ShapeBase(std::string name)
+        : name_(name) {}
 
     std::shared_ptr<PointCloud> getSurfaceMeshPCD() const override
     {
@@ -39,7 +30,6 @@ public:
     void setName(const std::string &name) { name_ = name; }
 
 protected:
-    spatial::Transform transform_;
     std::string name_;
     mutable std::shared_ptr<PointCloud> surfaceMeshPcd_; //  since its using by a const method but it modifies a member.
     int meshQuality_{2048};

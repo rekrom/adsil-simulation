@@ -108,8 +108,8 @@ namespace viewer
         if (!shape_)
             return glm::vec3(0.0F);
 
-        auto origin = shape_->getOrigin();
-        return glm::vec3(origin.x(), origin.y(), origin.z());
+        const auto globalPos = shape_->getTransformNode()->getGlobalTransform().getPosition();
+        return {globalPos.x(), globalPos.y(), globalPos.z()};
     }
 
 }

@@ -18,25 +18,31 @@ namespace viewer::imgui
 
     void CarInspectorPanel::drawTransformSection(const std::shared_ptr<Car> &car)
     {
-        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::CollapsingHeader("Car Global Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             // Position
-            Point pos = car->getPosition();
-            float posArr[3] = {pos.x(), pos.y(), pos.z()};
+            auto node = car->getTransformNode();
+            spatial::Transform transform = node->getLocalTransform();
+            float posArr[3] = {
+                transform.getPosition().x(),
+                transform.getPosition().y(),
+                transform.getPosition().z()};
 
             if (ImGui::DragFloat3("Position", posArr, 0.1F))
             {
-                car->setPosition(Point(posArr[0], posArr[1], posArr[2]));
+                transform.setPosition(Point(posArr[0], posArr[1], posArr[2]));
+                node->setLocalTransform(transform);
             }
 
             ImGui::SameLine();
             if (ImGui::Button("Reset Pos"))
             {
-                car->setPosition(Point(0.0F, 0.0F, 0.0F));
+                transform.setPosition(Point(0.0F, 0.0F, 0.0F));
+                node->setLocalTransform(transform);
             }
 
             // Orientation
-            Vector rpy = car->getOrientation();
+            Vector rpy = transform.getOrientation(); // Use the same 'transform' from earlier
             float rpyDeg[3] = {
                 RotationUtils::rad2deg(rpy.x()),
                 RotationUtils::rad2deg(rpy.y()),
@@ -44,16 +50,19 @@ namespace viewer::imgui
 
             if (ImGui::DragFloat3("Orientation (Roll, Pitch, Yaw)", rpyDeg, 1.0F, -180.0F, 180.0F))
             {
-                car->setOrientation(Vector(
+                transform.setOrientation(Vector(
                     RotationUtils::deg2rad(rpyDeg[0]),
                     RotationUtils::deg2rad(rpyDeg[1]),
                     RotationUtils::deg2rad(rpyDeg[2])));
+                node->setLocalTransform(transform);
+                std::cout << "Updated orientation: " << rpyDeg[0] << ", " << rpyDeg[1] << ", " << rpyDeg[2] << std::endl;
             }
 
             ImGui::SameLine();
             if (ImGui::Button("Reset Rot"))
             {
-                car->setOrientation(Vector(0.0F, 0.0F, 0.0F));
+                transform.setOrientation(Vector(0.0F, 0.0F, 0.0F));
+                node->setLocalTransform(transform);
             }
         }
     }
@@ -157,14 +166,23 @@ namespace viewer::imgui
             deviceEntity->getDevice()->setVerticalFovDeg(vFov);
         }
 
-        Point pos = deviceEntity->getDevice()->getOrigin();
-        float posArr[3] = {pos.x(), pos.y(), pos.z()};
+        auto node = deviceEntity->getDevice()->getTransformNode();
+        spatial::Transform transform = node->getLocalTransform();
+
+        // Position
+        float posArr[3] = {
+            transform.getPosition().x(),
+            transform.getPosition().y(),
+            transform.getPosition().z()};
+
         if (ImGui::DragFloat3("Position wrt car", posArr, 0.1F))
         {
-            deviceEntity->getDevice()->setOrigin(Point(posArr[0], posArr[1], posArr[2]));
+            transform.setPosition(Point(posArr[0], posArr[1], posArr[2]));
+            node->setLocalTransform(transform);
         }
 
-        Vector rpy = deviceEntity->getDevice()->getOrientation();
+        // Orientation
+        Vector rpy = transform.getOrientation();
         float rpyDeg[3] = {
             RotationUtils::rad2deg(rpy.x()),
             RotationUtils::rad2deg(rpy.y()),
@@ -172,10 +190,11 @@ namespace viewer::imgui
 
         if (ImGui::DragFloat3("Orientation (RPY)", rpyDeg, 1.0F, -180.0F, 180.0F))
         {
-            deviceEntity->getDevice()->setOrientation(Vector(
+            transform.setOrientation(Vector(
                 RotationUtils::deg2rad(rpyDeg[0]),
                 RotationUtils::deg2rad(rpyDeg[1]),
                 RotationUtils::deg2rad(rpyDeg[2])));
+            node->setLocalTransform(transform);
         }
 
         float range = deviceEntity->getDevice()->getRange();

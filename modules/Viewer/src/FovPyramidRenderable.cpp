@@ -86,7 +86,11 @@ namespace viewer
             v3, v4, v1};
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * triangleVertices.size(), triangleVertices.data());
+        glBufferSubData(
+            GL_ARRAY_BUFFER,
+            0,
+            static_cast<GLsizeiptr>(sizeof(glm::vec3) * triangleVertices.size()),
+            triangleVertices.data());
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 

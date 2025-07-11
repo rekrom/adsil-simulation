@@ -34,7 +34,7 @@ Car::Car(const CarConfig &config)
         device->getTransformNode()->setParent(transformNode_);
     }
 
-    trajectory_.push_back(getPosition());
+    trajectory_.push_back(transformNode_->getGlobalTransform().getPosition());
 }
 
 const SharedVec<Device> &Car::getTransmitters() const
@@ -97,29 +97,6 @@ void Car::moveTo(const Point &newPosition)
 
 //     transformNode_->setLocalTransform(localTransform);
 // }
-
-Point Car::getPosition() const
-{
-    return getTransformNode()->getGlobalTransform().getPosition();
-}
-
-Vector Car::getOrientation() const
-{
-    return getTransformNode()->getGlobalTransform().getOrientation();
-}
-void Car::setPosition(const Point &position)
-{
-    spatial::Transform t = getTransformNode()->getLocalTransform();
-    t.setPosition(position);
-    getTransformNode()->setLocalTransform(t);
-}
-
-void Car::setOrientation(const Vector &rpy)
-{
-    spatial::Transform t = getTransformNode()->getLocalTransform();
-    t.setOrientation(rpy); // assumes rpy = (roll, pitch, yaw)
-    getTransformNode()->setLocalTransform(t);
-}
 
 CarDimension Car::getDimension() const
 {

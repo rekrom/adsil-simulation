@@ -43,30 +43,6 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
     return visible;
 }
 
-const Point &Device::getOrigin() const
-{
-    return transformNode_->getLocalTransform().getPosition();
-}
-
-const Vector &Device::getOrientation() const
-{
-    return transformNode_->getLocalTransform().getOrientation();
-}
-
-void Device::setOrientation(const Vector &newOrientation)
-{
-    spatial::Transform t = getTransformNode()->getLocalTransform();
-    t.setOrientation(newOrientation); // assumes rpy = (roll, pitch, yaw)
-    getTransformNode()->setLocalTransform(t);
-}
-
-void Device::setOrigin(const Point &newOrigin)
-{
-    spatial::Transform t = transformNode_->getLocalTransform();
-    t.setPosition(newOrigin);
-    transformNode_->setLocalTransform(t);
-}
-
 float Device::getHorizontalFovDeg() const
 {
     return RotationUtils::rad2deg(horizontal_fov_rad_);

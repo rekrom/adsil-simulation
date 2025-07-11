@@ -13,8 +13,9 @@ namespace adapter
     {
         nlohmann::json j;
         j["name"] = device.getName();
-        j["origin"] = pointAdapter_.toJson(device.getOrigin());
-        j["orientation"] = vectorAdapter_.toJson(device.getOrientation());
+        const auto &transform = device.getTransformNode()->getLocalTransform();
+        j["origin"] = pointAdapter_.toJson(transform.getPosition());
+        j["orientation"] = vectorAdapter_.toJson(transform.getOrientation());
         j["vertical_fov_deg"] = device.getVerticalFovDeg();
         j["horizontal_fov_deg"] = device.getHorizontalFovDeg();
         j["range"] = device.getRange();

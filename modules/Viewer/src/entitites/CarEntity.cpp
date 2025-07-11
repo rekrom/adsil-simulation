@@ -75,7 +75,7 @@ namespace viewer
 
     glm::vec3 CarEntity::getCenter() const
     {
-        return renderable_->getCar()->getPosition().toGlmVec3();
+        return renderable_->getCar()->getGlobalTransform().getPosition().toGlmVec3();
     }
 
     std::shared_ptr<Car> CarEntity::getCar() const

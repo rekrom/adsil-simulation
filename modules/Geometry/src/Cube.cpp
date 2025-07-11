@@ -2,13 +2,17 @@
 #include <core/RotationUtils.hpp>
 #include <iostream>
 
-Cube::Cube(const spatial::Transform &transform, float dimension, std::string name)
-    : ShapeBase(transform, name), dimension_(dimension), cubeDimension_(dimension) {}
+Cube::Cube(CubeConfig config)
+    : ShapeBase(config.name), cubeDimension_(config.dimension)
+{
+    setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
+}
 
 std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
 {
     auto cloud = std::make_shared<PointCloud>();
-    float half = dimension_ / 2.0F;
+    auto dim = cubeDimension_.height; // it can be width or length
+    float half = dim / 2.0F;
     int n = std::max(2, static_cast<int>(std::sqrt(quality)));
 
     std::vector<std::tuple<Vector, Vector, Vector>> faceConfigs = {
@@ -28,10 +32,10 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
             cloud->addPoint(p);
         }
     }
-    for (const auto &p : cloud->getPoints())
-    {
-        std::cout << p.toString() << std::endl;
-    }
+    // for (const auto &p : cloud->getPoints())
+    // {
+    //     std::cout << p.toString() << std::endl;
+    // }
 
     return cloud;
 }
@@ -39,8 +43,11 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
 std::vector<Point> Cube::wireframe() const
 {
     std::vector<Point> edges;
-    glm::vec3 center = transform_.getPosition().toGlmVec3();
-    float half = dimension_ / 2.0F;
+    auto node = getTransformNode();
+    auto transform = node->getGlobalTransform();
+    glm::vec3 center = transform.getPosition().toGlmVec3();
+    auto dim = cubeDimension_.height; // it can be width or length
+    float half = dim / 2.0F;
 
     // Cube köşe noktaları
     glm::vec3 corners[8] = {
@@ -85,17 +92,21 @@ std::vector<Point> Cube::wireframe() const
 std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, const Vector &v, int n) const
 {
     std::vector<Point> points;
-    float step = dimension_ / static_cast<float>(n - 1);
+    auto dim = cubeDimension_.height; // it can be width or length
+
+    float step = dim / static_cast<float>(n - 1);
     for (int i = 0; i < n; ++i)
     {
         for (int j = 0; j < n; ++j)
         {
-            Vector offset = u * (-dimension_ / 2 + static_cast<float>(i) * step) + v * (-dimension_ / 2 + static_cast<float>(j) * step);
-            Vector rotated = RotationUtils::rotateRPY(center + offset, transform_.getOrientation());
+            Vector offset = u * (-dim / 2 + static_cast<float>(i) * step) + v * (-dim / 2 + static_cast<float>(j) * step);
+            auto node = getTransformNode();
+            auto transform = node->getGlobalTransform();
+            Vector rotated = RotationUtils::rotateRPY(center + offset, transform.getOrientation());
             points.emplace_back(
-                transform_.getPosition().x() + rotated.x(),
-                transform_.getPosition().y() + rotated.y(),
-                transform_.getPosition().z() + rotated.z());
+                transform.getPosition().x() + rotated.x(),
+                transform.getPosition().y() + rotated.y(),
+                transform.getPosition().z() + rotated.z());
         }
     }
 
@@ -109,5 +120,5 @@ CubeDimension Cube::getDimension()
 
 std::string Cube::toString() const
 {
-    return "Cube(dim=" + std::to_string(dimension_) + ")";
+    return "Cube(dim=" + cubeDimension_.toString() + ")";
 }

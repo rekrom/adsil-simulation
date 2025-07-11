@@ -9,7 +9,7 @@
 class Cylinder : public ShapeBase
 {
 public:
-    Cylinder(const spatial::Transform &transform, float height, float radius, std::string name);
+    Cylinder(CylinderConfig config);
 
     std::shared_ptr<PointCloud> surfaceMesh(int quality = 2048) const override;
 

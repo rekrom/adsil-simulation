@@ -11,8 +11,8 @@ namespace adapter
     nlohmann::json CarJsonAdapter::toJson(const std::shared_ptr<Car> &car) const
     {
         nlohmann::json j;
-        j["origin"] = pointAdapter_.toJson(car->getPosition());
-        j["orientation"] = vectorAdapter_.toJson(car->getOrientation());
+        j["origin"] = pointAdapter_.toJson(car->getGlobalTransform().getPosition());
+        j["orientation"] = vectorAdapter_.toJson(car->getGlobalTransform().getOrientation());
 
         // transmitters dizisi
         nlohmann::json txArr = nlohmann::json::array();
