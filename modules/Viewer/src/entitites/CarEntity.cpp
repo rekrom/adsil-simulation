@@ -5,16 +5,13 @@ namespace viewer
     CarEntity::CarEntity(std::shared_ptr<Car> car, glm::vec3 color)
         : car_(std::move(car)), renderable_(std::make_shared<CarRenderable>(car_, color)), color_(color)
     {
-
         for (const auto &tx : car_->getTransmitters())
         {
-            std::cout << "tx entity" << std::endl;
             txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0F, 0.0F, 0.0F)));
         }
 
         for (const auto &rx : car_->getReceivers())
         {
-            std::cout << "rx entity" << std::endl;
             rxEntities_.emplace_back(std::make_shared<DeviceEntity>(rx, glm::vec3(0.0F, 0.0F, 1.0F)));
         } // green for RX
     }

@@ -16,16 +16,23 @@ Device::Device(const DeviceConfig &config)
 std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
 {
     auto visible = std::make_shared<PointCloud>();
+    const auto &globalTransform = transformNode_->getGlobalTransform();
+
+    Point origin = globalTransform.getPosition();
+    Vector direction = globalTransform.get3DDirectionVector();
+
+    float horizontal_d_angle = std::atan2(direction.x(), direction.z()); // now Z is forward
+    float vertical_d_angle = std::atan2(direction.y(), direction.z());
+
+    float epsilon = static_cast<float>(1e-7);
 
     for (const auto &point : pcd.getPoints())
     {
-        Vector vec_to_point = point.toVectorFrom(transformNode_->getLocalTransform().getPosition());
-        float horizontal_p_angle = std::atan2(vec_to_point.y(), vec_to_point.x());
-        float vertical_p_angle = std::atan2(vec_to_point.y(), vec_to_point.z());
+        Vector vec_to_point = point.toVectorFrom(origin);
 
-        float horizontal_d_angle = std::atan2(transformNode_->getLocalTransform().get3DDirectionVector().y(), transformNode_->getLocalTransform().get3DDirectionVector().x());
-        float vertical_d_angle = std::atan2(transformNode_->getLocalTransform().get3DDirectionVector().y(), transformNode_->getLocalTransform().get3DDirectionVector().z());
-        float epsilon = static_cast<float>(1e-7);
+        float horizontal_p_angle = std::atan2(vec_to_point.x(), vec_to_point.z()); // horizontal in XZ plane
+        float vertical_p_angle = std::atan2(vec_to_point.y(), vec_to_point.z());   // vertical in YZ plane
+
         if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
             (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
         {

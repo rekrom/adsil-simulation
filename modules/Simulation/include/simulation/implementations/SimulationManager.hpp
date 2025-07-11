@@ -9,11 +9,12 @@
 #include <viewer/entities/entities.hpp>
 #include <simulation/implementations/InputManager.hpp>
 #include <adapter/AdapterManager.hpp>
+#include <simulation/SignalSolver.hpp>
 
 namespace simulation
 {
 
-    class SimulationApp
+    class SimulationManager
     {
     public:
         void init();
@@ -27,9 +28,9 @@ namespace simulation
     private:
         std::unique_ptr<viewer::OpenGLViewer> viewer_;
         std::shared_ptr<simulation::InputManager> inputManager_;
-        std::unique_ptr<adapter::AdapterManager> adapters;
-        std::shared_ptr<Car> car_;
+        std::unique_ptr<adapter::AdapterManager> adapters_;
         std::shared_ptr<SimulationScene> scene_;
+        std::unique_ptr<SignalSolver> signalSolver_;
 
         // Future: simulation time, sensor updates, etc.
     };

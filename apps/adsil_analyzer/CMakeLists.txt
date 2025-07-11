@@ -26,10 +26,10 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 add_custom_command(
-    TARGET adsil_analyzer POST_BUILD
+    TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/resources
-            $<TARGET_FILE_DIR:adsil_analyzer>/resources
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
     COMMENT "Copying resources folder to binary output directory"
 )
 

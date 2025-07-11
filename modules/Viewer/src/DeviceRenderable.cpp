@@ -13,7 +13,6 @@ namespace viewer
     DeviceRenderable::DeviceRenderable(std::shared_ptr<Device> device, glm::vec3 color)
         : device_(std::move(device))
     {
-        std::cout << "color(" << color[0] << ", " << color[1] << ", " << color[2] << ")" << std::endl;
 
         this->setColor(color);
 

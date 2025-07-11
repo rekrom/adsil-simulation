@@ -11,7 +11,7 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     int circRes = std::max(8, quality);
     int heightRes = std::max(2, quality / 2);
     float halfHeight = cylinderDimension.height_ / 2.0F;
-
+    auto globalTransform = getGlobalTransform();
     // Top and bottom
     for (float z : {-halfHeight, halfHeight})
     {
@@ -21,11 +21,11 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
             float angle = 2.0F * PI * static_cast<float>(i) / static_cast<float>(circRes);
 
             Vector local(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), z);
-            Vector rotated = RotationUtils::rotateRPY(local, transform_.getOrientation());
+            Vector rotated = RotationUtils::rotateRPY(local, globalTransform.getOrientation());
             cloud->addPoint(Point(
-                transform_.getPosition().x() + rotated.x(),
-                transform_.getPosition().y() + rotated.y(),
-                transform_.getPosition().z() + rotated.z()));
+                globalTransform.getPosition().x() + rotated.x(),
+                globalTransform.getPosition().y() + rotated.y(),
+                globalTransform.getPosition().z() + rotated.z()));
         }
     }
 

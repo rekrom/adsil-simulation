@@ -2,4 +2,4 @@
 
 #include "SignalSolver.hpp"
 #include "SimulationScene.hpp"
-#include "implementations/SimulationApp.hpp"
+#include "implementations/SimulationManager.hpp"

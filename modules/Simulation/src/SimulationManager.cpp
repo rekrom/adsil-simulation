@@ -1,4 +1,4 @@
-#include <simulation/implementations/SimulationApp.hpp>
+#include <simulation/implementations/SimulationManager.hpp>
 #include <viewer/entities/GroundEntity.hpp>
 #include <viewer/entities/AxisEntity.hpp>
 
@@ -8,47 +8,32 @@
 
 namespace simulation
 {
-    void SimulationApp::init()
+    void SimulationManager::init()
     {
         core::ResourceLocator::setBasePath(BASE_RESOURCE_DIR);
 
-        adapters = std::make_unique<adapter::AdapterManager>();
+        adapters_ = std::make_unique<adapter::AdapterManager>();
 
-        auto ground = std::make_shared<spatial::TransformNode>();
+        scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(core::ResourceLocator::getJsonPath("scene.json"));
 
-        car_ = adapters->fromJson<std::shared_ptr<Car>>(core::ResourceLocator::getJsonPath("car.json"));
+        std::cout << "scene shape size: " << scene_->getShapes().size() << std::endl;
 
-        // Attach car's transform node as a child of ground
-        ground->addChild(car_->getTransformNode());
-
-        // Calculate height offset
-        float groundHeight = ground->getGlobalTransform().getPosition().y();
-        float carHeight = car_->getDimension().height;
-
-        // Set car's local position on top of ground
-        spatial::Transform carTransform = car_->getTransformNode()->getLocalTransform();
-        carTransform.setPosition(Point(0.0F, groundHeight / 2.0F + carHeight / 2.0F, 0.0F));
-        car_->getTransformNode()->setLocalTransform(carTransform);
-
-        scene_ = adapters->fromJson<std::shared_ptr<SimulationScene>>(core::ResourceLocator::getJsonPath("objects.json"));
-
-        if (!scene_ || !car_)
+        if (!scene_ || !scene_->getCar())
             throw std::runtime_error("Missing essential simulation components.");
 
-        std::cout << "[INFO] Car loaded." << std::endl;
-        std::cout << "[INFO] Scene loaded." << std::endl;
         viewer_ = std::make_unique<viewer::OpenGLViewer>(1280, 720, "ADSIL Analyzer - OpenGL");
 
         inputManager_ = std::make_shared<simulation::InputManager>();
+        signalSolver_ = std::make_unique<SignalSolver>(scene_);
     }
 
-    void SimulationApp::createEntities()
+    void SimulationManager::createEntities()
     {
         SharedVec<viewer::Entity> entities;
 
         auto axisEntity = std::make_shared<viewer::AxisEntity>();
         auto groundEntity = std::make_shared<viewer::GroundEntity>();
-        auto carEntity = std::make_shared<viewer::CarEntity>(car_, glm::vec3(0.2F, 0.6F, 0.9F));
+        auto carEntity = std::make_shared<viewer::CarEntity>(scene_->getCar(), glm::vec3(0.2F, 0.6F, 0.9F));
 
         entities.push_back(groundEntity);
         entities.push_back(axisEntity);
@@ -64,17 +49,17 @@ namespace simulation
         viewer_->setEntities(entities);
     }
 
-    void SimulationApp::update(float deltaTime)
+    void SimulationManager::update(float deltaTime)
     {
-        inputManager_->processInput(deltaTime, *car_, viewer_->getCamera());
+        inputManager_->processInput(deltaTime, *scene_->getCar(), viewer_->getCamera());
     }
 
-    void SimulationApp::render()
+    void SimulationManager::render()
     {
         viewer_->render();
     }
 
-    void SimulationApp::run()
+    void SimulationManager::run()
     {
         init();
         createEntities();
@@ -94,6 +79,7 @@ namespace simulation
         {
             float deltaTime = viewer_->getDeltaTime();
             update(deltaTime);
+            signalSolver_->solve();
             render();
             // car_->moveForward(0.01F);
         }

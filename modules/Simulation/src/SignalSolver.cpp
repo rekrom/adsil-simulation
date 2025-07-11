@@ -2,10 +2,13 @@
 #include <iostream>
 
 SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
-    : scene_(std::move(scene)) {}
+    : scene_(std::move(scene))
+{
+}
 
 std::shared_ptr<PointCloud> SignalSolver::solve()
 {
+    // std::cout << "solving..." << std::endl;
     auto result = std::make_shared<PointCloud>();
     auto allPoints = scene_->getMergedPointCloud();
 
@@ -24,15 +27,18 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
         {
             // Filter points inside both FOVs
             auto inTxFov = tx->pointsInFov(*allPoints);
+
             if (!inTxFov || inTxFov->size() == 0)
-                {
-                    continue;
-                }
+            {
+                continue;
+            }
+
             auto inRxFov = rx->pointsInFov(*inTxFov);
             if (!inRxFov || inRxFov->size() == 0)
-                {
-                    continue;
-                }
+            {
+                continue;
+            }
+            std::cout << "after" << std::endl;
 
             std::vector<Point> points = inRxFov->getPoints();
 

@@ -17,6 +17,7 @@ public:
 
     // Add transmitters / receivers / shapes
     void addShape(std::shared_ptr<ShapeBase> shape);
+    void setShapes(SharedVec<ShapeBase> shapes);
 
     // Accessors
     const std::shared_ptr<Car> &getCar() const;
@@ -29,7 +30,7 @@ public:
     bool hasCar() const;
 
     // Merged point cloud from all shapes
-    std::shared_ptr<PointCloud> getMergedPointCloud(int quality = 25) const;
+    std::shared_ptr<PointCloud> getMergedPointCloud(int quality = 2048) const;
 
 private:
     std::shared_ptr<Car> car_;

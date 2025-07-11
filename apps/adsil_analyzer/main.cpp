@@ -13,7 +13,7 @@ int main()
     // // closestPointRenderable->setVisible(true);
     // // viewer.addRenderable(closestPointRenderable);
 
-    simulation::SimulationApp sim;
+    simulation::SimulationManager sim;
     sim.run();
     return 0;
 }

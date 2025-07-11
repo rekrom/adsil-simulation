@@ -7,6 +7,11 @@ void SimulationScene::addShape(std::shared_ptr<ShapeBase> shape)
     shapes_.push_back(std::move(shape));
 }
 
+void SimulationScene::setShapes(SharedVec<ShapeBase> shapes)
+{
+    shapes_ = shapes;
+}
+
 void SimulationScene::setCar(std::shared_ptr<Car> car)
 {
     car_ = std::move(car);
@@ -46,5 +51,6 @@ std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) co
         auto cloud = shape->surfaceMesh(quality);
         merged->addPoints(cloud->getPoints());
     }
+
     return merged;
 }
