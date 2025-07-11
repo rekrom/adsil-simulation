@@ -30,12 +30,8 @@ public:
     const std::vector<Point> &getTrajectory() const;
     std::string toString() const;
 
-    Point getPosition() const;
-    Vector getOrientation() const;
     CarDimension getDimension() const;
 
-    void setPosition(const Point &position);
-    void setOrientation(const Vector &rpy); // roll, pitch, yaw in radians
     void setDimension(const CarDimension &dim);
 
     const std::string &getName() const { return name_; }

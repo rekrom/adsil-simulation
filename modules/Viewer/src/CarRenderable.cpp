@@ -314,7 +314,7 @@ namespace viewer
 
     glm::vec3 CarRenderable::getCenter() const
     {
-        return car_->getPosition().toGlmVec3(); // Or however you access position
+        return car_->getGlobalTransform().getPosition().toGlmVec3(); // Or however you access position
     }
 
     void CarRenderable::setVisible(bool visible)

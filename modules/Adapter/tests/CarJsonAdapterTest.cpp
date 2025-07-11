@@ -52,13 +52,13 @@ void testCarJsonAdapter()
     std::shared_ptr<Car> loadedCar = adapter.fromJson(j);
 
     // Basic validations with tolerance
-    assert(floatEqual(loadedCar->getPosition().x(), car->getPosition().x()));
-    assert(floatEqual(loadedCar->getPosition().y(), car->getPosition().y()));
-    assert(floatEqual(loadedCar->getPosition().z(), car->getPosition().z()));
+    assert(floatEqual(loadedCar->getGlobalTransform().getPosition().x(), car->getGlobalTransform().getPosition().x()));
+    assert(floatEqual(loadedCar->getGlobalTransform().getPosition().y(), car->getGlobalTransform().getPosition().y()));
+    assert(floatEqual(loadedCar->getGlobalTransform().getPosition().z(), car->getGlobalTransform().getPosition().z()));
 
-    assert(floatEqual(loadedCar->getOrientation().x(), car->getOrientation().x()));
-    assert(floatEqual(loadedCar->getOrientation().y(), car->getOrientation().y()));
-    assert(floatEqual(loadedCar->getOrientation().z(), car->getOrientation().z()));
+    assert(floatEqual(loadedCar->getGlobalTransform().getOrientation().x(), car->getGlobalTransform().getOrientation().x()));
+    assert(floatEqual(loadedCar->getGlobalTransform().getOrientation().y(), car->getGlobalTransform().getOrientation().y()));
+    assert(floatEqual(loadedCar->getGlobalTransform().getOrientation().z(), car->getGlobalTransform().getOrientation().z()));
 
     assert(loadedCar->getTransmitters().size() == car->getTransmitters().size());
     assert(loadedCar->getReceivers().size() == car->getReceivers().size());
