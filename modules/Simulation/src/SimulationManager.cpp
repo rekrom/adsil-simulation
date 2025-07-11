@@ -77,7 +77,7 @@ namespace simulation
         {
             float deltaTime = viewer_->getDeltaTime();
             update(deltaTime);
-            signalSolver_->solve();
+            // signalSolver_->solve();
             render();
             // car_->moveForward(0.01F);
         }
