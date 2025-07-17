@@ -35,7 +35,6 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
         if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
             (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
         {
-            std::cout << getName() << " origin at " << origin.toString() << std::endl;
             visible->addPoint(point);
         }
     }
@@ -96,8 +95,8 @@ void Device::setRange(float newRange)
 std::string Device::toString() const
 {
     std::ostringstream oss;
-    oss << "Device(origin=" << transformNode_->getLocalTransform().getPosition().toString()
-        << ", direction=" << transformNode_->getLocalTransform().get3DDirectionVector().toString()
+    oss << "Device(origin=" << transformNode_->getGlobalTransform().getPosition().toString()
+        << ", direction=" << transformNode_->getGlobalTransform().get3DDirectionVector().toString()
         << ", vFOV=" << RotationUtils::rad2deg(vertical_fov_rad_)
         << ", hFOV=" << RotationUtils::rad2deg(horizontal_fov_rad_) << ")";
     return oss.str();

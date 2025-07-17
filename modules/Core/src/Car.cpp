@@ -10,7 +10,7 @@ Car::Car()
       dimension(CarDimension(1, 1, 1))
 {
     transformNode_ = std::make_shared<spatial::TransformNode>();
-    trajectory_.push_back(transformNode_->getLocalTransform().getPosition());
+    trajectory_.push_back(transformNode_->getGlobalTransform().getPosition());
 }
 
 Car::Car(const CarConfig &config)
@@ -21,13 +21,7 @@ Car::Car(const CarConfig &config)
 {
     transformNode_ = config.transformNode;
     // Setup device transform nodes parented to car node
-    for (auto &device : transmitters_)
-    {
-        if (!device->getTransformNode())
-            device->setTransformNode(std::make_shared<spatial::TransformNode>());
-        device->getTransformNode()->setParent(transformNode_);
-    }
-    for (auto &device : receivers_)
+    for (auto &device : getAllDevices())
     {
         if (!device->getTransformNode())
             device->setTransformNode(std::make_shared<spatial::TransformNode>());
@@ -55,48 +49,12 @@ SharedVec<Device> Car::getAllDevices() const
 
 void Car::moveTo(const Point &newPosition)
 {
-    auto localTransform = transformNode_->getLocalTransform();
+    auto localTransform = transformNode_->getGlobalTransform();
     localTransform.setPosition(newPosition);
     transformNode_->setLocalTransform(localTransform);
 
     trajectory_.push_back(newPosition);
 }
-
-// void Car::moveForward(float step)
-// {
-//     Vector orientation = getOrientation();
-
-//     // TODO: check with mustafa
-//     float pitch = orientation.x();
-//     float yaw = orientation.y();
-//     // float roll = orientation.z(); // not needed for forward
-
-//     float x = std::cos(pitch) * std::sin(yaw);
-//     float y = std::sin(pitch);
-//     float z = std::cos(pitch) * std::cos(yaw);
-
-//     Vector forward(x, y, z);
-//     forward = forward.normalized();
-
-//     // Scale by step size
-//     Vector displacement = forward * step;
-
-//     // Get current position and move
-//     Point currentPos = getPosition();
-//     moveTo(currentPos + displacement);
-// }
-
-// void Car::rotateYaw(float angleDeg)
-// {
-//     float angleRad = angleDeg * static_cast<float>(M_PI) / 180.0F;
-
-//     auto localTransform = transformNode_->getLocalTransform();
-//     Vector ori = localTransform.getOrientation();
-//     ori = ori + Vector(0.F, angleRad, 0.F); // Modify yaw (Y axis)
-//     localTransform.setOrientation(ori);
-
-//     transformNode_->setLocalTransform(localTransform);
-// }
 
 CarDimension Car::getDimension() const
 {
@@ -108,26 +66,12 @@ void Car::setDimension(const CarDimension &newCarDimension)
     dimension = newCarDimension;
 }
 
-// void Car::setTransformNode(std::shared_ptr<spatial::TransformNode> transformNode)
-// {
-//     transformNode_ = std::move(transformNode);
-// }
-
 const std::vector<Point> &Car::getTrajectory() const { return trajectory_; }
 
 std::string Car::toString() const
 {
     std::ostringstream oss;
-    oss << "Car(pos=" << transformNode_->getLocalTransform().getPosition().toString()
-        << ", rpy=" << transformNode_->getLocalTransform().getOrientation().toString() << ")";
+    oss << "Car(pos=" << transformNode_->getGlobalTransform().getPosition().toString()
+        << ", rpy=" << transformNode_->getGlobalTransform().getOrientation().toString() << ")";
     return oss.str();
-}
-
-spatial::Transform Car::getDeviceWorldTransform(const Device &device) const
-{
-    if (!device.getTransformNode())
-    {
-        return device.getTransformNode()->getLocalTransform();
-    }
-    return device.getTransformNode()->getGlobalTransform();
 }

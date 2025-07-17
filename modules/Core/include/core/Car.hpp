@@ -20,8 +20,6 @@ public:
     Car(const CarConfig &config);
 
     void moveTo(const Point &newPosition);
-    // void moveForward(float step = 100.0F);
-    // void rotateYaw(float angleDeg);
 
     const SharedVec<Device> &getTransmitters() const;
     const SharedVec<Device> &getReceivers() const;
@@ -45,7 +43,4 @@ private:
     std::vector<Point> trajectory_;
     CarDimension dimension;
     std::string name_;
-
-private:
-    spatial::Transform getDeviceWorldTransform(const Device &device) const;
 };

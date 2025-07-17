@@ -19,6 +19,14 @@ namespace simulation
         if (!scene_ || !scene_->getCar())
             throw std::runtime_error("Missing essential simulation components.");
 
+        frameBuffer_ = std::make_unique<FrameBufferManager>(3);
+        frameBuffer_->setOnFrameChanged([this](int frameId, std::shared_ptr<PointCloud> cloud, double timestamp)
+                                        {
+        if (scene_) {
+            scene_->overrideTimestamp(timestamp);
+            scene_->setExternalPointCloud(cloud);
+        } });
+
         viewer_ = std::make_unique<viewer::OpenGLViewer>(1280, 720, "ADSIL Analyzer - OpenGL");
 
         inputManager_ = std::make_shared<simulation::InputManager>();

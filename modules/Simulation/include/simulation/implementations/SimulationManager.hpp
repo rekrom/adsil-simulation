@@ -5,9 +5,11 @@
 #include <core/Car.hpp>
 #include <core/ResourceLocator.hpp>
 #include <simulation/SimulationScene.hpp>
+#include <simulation/interfaces/ISimulationScene.hpp>
 #include <viewer/implementations/OpenGLViewer.hpp>
 #include <viewer/entities/entities.hpp>
 #include <simulation/implementations/InputManager.hpp>
+#include <simulation/implementations/FrameBufferManager.hpp>
 #include <adapter/AdapterManager.hpp>
 #include <simulation/SignalSolver.hpp>
 
@@ -22,6 +24,10 @@ namespace simulation
         void render();
         void run(); // main loop
 
+        void play();
+        void pause();
+        void seek(int frameIndex);
+
     private:
         void createEntities();
 
@@ -30,7 +36,9 @@ namespace simulation
         std::shared_ptr<simulation::InputManager> inputManager_;
         std::unique_ptr<adapter::AdapterManager> adapters_;
         std::shared_ptr<SimulationScene> scene_;
+        // std::shared_ptr<ISimulationScene> scene_;
         std::unique_ptr<SignalSolver> signalSolver_;
+        std::unique_ptr<FrameBufferManager> frameBuffer_;
 
         // Future: simulation time, sensor updates, etc.
     };

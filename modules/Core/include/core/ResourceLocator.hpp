@@ -16,6 +16,9 @@ namespace core
         // Get the full path to a JSON file (e.g. "car.json")
         static std::string getJsonPath(const std::string &fileName);
 
+        // Get the full path to a JSON file for point cloud scene (e.g. "extracted/frames_json/frame_00000.json")
+        static std::string getJsonPathForScene(const std::string &fileName);
+
         // Get the full path to a model file (e.g. "cube.obj")
         static std::string getModelPath(const std::string &fileName);
 

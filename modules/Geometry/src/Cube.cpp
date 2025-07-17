@@ -24,6 +24,8 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
         {Vector(0, 0, -1), Vector(1, 0, 0), Vector(0, 1, 0)},
     };
 
+    std::cout << "==================Meshing STARTED==================" << std::endl;
+
     for (const auto &[normal, u, v] : faceConfigs)
     {
         auto facePoints = generateFace(normal * half, u, v, n);
@@ -32,10 +34,13 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
             cloud->addPoint(p);
         }
     }
-    // for (const auto &p : cloud->getPoints())
-    // {
-    //     std::cout << p.toString() << std::endl;
-    // }
+
+    for (const auto &p : cloud->getPoints())
+    {
+        std::cout << p.toString() << std::endl;
+    }
+
+    std::cout << "==================Meshing DONE==================" << std::endl;
 
     return cloud;
 }

@@ -3,7 +3,6 @@
 
 #include <spatial/interfaces/interfaces.hpp>
 #include <spatial/implementations/TransformNode.hpp>
-
 namespace spatial
 {
     class HasTransform : public ITransform
@@ -26,13 +25,6 @@ namespace spatial
             assert(transformNode_ && "transformNode_ is null in getGlobalTransform()");
 
             return transformNode_->getGlobalTransform();
-        }
-
-        Transform &getLocalTransform() override
-        {
-            static Transform dummy;
-            return dummy;
-            // return transformNode_->getLocalTransform();
         }
 
     protected:

@@ -20,6 +20,11 @@ namespace core
         return basePath_ + "/" + fileName;
     }
 
+    std::string ResourceLocator::getJsonPathForScene(const std::string &fileName)
+    {
+        return basePath_ + "/extracted_frames_json/" + fileName;
+    }
+
     std::string ResourceLocator::getModelPath(const std::string &fileName)
     {
         return basePath_ + "/models/" + fileName;

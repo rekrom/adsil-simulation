@@ -12,6 +12,5 @@ namespace spatial
 
         virtual std::shared_ptr<TransformNode> getTransformNode() const = 0;
         virtual Transform getGlobalTransform() const = 0;
-        virtual Transform &getLocalTransform() = 0;
     };
 }

@@ -1,6 +1,12 @@
 #include <simulation/SimulationScene.hpp>
 
-SimulationScene::SimulationScene() = default;
+SimulationScene::SimulationScene()
+    : car_(nullptr),
+      shapes_(),
+      externalCloud_(nullptr),
+      timestamp_(0.0)
+{
+}
 
 void SimulationScene::addShape(std::shared_ptr<ShapeBase> shape)
 {
@@ -45,12 +51,41 @@ bool SimulationScene::hasCar() const
 }
 std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) const
 {
+    if (externalCloud_)
+        return externalCloud_;
+    return mergedShapePointCloud(quality);
+}
+
+std::shared_ptr<PointCloud> SimulationScene::mergedShapePointCloud(int quality) const
+{
     auto merged = std::make_shared<PointCloud>();
+
     for (const auto &shape : shapes_)
     {
-        auto cloud = shape->getSurfaceMeshPCD();
-        merged->addPoints(cloud->getPoints());
+        if (!shape)
+            continue;
+        merged = shape->getSurfaceMeshPCD();
     }
 
     return merged;
+}
+
+double SimulationScene::getTimestamp() const
+{
+    return timestamp_;
+}
+
+void SimulationScene::overrideTimestamp(double ts)
+{
+    timestamp_ = ts;
+}
+
+void SimulationScene::setExternalPointCloud(std::shared_ptr<PointCloud> cloud)
+{
+    externalCloud_ = std::move(cloud);
+}
+
+std::shared_ptr<PointCloud> SimulationScene::getExternalPointCloud() const
+{
+    return externalCloud_;
 }
