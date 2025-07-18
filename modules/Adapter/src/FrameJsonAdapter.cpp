@@ -26,17 +26,17 @@ namespace adapter
     std::shared_ptr<simulation::Frame> FrameJsonAdapter::fromJson(const nlohmann::json &j) const
     {
         auto cloud = std::make_shared<PointCloud>();
-        for (const auto &pt : j["pointcloud"])
+        for (const auto &pt : j.at("pointcloud"))
         {
             if (pt.size() == 3)
-                cloud->addPoint(Point(pt[0], pt[1], pt[2]));
+                cloud->addPoint(Point(pt.at(0).get<float>(), pt.at(2).get<float>(), pt.at(1).get<float>()));
         }
 
-        std::shared_ptr<simulation::Frame> frame;
+        std::shared_ptr<simulation::Frame> frame = std::make_shared<simulation::Frame>();
         frame->cloud = cloud;
-        frame->timestamp = j["timestamp"];
-        frame->linearAcceleration = j["imu"]["linear_acceleration"].get<std::vector<float>>();
-        frame->angularVelocity = j["imu"]["angular_velocity"].get<std::vector<float>>();
+        frame->timestamp = j.at("timestamp").get<double>();
+        frame->linearAcceleration = j.at("imu").at("linear_acceleration").get<std::vector<float>>();
+        frame->angularVelocity = j.at("imu").at("angular_velocity").get<std::vector<float>>();
         return frame;
     }
 };
