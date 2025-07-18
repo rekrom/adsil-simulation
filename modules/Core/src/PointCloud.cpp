@@ -29,6 +29,11 @@ std::size_t PointCloud::size() const
     return points_.size();
 }
 
+bool PointCloud::empty() const
+{
+    return points_.empty();
+}
+
 PointCloud PointCloud::operator+(const PointCloud &other) const
 {
     std::vector<Point> combined = points_;

@@ -33,12 +33,12 @@ namespace simulation
 
     private:
         std::unique_ptr<viewer::OpenGLViewer> viewer_;
+        std::shared_ptr<FrameBufferManager> frameBuffer_;
         std::shared_ptr<simulation::InputManager> inputManager_;
         std::unique_ptr<adapter::AdapterManager> adapters_;
         std::shared_ptr<SimulationScene> scene_;
         // std::shared_ptr<ISimulationScene> scene_;
         std::unique_ptr<SignalSolver> signalSolver_;
-        std::unique_ptr<FrameBufferManager> frameBuffer_;
 
         // Future: simulation time, sensor updates, etc.
     };

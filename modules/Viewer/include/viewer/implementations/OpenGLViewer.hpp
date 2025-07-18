@@ -18,6 +18,11 @@
 #include <chrono>
 #include <viewer/common/RenderingTypes.hpp> // instead of defining the enum
 
+namespace simulation
+{
+    class FrameBufferManager;
+}
+
 namespace viewer
 {
     class Renderable;
@@ -35,6 +40,8 @@ namespace viewer
         void setEntities(SharedVec<Entity> e);
 
         void setRenderingMode(RenderingMode mode);
+
+        void setFrameManager(std::shared_ptr<simulation::FrameBufferManager> frameBuffer);
 
         RenderingMode getRenderingMode() const;
 
@@ -80,5 +87,7 @@ namespace viewer
         SharedVec<Entity> entities_;
 
         std::shared_ptr<input::IInputManager> inputManager_;
+
+        std::shared_ptr<simulation::FrameBufferManager> frameManager_;
     };
 }

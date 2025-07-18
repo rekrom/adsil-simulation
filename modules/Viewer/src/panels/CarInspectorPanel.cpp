@@ -55,7 +55,6 @@ namespace viewer::imgui
                     RotationUtils::deg2rad(rpyDeg[1]),
                     RotationUtils::deg2rad(rpyDeg[2])));
                 node->setLocalTransform(transform);
-                std::cout << "Updated orientation: " << rpyDeg[0] << ", " << rpyDeg[1] << ", " << rpyDeg[2] << std::endl;
             }
 
             ImGui::SameLine();

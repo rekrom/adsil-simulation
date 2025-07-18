@@ -35,10 +35,10 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
         }
     }
 
-    for (const auto &p : cloud->getPoints())
-    {
-        std::cout << p.toString() << std::endl;
-    }
+    // for (const auto &p : cloud->getPoints())
+    // {
+    //     std::cout << p.toString() << std::endl;
+    // }
 
     std::cout << "==================Meshing DONE==================" << std::endl;
 

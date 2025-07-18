@@ -81,6 +81,7 @@ namespace viewer
         setupCallbacks(); // Add this line just before returning
 
         imguiLayer_.init(window_);
+        imguiLayer_.setFrameBuffer(frameManager_);
     }
 
     void OpenGLViewer::updateDeltaTime()
@@ -156,6 +157,11 @@ namespace viewer
     void OpenGLViewer::setRenderingMode(RenderingMode mode)
     {
         renderingMode_ = mode;
+    }
+
+    void OpenGLViewer::setFrameManager(std::shared_ptr<simulation::FrameBufferManager> frameBuffer)
+    {
+        frameManager_ = std::move(frameBuffer);
     }
 
     RenderingMode OpenGLViewer::getRenderingMode() const
@@ -276,11 +282,15 @@ namespace viewer
                   });
 
         for (auto &e : opaque)
+        {
             e->render(view, projection);
+        }
 
         glDepthMask(GL_FALSE); // ⛔ prevent depth writes
         for (auto &e : transparent)
+        {
             e->render(view, projection);
+        }
         glDepthMask(GL_TRUE); // ✅ restore
 
         // /// render ends here

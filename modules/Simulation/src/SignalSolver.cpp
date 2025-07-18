@@ -12,18 +12,6 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
     auto result = std::make_shared<PointCloud>();
     auto allPoints = scene_->getMergedPointCloud();
 
-    std::cout << "solving..." << std::endl;
-    for (const auto &p : allPoints->getPoints())
-    {
-        std::cout << p.toString() << std::endl;
-    }
-
-    // TEST PURPOSES CLEAR THIS AREA
-    // allPoints->clear();
-    // allPoints->addPoint(Point(-500 / 1000.0F, 1200 / 1000.0F, 0));
-    // allPoints->addPoint(Point(0, 1200 / 1000.0F, 0));
-    //
-
     const auto &txs = scene_->getTransmitters();
     const auto &rxs = scene_->getReceivers();
 

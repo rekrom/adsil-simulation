@@ -1,6 +1,7 @@
 #include <simulation/implementations/SimulationManager.hpp>
 #include <viewer/entities/GroundEntity.hpp>
 #include <viewer/entities/AxisEntity.hpp>
+#include <viewer/entities/PointCloudEntity.hpp>
 
 #ifndef BASE_RESOURCE_DIR
 #define BASE_RESOURCE_DIR "./resources"
@@ -10,26 +11,31 @@ namespace simulation
 {
     void SimulationManager::init()
     {
+        // Set the base path for resolving resources
         core::ResourceLocator::setBasePath(BASE_RESOURCE_DIR);
 
+        // Initialize adapter system
         adapters_ = std::make_unique<adapter::AdapterManager>();
 
-        scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(core::ResourceLocator::getJsonPath("scene.json"));
+        // Load the simulation scene (includes car, devices, etc.)
+        scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(
+            core::ResourceLocator::getJsonPath("scene.json"));
 
+        // Fail fast if essential components are missing
         if (!scene_ || !scene_->getCar())
-            throw std::runtime_error("Missing essential simulation components.");
+            throw std::runtime_error("Missing essential simulation components (scene or car).");
 
-        frameBuffer_ = std::make_unique<FrameBufferManager>(3);
-        frameBuffer_->setOnFrameChanged([this](int frameId, std::shared_ptr<PointCloud> cloud, double timestamp)
-                                        {
-        if (scene_) {
-            scene_->overrideTimestamp(timestamp);
-            scene_->setExternalPointCloud(cloud);
-        } });
+        // Initialize frame buffer with a ±3 frame window (total = 7)
+        frameBuffer_ = std::make_shared<FrameBufferManager>(3);
 
+        // Initialize the OpenGL viewer
         viewer_ = std::make_unique<viewer::OpenGLViewer>(1280, 720, "ADSIL Analyzer - OpenGL");
+        viewer_->setFrameManager(frameBuffer_);
 
+        // Initialize the input manager (for controlling the simulation)
         inputManager_ = std::make_shared<simulation::InputManager>();
+
+        // Initialize the signal solver (sensor signal processing, etc.)
         signalSolver_ = std::make_unique<SignalSolver>(scene_);
     }
 
@@ -41,23 +47,41 @@ namespace simulation
         auto groundEntity = std::make_shared<viewer::GroundEntity>();
         auto carEntity = std::make_shared<viewer::CarEntity>(scene_->getCar(), glm::vec3(0.2F, 0.6F, 0.9F));
 
-        entities.push_back(groundEntity);
         entities.push_back(axisEntity);
+        entities.push_back(groundEntity);
         entities.push_back(carEntity);
 
         for (auto shape : scene_->getShapes())
         {
             auto shapeEntity = std::make_shared<viewer::ShapeEntity>(shape);
-
             entities.push_back(shapeEntity);
         }
 
+        auto pcEntity = std::make_shared<viewer::PointCloudEntity>();
+        entities.push_back(pcEntity);
+
+        // Connect frame update callback: update the scene with new point cloud and timestamp
+        frameBuffer_->setOnFrameChanged(
+            [this, pcEntity](int frameId, std::shared_ptr<PointCloud> cloud, double timestamp)
+            {
+                std::cout << "[FrameCallback] Frame: " << frameId << ", Points: " << (cloud ? cloud->size() : 0) << "\n";
+
+                if (scene_)
+                {
+                    scene_->overrideTimestamp(timestamp);
+                    scene_->setExternalPointCloud(cloud); // optional
+                }
+                std::cout << "onFrameChanged" << std::endl;
+                pcEntity->setPointCloud(cloud);
+            });
+
+        //
         viewer_->setEntities(entities);
     }
 
     void SimulationManager::update(float deltaTime)
     {
-        inputManager_->processInput(deltaTime, *scene_->getCar(), viewer_->getCamera());
+        inputManager_->processInput(deltaTime, *scene_->getCar(), viewer_->getCamera(), frameBuffer_);
     }
 
     void SimulationManager::render()
@@ -67,9 +91,13 @@ namespace simulation
 
     void SimulationManager::run()
     {
+        // Step 1: Initialize core components (resources, scene, frame buffer, etc.)
         init();
+
+        // Step 2: Create viewer entities from the scene
         createEntities();
 
+        // Step 3: Initialize graphics subsystem
         try
         {
             viewer_->initGraphics();
@@ -79,13 +107,16 @@ namespace simulation
             std::cerr << "Initialization error: " << e.what() << std::endl;
             return;
         }
+
+        // Step 4: Initialize renderable entities in the viewer
         viewer_->initEntities();
 
+        // Step 5: Main simulation loop
         while (!viewer_->shouldClose())
         {
             float deltaTime = viewer_->getDeltaTime();
             update(deltaTime);
-            // signalSolver_->solve();
+            signalSolver_->solve();
             render();
             // car_->moveForward(0.01F);
         }

@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 #include <simulation/implementations/Frame.hpp>
+#include <adapter/AdapterManager.hpp> // Assuming this loads PointCloud
 
 namespace simulation
 {
@@ -26,13 +27,23 @@ namespace simulation
 
         std::shared_ptr<PointCloud> getCurrentCloud() const;
         double getCurrentTimestamp() const;
+        int getCurrentFrameIndex() const { return currentFrameIndex_; }
+        int getTotalFrameCount() const { return totalFrameCount_; }
+
+        std::shared_ptr<Frame> getCenterFrame() const
+        {
+            if (frameWindow_.size() > static_cast<size_t>(windowSize_))
+                return frameWindow_[windowSize_];
+            return nullptr;
+        }
 
         void setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb);
 
     private:
-        Frame frame_;
+        std::unique_ptr<adapter::AdapterManager> adapters_;
+        std::shared_ptr<Frame> frame_;
 
-        std::deque<Frame> frameWindow_;
+        std::deque<std::shared_ptr<Frame>> frameWindow_;
         std::string frameDir_;
         int currentFrameIndex_ = 0;
         int totalFrameCount_ = 0;
@@ -45,7 +56,7 @@ namespace simulation
         std::function<void(int, std::shared_ptr<PointCloud>, double)> onFrameChanged_;
 
         void loadWindowAround(int centerFrame);
-        Frame loadFrame(int frameIndex);
+        std::shared_ptr<Frame> loadFrame(int frameIndex);
         void fireCallback();
     };
 }

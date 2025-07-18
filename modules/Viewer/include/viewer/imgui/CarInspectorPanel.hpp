@@ -19,11 +19,6 @@ namespace viewer::imgui
         void draw(const std::shared_ptr<CarEntity> &carEntity);
 
     private:
-        // void drawTransformSection(const std::shared_ptr<Car> &car);
-        // void drawDimensionSection(const std::shared_ptr<Car> &car, const std::shared_ptr<CarRenderable> &carRenderable);
-        // void drawDeviceListSection(const std::shared_ptr<Car> &car);
-        // void drawDeviceInspector(const std::shared_ptr<Device> &device);
-
         void drawTransformSection(const std::shared_ptr<Car> &car);
         void drawDimensionSection(const std::shared_ptr<CarEntity> &carEntity);
         void drawDeviceListSection(const std::shared_ptr<viewer::CarEntity> &carEntity);

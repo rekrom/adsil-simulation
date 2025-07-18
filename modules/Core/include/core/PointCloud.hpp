@@ -17,6 +17,8 @@ public:
 
     std::size_t size() const;
 
+    bool empty() const;
+
     void clear();
 
     // Merge two point clouds

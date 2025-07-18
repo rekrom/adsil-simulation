@@ -49,6 +49,7 @@ target_link_libraries(Viewer
         Core              # Depends on Core module
         Spatial
         Geometry
+        Simulation
         glad              # GLAD must be linked here
         glfw              # External: GLFW
         OpenGL::GL        # External: OpenGL

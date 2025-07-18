@@ -41,6 +41,6 @@ private:
     SharedVec<Device> transmitters_;
     SharedVec<Device> receivers_;
     std::vector<Point> trajectory_;
-    CarDimension dimension;
+    CarDimension dimension_;
     std::string name_;
 };

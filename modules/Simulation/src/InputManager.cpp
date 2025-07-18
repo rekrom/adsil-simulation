@@ -6,7 +6,8 @@ namespace simulation
 
     void InputManager::processInput(float deltaTime,
                                     Car &car,
-                                    Camera &camera)
+                                    Camera &camera,
+                                    std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
     {
         GLFWwindow *window = glfwGetCurrentContext();
         if (camera.getIsLocked())
@@ -30,7 +31,15 @@ namespace simulation
         {
             car.rotateYaw(-deltaTime);
         }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        {
+            frameBuffer->stepForward();
+        }
 
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        {
+            frameBuffer->stepBackward();
+        }
         // Add camera movement if needed
     }
 

@@ -52,7 +52,9 @@ bool SimulationScene::hasCar() const
 std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) const
 {
     if (externalCloud_)
+    {
         return externalCloud_;
+    }
     return mergedShapePointCloud(quality);
 }
 

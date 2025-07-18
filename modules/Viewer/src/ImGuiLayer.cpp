@@ -66,6 +66,16 @@ namespace viewer
 
             // (optional) Handle other types, like CubeEntity, etc.
         }
+
+        if (frameBuffer_)
+        {
+            frameManagerInspector_.draw(frameBuffer_);
+        }
+    }
+
+    void ImGuiLayer::setFrameBuffer(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
+    {
+        frameBuffer_ = frameBuffer;
     }
 
 }

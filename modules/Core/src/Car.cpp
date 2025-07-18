@@ -7,7 +7,8 @@ Car::Car()
     : transmitters_(),
       receivers_(),
       trajectory_(),
-      dimension(CarDimension(1, 1, 1))
+      dimension_(CarDimension(1, 1, 1)),
+      name_("car")
 {
     transformNode_ = std::make_shared<spatial::TransformNode>();
     trajectory_.push_back(transformNode_->getGlobalTransform().getPosition());
@@ -17,7 +18,8 @@ Car::Car(const CarConfig &config)
     : transmitters_(config.transmitters),
       receivers_(config.receivers),
       trajectory_(),
-      dimension(config.dimension)
+      dimension_(config.dimension),
+      name_("car")
 {
     transformNode_ = config.transformNode;
     // Setup device transform nodes parented to car node
@@ -58,12 +60,12 @@ void Car::moveTo(const Point &newPosition)
 
 CarDimension Car::getDimension() const
 {
-    return dimension;
+    return dimension_;
 }
 
 void Car::setDimension(const CarDimension &newCarDimension)
 {
-    dimension = newCarDimension;
+    dimension_ = newCarDimension;
 }
 
 const std::vector<Point> &Car::getTrajectory() const { return trajectory_; }
