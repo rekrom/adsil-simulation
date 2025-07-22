@@ -7,11 +7,11 @@
 namespace adapter
 {
 
-    class PointJsonAdapter : public IJsonAdapter<Point>
+    class PointJsonAdapter : public IJsonAdapter<math::Point>
     {
     public:
-        nlohmann::json toJson(const Point &point) const override;
-        Point fromJson(const nlohmann::json &j) const override;
+        nlohmann::json toJson(const math::Point &point) const override;
+        math::Point fromJson(const nlohmann::json &j) const override;
     };
 
 } // namespace adapter

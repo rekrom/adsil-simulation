@@ -49,7 +49,7 @@ bool SimulationScene::hasCar() const
 {
     return static_cast<bool>(car_);
 }
-std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) const
+std::shared_ptr<math::PointCloud> SimulationScene::getMergedPointCloud(int quality) const
 {
     if (externalCloud_)
     {
@@ -58,9 +58,9 @@ std::shared_ptr<PointCloud> SimulationScene::getMergedPointCloud(int quality) co
     return mergedShapePointCloud(quality);
 }
 
-std::shared_ptr<PointCloud> SimulationScene::mergedShapePointCloud(int quality) const
+std::shared_ptr<math::PointCloud> SimulationScene::mergedShapePointCloud(int quality) const
 {
-    auto merged = std::make_shared<PointCloud>();
+    auto merged = std::make_shared<math::PointCloud>();
 
     for (const auto &shape : shapes_)
     {
@@ -82,12 +82,12 @@ void SimulationScene::overrideTimestamp(double ts)
     timestamp_ = ts;
 }
 
-void SimulationScene::setExternalPointCloud(std::shared_ptr<PointCloud> cloud)
+void SimulationScene::setExternalPointCloud(std::shared_ptr<math::PointCloud> cloud)
 {
     externalCloud_ = std::move(cloud);
 }
 
-std::shared_ptr<PointCloud> SimulationScene::getExternalPointCloud() const
+std::shared_ptr<math::PointCloud> SimulationScene::getExternalPointCloud() const
 {
     return externalCloud_;
 }

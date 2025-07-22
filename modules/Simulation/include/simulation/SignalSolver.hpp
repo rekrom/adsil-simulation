@@ -14,7 +14,7 @@ public:
     explicit SignalSolver(std::shared_ptr<SimulationScene> scene);
 
     // Runs the solver and returns closest points for each (Tx, Rx) pair
-    std::shared_ptr<PointCloud> solve();
+    std::shared_ptr<math::PointCloud> solve();
 
 private:
     std::shared_ptr<SimulationScene> scene_;

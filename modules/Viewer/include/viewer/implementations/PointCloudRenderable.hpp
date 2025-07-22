@@ -11,14 +11,14 @@ namespace viewer
     class PointCloudRenderable : public Renderable
     {
     public:
-        explicit PointCloudRenderable(std::shared_ptr<PointCloud> pointCloud, glm::vec3 color);
+        explicit PointCloudRenderable(std::shared_ptr<math::PointCloud> pointCloud, glm::vec3 color);
         ~PointCloudRenderable();
 
         void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        void updatePointCloud(std::shared_ptr<PointCloud> newCloud);
+        void updatePointCloud(std::shared_ptr<math::PointCloud> newCloud);
 
         void updateBuffers();
 
@@ -26,7 +26,7 @@ namespace viewer
 
     private:
         bool dirty_ = true;
-        std::shared_ptr<PointCloud> pointCloud_;
+        std::shared_ptr<math::PointCloud> pointCloud_;
         float pointSize_ = 1.0F;
         std::vector<float> vertices_;
 

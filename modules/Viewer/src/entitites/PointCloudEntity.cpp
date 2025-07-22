@@ -3,17 +3,17 @@
 namespace viewer
 {
 
-    PointCloudEntity::PointCloudEntity(std::shared_ptr<PointCloud> cloud, glm::vec3 color)
-        : cloud_(cloud ? cloud : std::make_shared<PointCloud>()), color_(color)
+    PointCloudEntity::PointCloudEntity(std::shared_ptr<math::PointCloud> cloud, glm::vec3 color)
+        : cloud_(cloud ? cloud : std::make_shared<math::PointCloud>()), color_(color)
     {
         renderable_ = std::make_shared<PointCloudRenderable>(cloud_, color_);
     }
 
-    void PointCloudEntity::addPoints(std::vector<Point> points)
+    void PointCloudEntity::addPoints(std::vector<math::Point> points)
     {
         if (!cloud_)
         {
-            cloud_ = std::make_shared<PointCloud>();
+            cloud_ = std::make_shared<math::PointCloud>();
         }
         cloud_->addPoints(points);
         if (renderable_)
@@ -22,7 +22,7 @@ namespace viewer
         }
     }
 
-    void PointCloudEntity::setPointCloud(std::shared_ptr<PointCloud> cloud)
+    void PointCloudEntity::setPointCloud(std::shared_ptr<math::PointCloud> cloud)
     {
         cloud_ = cloud;
         if (renderable_)
@@ -31,7 +31,7 @@ namespace viewer
         }
     }
 
-    std::shared_ptr<PointCloud> PointCloudEntity::getPointCloud() const
+    std::shared_ptr<math::PointCloud> PointCloudEntity::getPointCloud() const
     {
         return cloud_;
     }

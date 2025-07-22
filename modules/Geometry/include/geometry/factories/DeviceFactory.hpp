@@ -15,7 +15,7 @@ public:
 
     static SharedVec<Device> createDevices(
         const std::string &namePrefix,
-        const std::vector<Point> &origins,
+        const std::vector<math::Point> &origins,
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,
@@ -25,7 +25,7 @@ public:
 
     // Wrappers for clarity
     static SharedVec<Device> createTransmitters(
-        const std::vector<Point> &origins,
+        const std::vector<math::Point> &origins,
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,
@@ -34,7 +34,7 @@ public:
         LogCallback onCreate = nullptr);
 
     static SharedVec<Device> createReceivers(
-        const std::vector<Point> &origins,
+        const std::vector<math::Point> &origins,
         const std::vector<Vector> &directions,
         const std::vector<float> &vertical_fovs,
         const std::vector<float> &horizontal_fovs,

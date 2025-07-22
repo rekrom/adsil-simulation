@@ -25,7 +25,7 @@ public:
     const SharedVec<Device> &getReceivers() const;
     SharedVec<Device> getAllDevices() const;
 
-    const std::vector<Point> &getTrajectory() const;
+    const std::vector<math::Point> &getTrajectory() const;
     std::string toString() const;
 
     CarDimension getDimension() const;
@@ -40,7 +40,7 @@ public:
 private:
     SharedVec<Device> transmitters_;
     SharedVec<Device> receivers_;
-    std::vector<Point> trajectory_;
+    std::vector<math::Point> trajectory_;
     CarDimension dimension_;
     std::string name_;
 };

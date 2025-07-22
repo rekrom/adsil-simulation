@@ -11,7 +11,7 @@ namespace spatial
         virtual ~IMovable() = default;
 
         /// Move the object to a new position
-        virtual void moveBy(const Vector &delta) = 0;
+        virtual void moveBy(const math::Vector &delta) = 0;
 
         /// Move the object forward based on internal speed and delta time
         virtual void moveForward(float deltaTime) = 0;

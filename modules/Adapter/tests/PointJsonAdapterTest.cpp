@@ -6,7 +6,7 @@ using namespace adapter;
 
 void test_PointJsonAdapter()
 {
-    Point p(1.0F, 2.0F, 3.0F);
+    math::Point p(1.0F, 2.0F, 3.0F);
     PointJsonAdapter adapter;
 
     nlohmann::json j = adapter.toJson(p);
@@ -15,7 +15,7 @@ void test_PointJsonAdapter()
     assert(j["y"] == 2.0F);
     assert(j["z"] == 3.0F);
 
-    Point p2 = adapter.fromJson(j);
+    math::Point p2 = adapter.fromJson(j);
 
     assert(p2.x() == p.x());
     assert(p2.y() == p.y());

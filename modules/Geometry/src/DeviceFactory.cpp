@@ -3,8 +3,8 @@
 
 SharedVec<Device> DeviceFactory::createDevices(
     const std::string &namePrefix,
-    const std::vector<Point> &origins,
-    const std::vector<Vector> &directions,
+    const std::vector<math::Point> &origins,
+    const std::vector<math::Vector> &directions,
     const std::vector<float> &vertical_fovs,
     const std::vector<float> &horizontal_fovs,
     const std::vector<float> &ranges,
@@ -35,8 +35,8 @@ SharedVec<Device> DeviceFactory::createDevices(
 }
 
 SharedVec<Device> DeviceFactory::createTransmitters(
-    const std::vector<Point> &origins,
-    const std::vector<Vector> &directions,
+    const std::vector<math::Point> &origins,
+    const std::vector<math::Vector> &directions,
     const std::vector<float> &vertical_fovs,
     const std::vector<float> &horizontal_fovs,
     const std::vector<float> &ranges,
@@ -47,8 +47,8 @@ SharedVec<Device> DeviceFactory::createTransmitters(
 }
 
 SharedVec<Device> DeviceFactory::createReceivers(
-    const std::vector<Point> &origins,
-    const std::vector<Vector> &directions,
+    const std::vector<math::Point> &origins,
+    const std::vector<math::Vector> &directions,
     const std::vector<float> &vertical_fovs,
     const std::vector<float> &horizontal_fovs,
     const std::vector<float> &ranges,

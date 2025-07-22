@@ -12,9 +12,9 @@ class Cube : public ShapeBase
 public:
     Cube(CubeConfig config);
 
-    std::shared_ptr<PointCloud> surfaceMesh(int quality = 2048) const override;
+    std::shared_ptr<math::PointCloud> surfaceMesh(int quality = 2048) const override;
 
-    std::vector<Point> wireframe() const override;
+    std::vector<math::Point> wireframe() const override;
 
     std::string toString() const override;
 
@@ -22,7 +22,7 @@ public:
 
 private:
     CubeDimension cubeDimension_;
-    std::vector<Point> generateFace(
+    std::vector<math::Point> generateFace(
         const Vector &center,
         const Vector &u,
         const Vector &v,

@@ -5,7 +5,7 @@
 namespace viewer
 {
 
-    PointCloudRenderable::PointCloudRenderable(std::shared_ptr<PointCloud> pointCloud, glm::vec3 color)
+    PointCloudRenderable::PointCloudRenderable(std::shared_ptr<math::PointCloud> pointCloud, glm::vec3 color)
         : pointCloud_(std::move(pointCloud))
     {
         this->setColor(color);
@@ -131,7 +131,7 @@ namespace viewer
         return center;
     }
 
-    void PointCloudRenderable::updatePointCloud(std::shared_ptr<PointCloud> newCloud)
+    void PointCloudRenderable::updatePointCloud(std::shared_ptr<math::PointCloud> newCloud)
     {
         pointCloud_ = newCloud;
         dirty_ = true;

@@ -43,7 +43,7 @@ namespace adapter
     {
         Point p = pointAdapter_.fromJson(j.at("origin"));
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
-        Vector v_rad(RotationUtils::deg2rad(v.x()), RotationUtils::deg2rad(v.y()), RotationUtils::deg2rad(v.z()));
+        Vector v_rad(math::RotationUtils::deg2rad(v.x()), math::RotationUtils::deg2rad(v.y()), math::RotationUtils::deg2rad(v.z()));
 
         CarDimension dim(0, 0, 0);
         auto dims = j.at("dimension");

@@ -4,17 +4,17 @@
 #include <iostream>
 
 Device::Device(const DeviceConfig &config)
-    : vertical_fov_rad_(RotationUtils::deg2rad(config.vertical_fov_deg)),
-      horizontal_fov_rad_(RotationUtils::deg2rad(config.horizontal_fov_deg)),
+    : vertical_fov_rad_(math::RotationUtils::deg2rad(config.vertical_fov_deg)),
+      horizontal_fov_rad_(math::RotationUtils::deg2rad(config.horizontal_fov_deg)),
       range_(config.range),
       name_(config.name)
 {
     setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
 }
 
-std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
+std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pcd) const
 {
-    auto visible = std::make_shared<PointCloud>();
+    auto visible = std::make_shared<math::PointCloud>();
     const auto &globalTransform = transformNode_->getGlobalTransform();
 
     Point origin = globalTransform.getPosition();
@@ -44,22 +44,22 @@ std::shared_ptr<PointCloud> Device::pointsInFov(const PointCloud &pcd) const
 
 float Device::getHorizontalFovDeg() const
 {
-    return RotationUtils::rad2deg(horizontal_fov_rad_);
+    return math::RotationUtils::rad2deg(horizontal_fov_rad_);
 }
 
 void Device::setHorizontalFovDeg(float horizontalFovDeg)
 {
-    horizontal_fov_rad_ = RotationUtils::deg2rad(horizontalFovDeg);
+    horizontal_fov_rad_ = math::RotationUtils::deg2rad(horizontalFovDeg);
 }
 
 float Device::getVerticalFovDeg() const
 {
-    return RotationUtils::rad2deg(vertical_fov_rad_);
+    return math::RotationUtils::rad2deg(vertical_fov_rad_);
 }
 
 void Device::setVerticalFovDeg(float verticalFovDeg)
 {
-    vertical_fov_rad_ = RotationUtils::deg2rad(verticalFovDeg);
+    vertical_fov_rad_ = math::RotationUtils::deg2rad(verticalFovDeg);
 }
 
 float Device::getHorizontalFovRad() const
@@ -97,7 +97,7 @@ std::string Device::toString() const
     std::ostringstream oss;
     oss << "Device(origin=" << transformNode_->getGlobalTransform().getPosition().toString()
         << ", direction=" << transformNode_->getGlobalTransform().get3DDirectionVector().toString()
-        << ", vFOV=" << RotationUtils::rad2deg(vertical_fov_rad_)
-        << ", hFOV=" << RotationUtils::rad2deg(horizontal_fov_rad_) << ")";
+        << ", vFOV=" << math::RotationUtils::rad2deg(vertical_fov_rad_)
+        << ", hFOV=" << math::RotationUtils::rad2deg(horizontal_fov_rad_) << ")";
     return oss.str();
 }

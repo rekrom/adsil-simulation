@@ -3,7 +3,7 @@
 namespace adapter
 {
 
-    nlohmann::json PointJsonAdapter::toJson(const Point &point) const
+    nlohmann::json PointJsonAdapter::toJson(const math::Point &point) const
     {
         return {
             {"x", point.x()},
@@ -11,9 +11,9 @@ namespace adapter
             {"z", point.z()}};
     }
 
-    Point PointJsonAdapter::fromJson(const nlohmann::json &j) const
+    math::Point PointJsonAdapter::fromJson(const nlohmann::json &j) const
     {
-        return Point(
+        return math::Point(
             j.at("x").get<float>(),
             j.at("y").get<float>(),
             j.at("z").get<float>());

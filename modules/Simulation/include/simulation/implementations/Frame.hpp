@@ -9,7 +9,7 @@ namespace simulation
 {
     struct Frame
     {
-        std::shared_ptr<PointCloud> cloud;
+        std::shared_ptr<math::PointCloud> cloud;
         double timestamp = 0.0;
         std::vector<float> linearAcceleration; // imu
         std::vector<float> angularVelocity;

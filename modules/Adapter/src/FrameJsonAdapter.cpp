@@ -25,7 +25,7 @@ namespace adapter
 
     std::shared_ptr<simulation::Frame> FrameJsonAdapter::fromJson(const nlohmann::json &j) const
     {
-        auto cloud = std::make_shared<PointCloud>();
+        auto cloud = std::make_shared<math::PointCloud>();
         for (const auto &pt : j.at("pointcloud"))
         {
             if (pt.size() == 3)

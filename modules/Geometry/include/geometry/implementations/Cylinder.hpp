@@ -11,9 +11,9 @@ class Cylinder : public ShapeBase
 public:
     Cylinder(CylinderConfig config);
 
-    std::shared_ptr<PointCloud> surfaceMesh(int quality = 2048) const override;
+    std::shared_ptr<math::PointCloud> surfaceMesh(int quality = 2048) const override;
 
-    std::vector<Point> wireframe() const override;
+    std::vector<math::Point> wireframe() const override;
 
     std::string toString() const override;
 

@@ -108,7 +108,7 @@ namespace simulation
         fireCallback();
     }
 
-    std::shared_ptr<PointCloud> FrameBufferManager::getCurrentCloud() const
+    std::shared_ptr<math::PointCloud> FrameBufferManager::getCurrentCloud() const
     {
         if (!frameWindow_.empty())
             return frameWindow_[windowSize_]->cloud;
@@ -122,7 +122,7 @@ namespace simulation
         return 0.0;
     }
 
-    // void FrameBufferManager::setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb)
+    // void FrameBufferManager::setOnFrameChanged(std::function<void(int, std::shared_ptr<math::PointCloud>, double)> cb)
     // {
     //     onFrameChanged_ = std::move(cb);
     //     // 🔥 Trigger immediately for current frame, if valid

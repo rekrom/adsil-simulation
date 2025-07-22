@@ -8,6 +8,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+using math::Point;
+using math::Vector;
+
 namespace spatial
 {
     class Transform

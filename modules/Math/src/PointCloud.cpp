@@ -1,49 +1,52 @@
 #include <math/PointCloud.hpp>
 #include <sstream>
 
-PointCloud::PointCloud(const std::vector<Point> &points)
-    : points_(points) {}
-
-void PointCloud::addPoint(const Point &point)
+namespace math
 {
-    points_.emplace_back(point);
-}
+    PointCloud::PointCloud(const std::vector<math::Point> &points)
+        : points_(points) {}
 
-void PointCloud::addPoints(const std::vector<Point> &newPoints)
-{
-    points_.insert(points_.end(), newPoints.begin(), newPoints.end());
-}
+    void PointCloud::addPoint(const Point &point)
+    {
+        points_.emplace_back(point);
+    }
 
-const std::vector<Point> &PointCloud::getPoints() const
-{
-    return points_;
-}
+    void PointCloud::addPoints(const std::vector<math::Point> &newPoints)
+    {
+        points_.insert(points_.end(), newPoints.begin(), newPoints.end());
+    }
 
-void PointCloud::clear()
-{
-    points_.clear();
-}
+    const std::vector<math::Point> &PointCloud::getPoints() const
+    {
+        return points_;
+    }
 
-std::size_t PointCloud::size() const
-{
-    return points_.size();
-}
+    void PointCloud::clear()
+    {
+        points_.clear();
+    }
 
-bool PointCloud::empty() const
-{
-    return points_.empty();
-}
+    std::size_t PointCloud::size() const
+    {
+        return points_.size();
+    }
 
-PointCloud PointCloud::operator+(const PointCloud &other) const
-{
-    std::vector<Point> combined = points_;
-    combined.insert(combined.end(), other.points_.begin(), other.points_.end());
-    return PointCloud(combined);
-}
+    bool PointCloud::empty() const
+    {
+        return points_.empty();
+    }
 
-std::string PointCloud::toString() const
-{
-    std::ostringstream oss;
-    oss << "PointCloud(" << points_.size() << " points)";
-    return oss.str();
+    PointCloud PointCloud::operator+(const PointCloud &other) const
+    {
+        std::vector<math::Point> combined = points_;
+        combined.insert(combined.end(), other.points_.begin(), other.points_.end());
+        return PointCloud(combined);
+    }
+
+    std::string PointCloud::toString() const
+    {
+        std::ostringstream oss;
+        oss << "PointCloud(" << points_.size() << " points)";
+        return oss.str();
+    }
 }

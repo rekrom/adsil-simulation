@@ -25,14 +25,14 @@ namespace simulation
         void stepForward();
         void stepBackward();
 
-        std::shared_ptr<PointCloud> getCurrentCloud() const;
+        std::shared_ptr<math::PointCloud> getCurrentCloud() const;
         double getCurrentTimestamp() const;
         int getCurrentFrameIndex() const { return currentFrameIndex_; }
         int getTotalFrameCount() const { return totalFrameCount_; }
 
         std::shared_ptr<Frame> getCurrentFrame() const;
 
-        // void setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb);
+        // void setOnFrameChanged(std::function<void(int, std::shared_ptr<math::PointCloud>, double)> cb);
 
         void addFrameObserver(const std::shared_ptr<IFrameObserver> &observer);
 
@@ -52,7 +52,7 @@ namespace simulation
 
         std::vector<std::weak_ptr<IFrameObserver>> frameObservers_; // avoid ownership cycle
 
-        std::function<void(int, std::shared_ptr<PointCloud>, double)> onFrameChanged_;
+        std::function<void(int, std::shared_ptr<math::PointCloud>, double)> onFrameChanged_;
 
         void loadWindowAround(int centerFrame);
         std::shared_ptr<Frame> loadFrame(int frameIndex);

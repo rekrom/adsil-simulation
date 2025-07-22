@@ -12,7 +12,7 @@ namespace viewer
     class WireframeRenderable : public Renderable
     {
     public:
-        explicit WireframeRenderable(const std::vector<Point> &lines, glm::vec3 color = glm::vec3(1.0F));
+        explicit WireframeRenderable(const std::vector<math::Point> &lines, glm::vec3 color = glm::vec3(1.0F));
         ~WireframeRenderable();
 
         void initGL() override;
@@ -20,7 +20,7 @@ namespace viewer
         void cleanup() override;
 
     private:
-        std::vector<Point> lines_;
+        std::vector<math::Point> lines_;
         glm::vec3 color_;
 
     protected:

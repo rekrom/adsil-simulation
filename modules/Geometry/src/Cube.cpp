@@ -8,9 +8,9 @@ Cube::Cube(CubeConfig config)
     setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
 }
 
-std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
+std::shared_ptr<math::PointCloud> Cube::surfaceMesh(int quality) const
 {
-    auto cloud = std::make_shared<PointCloud>();
+    auto cloud = std::make_shared<math::PointCloud>();
     auto dim = cubeDimension_.height; // it can be width or length
     float half = dim / 2.0F;
     int n = std::max(2, static_cast<int>(std::sqrt(quality)));
@@ -45,9 +45,9 @@ std::shared_ptr<PointCloud> Cube::surfaceMesh(int quality) const
     return cloud;
 }
 
-std::vector<Point> Cube::wireframe() const
+std::vector<math::Point> Cube::wireframe() const
 {
-    std::vector<Point> edges;
+    std::vector<math::Point> edges;
     auto node = getTransformNode();
     auto transform = node->getGlobalTransform();
     glm::vec3 center = transform.getPosition().toGlmVec3();
@@ -94,9 +94,9 @@ std::vector<Point> Cube::wireframe() const
     return edges;
 }
 
-std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, const Vector &v, int n) const
+std::vector<math::Point> Cube::generateFace(const Vector &center, const Vector &u, const Vector &v, int n) const
 {
-    std::vector<Point> points;
+    std::vector<math::Point> points;
     auto dim = cubeDimension_.height; // it can be width or length
 
     float step = dim / static_cast<float>(n - 1);
@@ -107,7 +107,7 @@ std::vector<Point> Cube::generateFace(const Vector &center, const Vector &u, con
             Vector offset = u * (-dim / 2 + static_cast<float>(i) * step) + v * (-dim / 2 + static_cast<float>(j) * step);
             auto node = getTransformNode();
             auto transform = node->getGlobalTransform();
-            Vector rotated = RotationUtils::rotateRPY(center + offset, transform.getOrientation());
+            Vector rotated = math::RotationUtils::rotateRPY(center + offset, transform.getOrientation());
             points.emplace_back(
                 transform.getPosition().x() + rotated.x(),
                 transform.getPosition().y() + rotated.y(),

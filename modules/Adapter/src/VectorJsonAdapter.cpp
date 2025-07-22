@@ -3,7 +3,7 @@
 namespace adapter
 {
 
-    nlohmann::json VectorJsonAdapter::toJson(const Vector &vector) const
+    nlohmann::json VectorJsonAdapter::toJson(const math::Vector &vector) const
     {
         return {
             {"x", vector.x()},
@@ -11,9 +11,9 @@ namespace adapter
             {"z", vector.z()}};
     }
 
-    Vector VectorJsonAdapter::fromJson(const nlohmann::json &j) const
+    math::Vector VectorJsonAdapter::fromJson(const nlohmann::json &j) const
     {
-        return Vector(
+        return math::Vector(
             j.at("x").get<float>(),
             j.at("y").get<float>(),
             j.at("z").get<float>());

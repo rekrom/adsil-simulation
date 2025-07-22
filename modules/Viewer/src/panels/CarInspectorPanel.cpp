@@ -44,16 +44,16 @@ namespace viewer::imgui
             // Orientation
             Vector rpy = transform.getOrientation(); // Use the same 'transform' from earlier
             float rpyDeg[3] = {
-                RotationUtils::rad2deg(rpy.x()),
-                RotationUtils::rad2deg(rpy.y()),
-                RotationUtils::rad2deg(rpy.z())};
+                math::RotationUtils::rad2deg(rpy.x()),
+                math::RotationUtils::rad2deg(rpy.y()),
+                math::RotationUtils::rad2deg(rpy.z())};
 
             if (ImGui::DragFloat3("Orientation (Roll, Pitch, Yaw)", rpyDeg, 1.0F, -180.0F, 180.0F))
             {
-                transform.setOrientation(Vector(
-                    RotationUtils::deg2rad(rpyDeg[0]),
-                    RotationUtils::deg2rad(rpyDeg[1]),
-                    RotationUtils::deg2rad(rpyDeg[2])));
+                transform.setOrientation(math::Vector(
+                    math::RotationUtils::deg2rad(rpyDeg[0]),
+                    math::RotationUtils::deg2rad(rpyDeg[1]),
+                    math::RotationUtils::deg2rad(rpyDeg[2])));
                 node->setLocalTransform(transform);
             }
 
@@ -183,16 +183,16 @@ namespace viewer::imgui
         // Orientation
         Vector rpy = transform.getOrientation();
         float rpyDeg[3] = {
-            RotationUtils::rad2deg(rpy.x()),
-            RotationUtils::rad2deg(rpy.y()),
-            RotationUtils::rad2deg(rpy.z())};
+            math::RotationUtils::rad2deg(rpy.x()),
+            math::RotationUtils::rad2deg(rpy.y()),
+            math::RotationUtils::rad2deg(rpy.z())};
 
         if (ImGui::DragFloat3("Orientation (RPY)", rpyDeg, 1.0F, -180.0F, 180.0F))
         {
-            transform.setOrientation(Vector(
-                RotationUtils::deg2rad(rpyDeg[0]),
-                RotationUtils::deg2rad(rpyDeg[1]),
-                RotationUtils::deg2rad(rpyDeg[2])));
+            transform.setOrientation(math::Vector(
+                math::RotationUtils::deg2rad(rpyDeg[0]),
+                math::RotationUtils::deg2rad(rpyDeg[1]),
+                math::RotationUtils::deg2rad(rpyDeg[2])));
             node->setLocalTransform(transform);
         }
 

@@ -16,7 +16,7 @@ class Device : public spatial::HasTransform
 public:
     Device(const DeviceConfig &config);
 
-    std::shared_ptr<PointCloud> pointsInFov(const PointCloud &pcd) const;
+    std::shared_ptr<math::PointCloud> pointsInFov(const math::PointCloud &pcd) const;
 
     std::string toString() const;
 

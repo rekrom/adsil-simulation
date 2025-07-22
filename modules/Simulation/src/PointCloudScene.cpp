@@ -7,7 +7,7 @@
 using json = nlohmann::json;
 
 PointCloudScene::PointCloudScene(const std::string &jsonPath)
-    : cloud_(std::make_shared<PointCloud>()), timestamp_(0.0)
+    : cloud_(std::make_shared<math::PointCloud>()), timestamp_(0.0)
 {
     std::ifstream in(jsonPath);
     if (!in.is_open())
@@ -29,7 +29,7 @@ PointCloudScene::PointCloudScene(const std::string &jsonPath)
         {
             if (pt.is_array() && pt.size() == 3)
             {
-                cloud_->addPoint(Point(
+                cloud_->addPoint(math::Point(
                     static_cast<float>(pt[0]),
                     static_cast<float>(pt[1]),
                     static_cast<float>(pt[2])));
@@ -38,7 +38,7 @@ PointCloudScene::PointCloudScene(const std::string &jsonPath)
     }
 }
 
-std::shared_ptr<PointCloud> PointCloudScene::getMergedPointCloud(int) const
+std::shared_ptr<math::PointCloud> PointCloudScene::getMergedPointCloud(int) const
 {
     return cloud_;
 }

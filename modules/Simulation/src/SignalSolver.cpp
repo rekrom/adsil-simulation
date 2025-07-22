@@ -6,10 +6,10 @@ SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
 {
 }
 
-std::shared_ptr<PointCloud> SignalSolver::solve()
+std::shared_ptr<math::PointCloud> SignalSolver::solve()
 {
     // std::cout << "solving..." << std::endl;
-    auto result = std::make_shared<PointCloud>();
+    auto result = std::make_shared<math::PointCloud>();
     auto allPoints = scene_->getMergedPointCloud();
 
     const auto &txs = scene_->getTransmitters();
@@ -33,7 +33,7 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
                 continue;
             }
 
-            std::vector<Point> points = inRxFov->getPoints();
+            std::vector<math::Point> points = inRxFov->getPoints();
 
             // Find the closest point (based on Tx + Rx distance)
             float minDist = std::numeric_limits<float>::max();

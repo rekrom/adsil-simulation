@@ -35,15 +35,15 @@ public:
     bool hasCar() const;
 
     // Merged point cloud from all shapes
-    std::shared_ptr<PointCloud> getMergedPointCloud(int quality = 2048) const override;
+    std::shared_ptr<math::PointCloud> getMergedPointCloud(int quality = 2048) const override;
 
     // Timestamp override
     double getTimestamp() const override;
 
     // Inject real data
     void overrideTimestamp(double ts);
-    void setExternalPointCloud(std::shared_ptr<PointCloud> cloud);
-    std::shared_ptr<PointCloud> getExternalPointCloud() const;
+    void setExternalPointCloud(std::shared_ptr<math::PointCloud> cloud);
+    std::shared_ptr<math::PointCloud> getExternalPointCloud() const;
 
     void onFrameChanged(const std::shared_ptr<simulation::Frame> &frame) override;
 
@@ -52,9 +52,9 @@ private:
     SharedVec<ShapeBase> shapes_;
 
     // Real-frame override
-    std::shared_ptr<PointCloud> externalCloud_ = nullptr;
+    std::shared_ptr<math::PointCloud> externalCloud_ = nullptr;
     double timestamp_ = 0.0;
 
     // Internal helper
-    std::shared_ptr<PointCloud> mergedShapePointCloud(int quality) const;
+    std::shared_ptr<math::PointCloud> mergedShapePointCloud(int quality) const;
 };

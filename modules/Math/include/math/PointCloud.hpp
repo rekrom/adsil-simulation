@@ -5,27 +5,30 @@
 #include <memory>
 #include <string>
 
-class PointCloud
+namespace math
 {
-public:
-    PointCloud() = default;
-    PointCloud(const std::vector<Point> &points);
+    class PointCloud
+    {
+    public:
+        PointCloud() = default;
+        PointCloud(const std::vector<math::Point> &points);
 
-    void addPoint(const Point &point);
-    void addPoints(const std::vector<Point> &newPoints);
-    const std::vector<Point> &getPoints() const;
+        void addPoint(const Point &point);
+        void addPoints(const std::vector<math::Point> &newPoints);
+        const std::vector<math::Point> &getPoints() const;
 
-    std::size_t size() const;
+        std::size_t size() const;
 
-    bool empty() const;
+        bool empty() const;
 
-    void clear();
+        void clear();
 
-    // Merge two point clouds
-    PointCloud operator+(const PointCloud &other) const;
+        // Merge two point clouds
+        PointCloud operator+(const PointCloud &other) const;
 
-    std::string toString() const;
+        std::string toString() const;
 
-private:
-    std::vector<Point> points_;
-};
+    private:
+        std::vector<math::Point> points_;
+    };
+}

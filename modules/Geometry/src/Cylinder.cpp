@@ -8,9 +8,9 @@ Cylinder::Cylinder(CylinderConfig config)
     setTransformNode(std::make_shared<spatial::TransformNode>(config.transform));
 }
 
-std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
+std::shared_ptr<math::PointCloud> Cylinder::surfaceMesh(int quality) const
 {
-    auto cloud = std::make_shared<PointCloud>();
+    auto cloud = std::make_shared<math::PointCloud>();
     int circRes = std::max(8, quality);
     int heightRes = std::max(2, quality / 2);
     float halfHeight = cylinderDimension.height_ / 2.0F;
@@ -24,7 +24,7 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
             float angle = 2.0F * PI * static_cast<float>(i) / static_cast<float>(circRes);
 
             Vector local(cylinderDimension.radius_ * std::cos(angle), cylinderDimension.radius_ * std::sin(angle), z);
-            Vector rotated = RotationUtils::rotateRPY(local, globalTransform.getOrientation());
+            Vector rotated = math::RotationUtils::rotateRPY(local, globalTransform.getOrientation());
             cloud->addPoint(Point(
                 globalTransform.getPosition().x() + rotated.x(),
                 globalTransform.getPosition().y() + rotated.y(),
@@ -47,7 +47,7 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
             Vector local = base + (top - base) * t;
             auto node = getTransformNode();
             auto transform = node->getGlobalTransform();
-            Vector rotated = RotationUtils::rotateRPY(local, transform.getOrientation());
+            Vector rotated = math::RotationUtils::rotateRPY(local, transform.getOrientation());
             cloud->addPoint(Point(
                 transform.getPosition().x() + rotated.x(),
                 transform.getPosition().y() + rotated.y(),
@@ -58,9 +58,9 @@ std::shared_ptr<PointCloud> Cylinder::surfaceMesh(int quality) const
     return cloud;
 }
 
-std::vector<Point> Cylinder::wireframe() const
+std::vector<math::Point> Cylinder::wireframe() const
 {
-    std::vector<Point> framePoints;
+    std::vector<math::Point> framePoints;
 
     int segments = 16;
     constexpr float PI = static_cast<float>(M_PI);
@@ -77,8 +77,8 @@ std::vector<Point> Cylinder::wireframe() const
         Vector topLocal(x, y, +halfHeight);
         auto node = getTransformNode();
         auto transform = node->getGlobalTransform();
-        Vector bottomRotated = RotationUtils::rotateRPY(bottomLocal, transform.getOrientation());
-        Vector topRotated = RotationUtils::rotateRPY(topLocal, transform.getOrientation());
+        Vector bottomRotated = math::RotationUtils::rotateRPY(bottomLocal, transform.getOrientation());
+        Vector topRotated = math::RotationUtils::rotateRPY(topLocal, transform.getOrientation());
 
         framePoints.emplace_back(Point(
             transform.getPosition().x() + bottomRotated.x(),

@@ -13,7 +13,7 @@ public:
     ShapeBase(std::string name)
         : name_(name) {}
 
-    std::shared_ptr<PointCloud> getSurfaceMeshPCD() const override
+    std::shared_ptr<math::PointCloud> getSurfaceMeshPCD() const override
     {
         if (!surfaceMeshPcd_ || surfaceMeshPcd_->size() == 0)
         {
@@ -31,6 +31,6 @@ public:
 
 protected:
     std::string name_;
-    mutable std::shared_ptr<PointCloud> surfaceMeshPcd_; //  since its using by a const method but it modifies a member.
+    mutable std::shared_ptr<math::PointCloud> surfaceMeshPcd_; //  since its using by a const method but it modifies a member.
     int meshQuality_{2048};
 };

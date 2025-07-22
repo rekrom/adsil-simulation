@@ -11,13 +11,13 @@ void test_JsonAdapterRegistry_with_Point()
     JsonAdapterRegistry registry;
 
     // Adapter kaydı
-    registry.registerAdapter<Point>(std::make_shared<PointJsonAdapter>());
+    registry.registerAdapter<math::Point>(std::make_shared<PointJsonAdapter>());
 
     // Orijinal Point objesi
-    Point p1(10.0F, 20.0F, 30.0F);
+    math::Point p1(10.0F, 20.0F, 30.0F);
 
     // Adapter aracılığıyla JSON'a çevir
-    auto *adapter = registry.getAdapter<Point>();
+    auto *adapter = registry.getAdapter<math::Point>();
     assert(adapter != nullptr);
 
     nlohmann::json j = adapter->toJson(p1);
@@ -25,7 +25,7 @@ void test_JsonAdapterRegistry_with_Point()
               << j.dump(2) << "\n";
 
     // JSON'dan geri objeyi oluştur
-    Point p2 = adapter->fromJson(j);
+    math::Point p2 = adapter->fromJson(j);
 
     // Doğrulama
     assert(p2.x() == p1.x());

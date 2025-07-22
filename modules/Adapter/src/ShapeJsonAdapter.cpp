@@ -49,7 +49,7 @@ namespace adapter
         Point origin = pointAdapter_.fromJson(j.at("origin"));
 
         Vector v = vectorAdapter_.fromJson(j.at("orientation"));
-        Vector orientation(RotationUtils::deg2rad(v.x()), RotationUtils::deg2rad(v.y()), RotationUtils::deg2rad(v.z()));
+        Vector orientation(math::RotationUtils::deg2rad(v.x()), math::RotationUtils::deg2rad(v.y()), math::RotationUtils::deg2rad(v.z()));
         spatial::Transform t(origin, orientation);
         if (type == "Cube")
         {
