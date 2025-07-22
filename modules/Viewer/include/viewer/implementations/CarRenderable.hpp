@@ -1,4 +1,5 @@
 #pragma once
+#include <core/Logger.hpp>
 
 #include <core/Car.hpp>
 #include <viewer/implementations/Renderable.hpp>

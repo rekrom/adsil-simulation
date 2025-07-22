@@ -32,7 +32,7 @@ namespace viewer
 
     void FoVPyramidRenderable::createShader()
     {
-        // std::cout << "[FoVPyramidRenderable] Compiling shaders..." << std::endl;
+        LOGGER_DEBUG("Compiling shaders for FoVPyramidRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("fov_pyramid");
 

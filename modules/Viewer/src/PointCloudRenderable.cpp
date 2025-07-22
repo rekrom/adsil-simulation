@@ -32,7 +32,7 @@ namespace viewer
 
     void PointCloudRenderable::createShader()
     {
-        std::cout << "[PointCloudRenderable] Compiling shaders..." << std::endl;
+        LOGGER_DEBUG("Compiling shaders for PointCloudRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("point_cloud");
 

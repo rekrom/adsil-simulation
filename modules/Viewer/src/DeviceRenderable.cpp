@@ -145,7 +145,7 @@ namespace viewer
 
     void DeviceRenderable::createShader()
     {
-        // std::cout << "[DeviceRenderable] Compiling shaders..." << std::endl;
+        LOGGER_DEBUG("Compiling shaders for DeviceRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("device");
 

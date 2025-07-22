@@ -26,7 +26,7 @@ namespace viewer
 
     void ShapeRenderable::createShader()
     {
-        // std::cout << "[ShapeRenderable] Compiling shaders..." << std::endl;
+        LOGGER_INFO("Compiling shaders for ShapeRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("shape");
 

@@ -254,7 +254,7 @@ namespace viewer
 
     void CarRenderable::createShader()
     {
-        // std::cout << "[CarRenderable] Compiling shaders..." << std::endl;
+        LOGGER_DEBUG("Compiling shaders for CarRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("car");
 

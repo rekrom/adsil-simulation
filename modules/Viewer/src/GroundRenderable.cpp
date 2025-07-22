@@ -21,7 +21,7 @@ namespace viewer
 
     void GroundRenderable::createShader()
     {
-        // std::cout << "[GroundRenderable] Compiling shaders..." << std::endl;
+        LOGGER_DEBUG("Compiling shaders for GroundRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("ground");
     }

@@ -2,6 +2,7 @@
 
 #include <viewer/implementations/Renderable.hpp>
 #include <core/PointCloud.hpp>
+#include <core/Logger.hpp>
 #include <memory>
 #include <glad/glad.h>
 

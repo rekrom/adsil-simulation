@@ -1,4 +1,5 @@
 #pragma once
+#include <core/Logger.hpp>
 
 #include <viewer/implementations/Renderable.hpp>
 #include <core/Point.hpp>

@@ -28,7 +28,7 @@ namespace viewer
 
     void WireframeRenderable::createShader()
     {
-        // std::cout << "[WireframeRenderable] Compiling shaders..." << std::endl;
+        LOGGER_INFO("Compiling shaders for WireframeRenderable");
 
         shader_ = shader::ShaderUtils::createProgramFromFiles("wireframe");
     }

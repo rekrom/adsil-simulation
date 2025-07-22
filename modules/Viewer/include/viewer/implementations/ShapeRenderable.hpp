@@ -1,4 +1,5 @@
 #pragma once
+#include <core/Logger.hpp>
 
 #include <geometry/implementations/ShapeBase.hpp>
 #include <viewer/implementations/Renderable.hpp>
