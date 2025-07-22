@@ -43,6 +43,22 @@ Point Vector::rotatePoint(const Point &point) const
     return Point(rotated.x, rotated.y, rotated.z);
 }
 
+Vector &Vector::operator+=(const Vector &other)
+{
+    x_ += other.x_;
+    y_ += other.y_;
+    z_ += other.z_;
+    return *this;
+}
+
+Vector &Vector::operator-=(const Vector &other)
+{
+    x_ -= other.x_;
+    y_ -= other.y_;
+    z_ -= other.z_;
+    return *this;
+}
+
 Vector Vector::operator+(const Vector &other) const
 {
     return Vector(x_ + other.x_, y_ + other.y_, z_ + other.z_);

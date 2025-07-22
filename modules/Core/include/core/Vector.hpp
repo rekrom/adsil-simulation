@@ -29,7 +29,9 @@ public:
     [[nodiscard]] Vector cross(const Vector &other) const;
     [[nodiscard]] Point rotatePoint(const Point &point) const;
 
+    Vector &operator+=(const Vector &other);
     Vector operator+(const Vector &other) const;
+    Vector &operator-=(const Vector &other);
     Vector operator-(const Vector &other) const;
     Vector operator*(const Vector &other) const;
     Vector operator*(float scalar) const;
