@@ -122,17 +122,17 @@ namespace simulation
         return 0.0;
     }
 
-    void FrameBufferManager::setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb)
-    {
-        onFrameChanged_ = std::move(cb);
-        // 🔥 Trigger immediately for current frame, if valid
-        if (!frameWindow_.empty() && frameWindow_[windowSize_]->cloud)
-        {
-            onFrameChanged_(currentFrameIndex_,
-                            frameWindow_[windowSize_]->cloud,
-                            frameWindow_[windowSize_]->timestamp);
-        }
-    }
+    // void FrameBufferManager::setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb)
+    // {
+    //     onFrameChanged_ = std::move(cb);
+    //     // 🔥 Trigger immediately for current frame, if valid
+    //     if (!frameWindow_.empty() && frameWindow_[windowSize_]->cloud)
+    //     {
+    //         onFrameChanged_(currentFrameIndex_,
+    //                         frameWindow_[windowSize_]->cloud,
+    //                         frameWindow_[windowSize_]->timestamp);
+    //     }
+    // }
 
     void FrameBufferManager::loadWindowAround(int centerFrame)
     {
@@ -186,10 +186,8 @@ namespace simulation
         // 🔹 Notify all registered observers
         for (auto it = frameObservers_.begin(); it != frameObservers_.end();)
         {
-            std::cout << "[FrameCallback] Notifying observer for frame: " << currentFrameIndex_ << "\n";
             if (auto observer = it->lock())
             {
-                std::cout << "[FrameCallback] Observer is valid, notifying...\n";
                 observer->onFrameChanged(frame);
                 ++it;
             }

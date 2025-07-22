@@ -9,6 +9,7 @@
 #include <simulation/implementations/Frame.hpp>
 #include <adapter/AdapterManager.hpp> // Assuming this loads PointCloud
 #include <simulation/interfaces/IFrameObserver.hpp>
+#include <core/Logger.hpp>
 
 namespace simulation
 {
@@ -31,7 +32,7 @@ namespace simulation
 
         std::shared_ptr<Frame> getCurrentFrame() const;
 
-        void setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb);
+        // void setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb);
 
         void addFrameObserver(const std::shared_ptr<IFrameObserver> &observer);
 

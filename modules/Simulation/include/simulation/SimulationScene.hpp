@@ -6,6 +6,7 @@
 #include <core/PointCloud.hpp>
 #include <core/Car.hpp>
 #include <core/Alias.hpp>
+#include <core/Logger.hpp>
 
 #include <simulation/interfaces/ISimulationScene.hpp>
 #include <simulation/interfaces/IFrameObserver.hpp>

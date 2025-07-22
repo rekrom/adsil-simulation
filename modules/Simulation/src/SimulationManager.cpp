@@ -63,13 +63,9 @@ namespace simulation
         auto pcEntity = std::make_shared<viewer::PointCloudEntity>(this->scene_->getExternalPointCloud());
         entities.push_back(pcEntity);
 
-        // Connect frame update callback: update the scene with new point cloud and timestamp
-        frameBuffer_->setOnFrameChanged(
-            [this, pcEntity](int frameId, std::shared_ptr<PointCloud> cloud, double timestamp)
-            {
-                LOGGER_INFO("onFrameChanged");
-                pcEntity->setPointCloud(cloud);
-            });
+        // In createEntities():
+        pcEntityObserver_ = std::make_shared<viewer::PointCloudEntityObserver>(pcEntity);
+        frameBuffer_->addFrameObserver(pcEntityObserver_);
 
         detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
         detectedPointCloudEntity_->setPointSize(10.0F);

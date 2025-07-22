@@ -13,6 +13,7 @@
 #include <adapter/AdapterManager.hpp>
 #include <simulation/SignalSolver.hpp>
 #include <core/Logger.hpp>
+#include <viewer/entities/PointCloudEntityObserver.hpp>
 
 namespace simulation
 {
@@ -42,6 +43,9 @@ namespace simulation
         std::unique_ptr<SignalSolver> signalSolver_;
 
         std::shared_ptr<viewer::PointCloudEntity> detectedPointCloudEntity_;
+
+        // In SimulationManager.hpp:
+        std::shared_ptr<viewer::PointCloudEntityObserver> pcEntityObserver_;
         // Future: simulation time, sensor updates, etc.3
     };
 

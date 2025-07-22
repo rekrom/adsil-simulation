@@ -98,10 +98,10 @@ void SimulationScene::onFrameChanged(const std::shared_ptr<simulation::Frame> &f
     {
         overrideTimestamp(frame->timestamp);
         setExternalPointCloud(frame->cloud);
-        std::cout << "here" << std::endl;
+        // LOGGER_INFO("SimulationScene: Frame changed, timestamp updated to " + std::to_string(frame->timestamp));
         if (this->getCar())
         {
-            std::cout << "and here" << std::endl;
+            // LOGGER_INFO("SimulationScene: Updating car position and orientation based on frame data");
 
             if (!frame || frame->linearAcceleration.size() != 3 || frame->angularVelocity.size() != 3)
             {
