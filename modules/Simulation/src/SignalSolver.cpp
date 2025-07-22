@@ -51,7 +51,8 @@ std::shared_ptr<PointCloud> SignalSolver::solve()
                     closest = pt;
                 }
             }
-            std::cout << tx->getName() << "-" << rx->getName() << "\t" << closest.toString() << "\t tof:" << minDist << std::endl;
+            // std::cout << solveCount_ << " " << tx->getName() << "-" << rx->getName() << "\t" << closest.toString() << "\t tof:" << minDist << std::endl;
+            solveCount_++;
             result->addPoint(closest);
         }
     }

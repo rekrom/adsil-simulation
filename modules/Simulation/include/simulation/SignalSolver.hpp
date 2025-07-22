@@ -18,4 +18,5 @@ public:
 
 private:
     std::shared_ptr<SimulationScene> scene_;
+    size_t solveCount_ = 0; // For debugging or tracking how many times solve is called
 };
