@@ -12,6 +12,7 @@
 #include <simulation/implementations/FrameBufferManager.hpp>
 #include <adapter/AdapterManager.hpp>
 #include <simulation/SignalSolver.hpp>
+#include <core/Logger.hpp>
 
 namespace simulation
 {

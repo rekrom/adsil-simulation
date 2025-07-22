@@ -4,13 +4,15 @@
 #include <viewer/entities/PointCloudEntity.hpp>
 
 #ifndef BASE_RESOURCE_DIR
-#define BASE_RESOURCE_DIR "./resources"
+#define BASE_RESOURCE_DIR "/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources"
 #endif
 
 namespace simulation
 {
     void SimulationManager::init()
     {
+        // core::Logger::getInstance().enableSyslog(true);
+
         // Set the base path for resolving resources
         core::ResourceLocator::setBasePath(BASE_RESOURCE_DIR);
 
@@ -58,25 +60,16 @@ namespace simulation
             entities.push_back(shapeEntity);
         }
 
-        auto pcEntity = std::make_shared<viewer::PointCloudEntity>();
+        auto pcEntity = std::make_shared<viewer::PointCloudEntity>(this->scene_->getExternalPointCloud());
         entities.push_back(pcEntity);
 
         // Connect frame update callback: update the scene with new point cloud and timestamp
         frameBuffer_->setOnFrameChanged(
             [this, pcEntity](int frameId, std::shared_ptr<PointCloud> cloud, double timestamp)
             {
-                std::cout << "[FrameCallback] Frame: " << frameId << ", Points: " << (cloud ? cloud->size() : 0) << "\n";
-
-                if (scene_)
-                {
-                    scene_->overrideTimestamp(timestamp);
-                    scene_->setExternalPointCloud(cloud); // optional
-                }
-                std::cout << "onFrameChanged" << std::endl;
+                LOGGER_INFO("onFrameChanged");
                 pcEntity->setPointCloud(cloud);
             });
-
-        //
 
         detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
         detectedPointCloudEntity_->setPointSize(10.0F);
@@ -113,7 +106,7 @@ namespace simulation
         }
         catch (const std::exception &e)
         {
-            std::cerr << "Initialization error: " << e.what() << std::endl;
+            LOGGER_ERROR(std::string("Initialization error: ") + e.what());
             return;
         }
 
