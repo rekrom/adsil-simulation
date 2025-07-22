@@ -1,5 +1,5 @@
 #pragma once
-#include <math/Point.hpp>
+#include "Point.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/constants.hpp>
