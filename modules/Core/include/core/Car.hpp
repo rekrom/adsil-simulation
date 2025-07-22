@@ -1,8 +1,8 @@
 #pragma once
 
 #include <core/Alias.hpp>
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
 #include <spatial/implementations/TransformNode.hpp>
 #include <core/configs/CarConfig.hpp>
 #include <spatial/implementations/implementations.hpp>

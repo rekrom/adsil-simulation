@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/Point.hpp>
+#include <math/Point.hpp>
 #include <adapter/interfaces/IJsonAdapter.hpp>
 #include <nlohmann/json.hpp>
 

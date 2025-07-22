@@ -1,4 +1,4 @@
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 #include <sstream>
 
 PointCloud::PointCloud(const std::vector<Point> &points)

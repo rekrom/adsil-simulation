@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include <core/Car.hpp>
 #include <geometry/implementations/Device.hpp>
-#include <core/RotationUtils.hpp>
+#include <math/RotationUtils.hpp>
 #include <viewer/implementations/CarRenderable.hpp>
 #include <viewer/entities/CarEntity.hpp>
 #include <viewer/entities/DeviceEntity.hpp>

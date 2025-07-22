@@ -1,4 +1,4 @@
-#include <core/RotationUtils.hpp>
+#include <math/RotationUtils.hpp>
 #include <cmath>
 
 Vector RotationUtils::rotateRPY(const Vector &vec, const Vector &rpy)

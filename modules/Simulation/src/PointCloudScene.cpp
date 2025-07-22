@@ -2,7 +2,7 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <stdexcept>
-#include <core/Point.hpp>
+#include <math/Point.hpp>
 
 using json = nlohmann::json;
 

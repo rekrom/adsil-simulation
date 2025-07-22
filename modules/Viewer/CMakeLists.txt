@@ -47,6 +47,7 @@ target_include_directories(Viewer
 target_link_libraries(Viewer
     PUBLIC
         Core              # Depends on Core module
+        Math
         Spatial
         Geometry
         Simulation

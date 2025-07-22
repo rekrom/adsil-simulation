@@ -5,7 +5,7 @@
 #include <geometry/configs/CubeConfig.hpp>
 
 #include <spatial/implementations/Transform.hpp>
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 
 class Cube : public ShapeBase
 {
@@ -21,7 +21,7 @@ public:
     CubeDimension getDimension();
 
 private:
-        CubeDimension cubeDimension_;
+    CubeDimension cubeDimension_;
     std::vector<Point> generateFace(
         const Vector &center,
         const Vector &u,

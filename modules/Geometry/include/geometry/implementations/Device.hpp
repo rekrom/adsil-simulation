@@ -1,11 +1,11 @@
 #pragma once
 
 #include <core/Alias.hpp>
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
-#include <core/RotationUtils.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
+#include <math/RotationUtils.hpp>
 #include <spatial/implementations/TransformNode.hpp>
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 #include <string>
 #include <memory>
 #include <geometry/configs/DeviceConfig.hpp>

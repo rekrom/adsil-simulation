@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/Point.hpp>
+#include <math/Point.hpp>
 #include <vector>
 #include <memory>
 #include <string>

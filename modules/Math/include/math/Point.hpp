@@ -1,5 +1,5 @@
 #pragma once
-#include <core/Vector.hpp>
+#include <math/Vector.hpp>
 #include <string>
 #include <cmath>
 #include <glm/glm.hpp>

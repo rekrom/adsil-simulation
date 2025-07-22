@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SimulationScene.hpp"
-#include <core/PointCloud.hpp>
-#include <core/Point.hpp>
+#include <math/PointCloud.hpp>
+#include <math/Point.hpp>
 
 #include <vector>
 #include <tuple>

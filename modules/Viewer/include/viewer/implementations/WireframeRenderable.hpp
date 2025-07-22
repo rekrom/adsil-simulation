@@ -2,7 +2,7 @@
 #include <core/Logger.hpp>
 
 #include <viewer/implementations/Renderable.hpp>
-#include <core/Point.hpp>
+#include <math/Point.hpp>
 #include <vector>
 #include <glm/glm.hpp>
 #include <glad/glad.h>

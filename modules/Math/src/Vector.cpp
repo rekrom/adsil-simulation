@@ -1,4 +1,4 @@
-#include <core/Vector.hpp>
+#include <math/Vector.hpp>
 #include <cmath>
 #include <sstream>
 

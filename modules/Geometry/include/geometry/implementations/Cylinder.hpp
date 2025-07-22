@@ -2,9 +2,9 @@
 
 #include <geometry/implementations/ShapeBase.hpp>
 #include <geometry/configs/CylinderConfig.hpp>
-#include <core/Point.hpp>
-#include <core/PointCloud.hpp>
-#include <core/Vector.hpp>
+#include <math/Point.hpp>
+#include <math/PointCloud.hpp>
+#include <math/Vector.hpp>
 
 class Cylinder : public ShapeBase
 {

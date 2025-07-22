@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 #include <vector>
 #include <string>
 #include <memory>

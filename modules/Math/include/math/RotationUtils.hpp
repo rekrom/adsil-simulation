@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/Vector.hpp>
+#include <math/Vector.hpp>
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp> // <-- Bunu ekle
 

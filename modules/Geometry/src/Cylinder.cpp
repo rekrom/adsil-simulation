@@ -1,5 +1,5 @@
 #include <geometry/implementations/Cylinder.hpp>
-#include <core/RotationUtils.hpp>
+#include <math/RotationUtils.hpp>
 #include <cmath>
 
 Cylinder::Cylinder(CylinderConfig config)

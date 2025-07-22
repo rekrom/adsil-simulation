@@ -3,7 +3,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "viewer/entities/Entity.hpp"
-#include "core/PointCloud.hpp"
+#include <math/PointCloud.hpp>
 #include "viewer/implementations/PointCloudRenderable.hpp"
 #include <simulation/interfaces/IFrameObserver.hpp>
 #include <simulation/implementations/Frame.hpp>

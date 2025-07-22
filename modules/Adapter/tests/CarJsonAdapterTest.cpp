@@ -1,6 +1,6 @@
 #include <adapter/implementations/CarJsonAdapter.hpp>
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <cassert>
 #include <iostream>

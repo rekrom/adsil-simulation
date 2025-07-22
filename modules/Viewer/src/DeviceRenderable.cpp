@@ -3,7 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stdexcept>
 #include <iostream>
-#include <core/RotationUtils.hpp>
+#include <math/RotationUtils.hpp>
 
 namespace viewer
 {

@@ -13,5 +13,5 @@ target_include_directories(Spatial
 
 # Link internal dependencies and external libraries
 target_link_libraries(Spatial PUBLIC
-        Core              # Depends on Core module
+        Math
 )

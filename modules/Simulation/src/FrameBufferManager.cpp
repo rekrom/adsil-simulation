@@ -1,5 +1,5 @@
 #include <simulation/implementations/FrameBufferManager.hpp>
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 #include <filesystem>
 #include <sstream>
 #include <iomanip>

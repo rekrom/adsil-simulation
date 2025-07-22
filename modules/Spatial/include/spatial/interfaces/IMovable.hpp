@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/vec3.hpp>
-#include <core/Vector.hpp>
+#include <math/Vector.hpp>
 
 namespace spatial
 {

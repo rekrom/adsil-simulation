@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
 #include <spatial/implementations/Transform.hpp>
 #include <spatial/implementations/HasTransform.hpp>
 #include <geometry/interfaces/IShape.hpp>

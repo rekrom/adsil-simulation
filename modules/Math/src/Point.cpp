@@ -1,4 +1,4 @@
-#include <core/Point.hpp>
+#include <math/Point.hpp>
 #include <sstream>
 
 Point::Point()

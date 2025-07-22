@@ -1,8 +1,8 @@
 #pragma once
 
 #include <geometry/implementations/Device.hpp>
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
 #include <vector>
 #include <memory>
 #include <functional>

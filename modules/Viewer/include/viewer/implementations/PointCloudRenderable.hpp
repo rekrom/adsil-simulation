@@ -1,7 +1,7 @@
 #pragma once
 
 #include <viewer/implementations/Renderable.hpp>
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 #include <core/Logger.hpp>
 #include <memory>
 #include <glad/glad.h>

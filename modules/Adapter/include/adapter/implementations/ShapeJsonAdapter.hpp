@@ -6,7 +6,7 @@
 #include <memory>
 #include <adapter/implementations/PointJsonAdapter.hpp>
 #include <adapter/implementations/VectorJsonAdapter.hpp>
-#include <core/RotationUtils.hpp>
+#include <math/RotationUtils.hpp>
 
 namespace adapter
 {

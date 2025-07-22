@@ -3,7 +3,7 @@
 #include <geometry/implementations/Device.hpp>
 #include <geometry/interfaces/IShape.hpp>
 #include <geometry/implementations/ShapeBase.hpp>
-#include <core/PointCloud.hpp>
+#include <math/PointCloud.hpp>
 #include <core/Car.hpp>
 #include <core/Alias.hpp>
 #include <core/Logger.hpp>

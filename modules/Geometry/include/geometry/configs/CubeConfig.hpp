@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/Point.hpp>
-#include <core/Vector.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
 #include <sstream>
 
 struct CubeDimension final

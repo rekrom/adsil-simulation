@@ -1,5 +1,5 @@
 #include <geometry/implementations/Cube.hpp>
-#include <core/RotationUtils.hpp>
+#include <math/RotationUtils.hpp>
 #include <iostream>
 
 Cube::Cube(CubeConfig config)
