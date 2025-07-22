@@ -13,6 +13,7 @@ namespace viewer
     public:
         PointCloudEntity(std::shared_ptr<PointCloud> cloud = nullptr, glm::vec3 color = glm::vec3(0.9F, 0.6F, 0.3F));
 
+        void addPoints(std::vector<Point> points);
         void setPointCloud(std::shared_ptr<PointCloud> cloud);
         std::shared_ptr<PointCloud> getPointCloud() const;
 
@@ -24,6 +25,11 @@ namespace viewer
         glm::vec3 getCenter() const override;
         bool isTransparent() const override;
         std::string getName() const override;
+
+        void setPointSize(float pointSize);
+        void setColor(glm::vec3 color);
+
+        void setAlpha(float alpha);
 
     private:
         std::shared_ptr<PointCloud> cloud_;

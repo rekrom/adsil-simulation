@@ -9,6 +9,19 @@ namespace viewer
         renderable_ = std::make_shared<PointCloudRenderable>(cloud_, color_);
     }
 
+    void PointCloudEntity::addPoints(std::vector<Point> points)
+    {
+        if (!cloud_)
+        {
+            cloud_ = std::make_shared<PointCloud>();
+        }
+        cloud_->addPoints(points);
+        if (renderable_)
+        {
+            renderable_->updatePointCloud(cloud_);
+        }
+    }
+
     void PointCloudEntity::setPointCloud(std::shared_ptr<PointCloud> cloud)
     {
         cloud_ = cloud;
@@ -62,6 +75,22 @@ namespace viewer
     std::string PointCloudEntity::getName() const
     {
         return "PointCloudEntity";
+    }
+
+    void PointCloudEntity::setPointSize(float pointSize)
+    {
+        renderable_->setPointSize(pointSize);
+    }
+
+    void PointCloudEntity::setAlpha(float alpha)
+    {
+        renderable_->setAlpha(alpha);
+    }
+
+    void PointCloudEntity::setColor(glm::vec3 color)
+    {
+        renderable_->setColor(color);
+        color_ = color; // Update internal color state
     }
 
 }

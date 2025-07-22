@@ -13,6 +13,7 @@ namespace viewer::imgui
 
         drawFrameInfoSection(frameBuffer);
         drawNavigationControls(frameBuffer);
+        drawPlaybackControls(frameBuffer); // <-- New
         drawJumpToFrame(frameBuffer);
 
         ImGui::End();
@@ -23,10 +24,10 @@ namespace viewer::imgui
         ImGui::Text("Current Frame: %d", frameBuffer->getCurrentFrameIndex());
         ImGui::Text("Total Frames: %d", frameBuffer->getTotalFrameCount());
 
-        const auto &center = frameBuffer->getCenterFrame();
-        if (center)
+        const auto &currentFrame = frameBuffer->getCurrentFrame();
+        if (currentFrame)
         {
-            ImGui::Text("Timestamp: %.4f", center->timestamp);
+            ImGui::Text("Timestamp: %.4f", currentFrame->timestamp);
         }
     }
 
@@ -41,6 +42,23 @@ namespace viewer::imgui
         {
             frameBuffer->stepForward();
         }
+    }
+
+    void FrameManagerInspectorPanel::drawPlaybackControls(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
+    {
+        ImGui::Spacing();
+        if (ImGui::Button("▶ Play"))
+        {
+            frameBuffer->play();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("⏸ Pause"))
+        {
+            frameBuffer->pause();
+        }
+        ImGui::SameLine();
+
+        ImGui::SliderFloat("Speed (fps)", &playbackSpeed_, 0.1f, 60.0f, "%.1f");
     }
 
     void FrameManagerInspectorPanel::drawJumpToFrame(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)

@@ -103,6 +103,14 @@ namespace spatial
         orientation_ = ori;
     }
 
+    void Transform::rotateYawPitchRoll(float yaw, float pitch, float roll)
+    {
+        Vector ori = orientation_;
+        ori = ori + Vector(roll, pitch, yaw); // ✅ modifying X (roll
+        // ✅ modifying Y (pitch), ✅ modifying Z (yaw)
+        orientation_ = ori;
+    }
+
     Transform Transform::operator*(const Transform &other) const
     {
         // Compose positions and orientations:

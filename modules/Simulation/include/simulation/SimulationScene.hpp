@@ -8,11 +8,13 @@
 #include <core/Alias.hpp>
 
 #include <simulation/interfaces/ISimulationScene.hpp>
+#include <simulation/interfaces/IFrameObserver.hpp>
+#include <simulation/implementations/Frame.hpp>
 
 #include <vector>
 #include <memory>
 
-class SimulationScene : public ISimulationScene
+class SimulationScene : public ISimulationScene, public simulation::IFrameObserver
 {
 public:
     SimulationScene();
@@ -41,6 +43,8 @@ public:
     void overrideTimestamp(double ts);
     void setExternalPointCloud(std::shared_ptr<PointCloud> cloud);
     std::shared_ptr<PointCloud> getExternalPointCloud() const;
+
+    void onFrameChanged(const std::shared_ptr<simulation::Frame> &frame) override;
 
 private:
     std::shared_ptr<Car> car_;

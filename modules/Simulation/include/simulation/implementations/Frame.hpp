@@ -14,5 +14,16 @@ namespace simulation
         std::vector<float> linearAcceleration; // imu
         std::vector<float> angularVelocity;
         std::string filePath;
+
+        void clear()
+        {
+            if (cloud)
+            {
+                cloud.reset();
+            }
+            linearAcceleration.clear();
+            angularVelocity.clear();
+            filePath.clear();
+        }
     };
 }

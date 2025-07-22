@@ -78,6 +78,8 @@ namespace simulation
         const auto &center = frameWindow_[windowSize_];
         if (onFrameChanged_ && center && center->cloud)
             onFrameChanged_(currentFrameIndex_, center->cloud, center->timestamp);
+
+        fireCallback();
     }
 
     void FrameBufferManager::stepBackward()
@@ -102,6 +104,8 @@ namespace simulation
         const auto &center = frameWindow_[windowSize_];
         if (onFrameChanged_ && center && center->cloud)
             onFrameChanged_(currentFrameIndex_, center->cloud, center->timestamp);
+
+        fireCallback();
     }
 
     std::shared_ptr<PointCloud> FrameBufferManager::getCurrentCloud() const
@@ -132,6 +136,13 @@ namespace simulation
 
     void FrameBufferManager::loadWindowAround(int centerFrame)
     {
+        // Step 1: Clear internal data of each frame before dropping references
+        for (auto &frame : frameWindow_)
+        {
+            if (frame)
+                frame->clear();
+        }
+
         frameWindow_.clear();
         for (int offset = -windowSize_; offset <= windowSize_; ++offset)
         {
@@ -161,10 +172,45 @@ namespace simulation
 
     void FrameBufferManager::fireCallback()
     {
+        if (frameWindow_.empty())
+            return;
+
+        auto &frame = frameWindow_[windowSize_];
+
+        // 🔹 Existing lambda callback
         if (onFrameChanged_)
         {
-            auto &frame = frameWindow_[windowSize_];
             onFrameChanged_(currentFrameIndex_, frame->cloud, frame->timestamp);
         }
+
+        // 🔹 Notify all registered observers
+        for (auto it = frameObservers_.begin(); it != frameObservers_.end();)
+        {
+            std::cout << "[FrameCallback] Notifying observer for frame: " << currentFrameIndex_ << "\n";
+            if (auto observer = it->lock())
+            {
+                std::cout << "[FrameCallback] Observer is valid, notifying...\n";
+                observer->onFrameChanged(frame);
+                ++it;
+            }
+            else
+            {
+                // Remove expired observers
+                it = frameObservers_.erase(it);
+            }
+        }
     }
+
+    std::shared_ptr<Frame> FrameBufferManager::getCurrentFrame() const
+    {
+        if (frameWindow_.size() > static_cast<size_t>(windowSize_))
+            return frameWindow_[windowSize_];
+        return nullptr;
+    }
+
+    void FrameBufferManager::addFrameObserver(const std::shared_ptr<IFrameObserver> &observer)
+    {
+        frameObservers_.push_back(observer);
+    }
+
 }

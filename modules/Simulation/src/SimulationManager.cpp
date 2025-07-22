@@ -27,6 +27,7 @@ namespace simulation
 
         // Initialize frame buffer with a ±3 frame window (total = 7)
         frameBuffer_ = std::make_shared<FrameBufferManager>(3);
+        frameBuffer_->addFrameObserver(scene_);
 
         // Initialize the OpenGL viewer
         viewer_ = std::make_unique<viewer::OpenGLViewer>(1280, 720, "ADSIL Analyzer - OpenGL");
@@ -76,6 +77,14 @@ namespace simulation
             });
 
         //
+
+        detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
+        detectedPointCloudEntity_->setPointSize(10.0F);
+        detectedPointCloudEntity_->setAlpha(1.0F);
+        detectedPointCloudEntity_->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
+
+        entities.push_back(detectedPointCloudEntity_);
+
         viewer_->setEntities(entities);
     }
 
@@ -116,7 +125,9 @@ namespace simulation
         {
             float deltaTime = viewer_->getDeltaTime();
             update(deltaTime);
-            signalSolver_->solve();
+            frameBuffer_->update(deltaTime);
+
+            detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
             render();
             // car_->moveForward(0.01F);
         }

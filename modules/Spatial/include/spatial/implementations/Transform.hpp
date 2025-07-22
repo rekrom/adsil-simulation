@@ -29,6 +29,8 @@ namespace spatial
 
         void rotateYaw(float angleRad);
 
+        void rotateYawPitchRoll(float yaw, float pitch, float roll);
+
         Transform operator*(const Transform &other) const;
 
         [[nodiscard]] glm::mat4 getModelMatrix() const;

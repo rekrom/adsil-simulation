@@ -8,6 +8,7 @@
 #include <memory>
 #include <simulation/implementations/Frame.hpp>
 #include <adapter/AdapterManager.hpp> // Assuming this loads PointCloud
+#include <simulation/interfaces/IFrameObserver.hpp>
 
 namespace simulation
 {
@@ -23,21 +24,16 @@ namespace simulation
         void stepForward();
         void stepBackward();
 
-        bool isPlaying() const;
-
         std::shared_ptr<PointCloud> getCurrentCloud() const;
         double getCurrentTimestamp() const;
         int getCurrentFrameIndex() const { return currentFrameIndex_; }
         int getTotalFrameCount() const { return totalFrameCount_; }
 
-        std::shared_ptr<Frame> getCenterFrame() const
-        {
-            if (frameWindow_.size() > static_cast<size_t>(windowSize_))
-                return frameWindow_[windowSize_];
-            return nullptr;
-        }
+        std::shared_ptr<Frame> getCurrentFrame() const;
 
         void setOnFrameChanged(std::function<void(int, std::shared_ptr<PointCloud>, double)> cb);
+
+        void addFrameObserver(const std::shared_ptr<IFrameObserver> &observer);
 
     private:
         std::unique_ptr<adapter::AdapterManager> adapters_;
@@ -52,6 +48,8 @@ namespace simulation
         bool isPlaying_ = false;
         float playbackTimer_ = 0.0f;
         float frameInterval_ = 0.10f; // e.g. 10 FPS
+
+        std::vector<std::weak_ptr<IFrameObserver>> frameObservers_; // avoid ownership cycle
 
         std::function<void(int, std::shared_ptr<PointCloud>, double)> onFrameChanged_;
 

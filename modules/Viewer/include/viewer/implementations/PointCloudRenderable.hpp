@@ -21,9 +21,13 @@ namespace viewer
 
         void updateBuffers();
 
+        void setPointSize(float pointSize);
+
     private:
         bool dirty_ = true;
         std::shared_ptr<PointCloud> pointCloud_;
+        float pointSize_ = 1.0F;
+        std::vector<float> vertices_;
 
     protected:
         void createShader() override;

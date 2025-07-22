@@ -20,6 +20,8 @@ namespace viewer
             GLint color = -1;
             GLint useUniformColor = -1;
             GLint uniformColor = -1;
+
+            GLint pointSize = -1;
         };
 
     public:

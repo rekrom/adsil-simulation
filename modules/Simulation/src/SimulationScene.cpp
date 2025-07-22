@@ -91,3 +91,40 @@ std::shared_ptr<PointCloud> SimulationScene::getExternalPointCloud() const
 {
     return externalCloud_;
 }
+
+void SimulationScene::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
+{
+    if (frame)
+    {
+        overrideTimestamp(frame->timestamp);
+        setExternalPointCloud(frame->cloud);
+        std::cout << "here" << std::endl;
+        if (this->getCar())
+        {
+            std::cout << "and here" << std::endl;
+
+            if (!frame || frame->linearAcceleration.size() != 3 || frame->angularVelocity.size() != 3)
+            {
+                return;
+            }
+            // Update car's IMU data if available
+            const auto &acc = frame->linearAcceleration;
+            const auto &angVel = frame->angularVelocity;
+
+            float frameInterval = 0.1f; // or inject this from SimulationManager
+
+            Vector acceleration(acc[0] * 100, acc[1] * 100, acc[2] * 100);
+            Vector angularVelocity(angVel[0], angVel[1], angVel[2]);
+
+            Vector carVelocity_;
+            carVelocity_ += acceleration * frameInterval;
+            Vector displacement = carVelocity_ * frameInterval;
+            this->getCar()->moveBy(displacement);
+
+            Vector deltaEuler = angularVelocity * frameInterval;
+            Vector carOrientation_;
+            carOrientation_ += deltaEuler;
+            this->getCar()->rotateByYawPitchRoll(carOrientation_.x(), carOrientation_.y(), carOrientation_.z());
+        }
+    }
+}

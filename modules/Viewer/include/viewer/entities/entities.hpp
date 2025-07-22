@@ -6,3 +6,4 @@
 #include "GroundEntity.hpp"
 #include "AxisEntity.hpp"
 #include "ShapeEntity.hpp"
+#include "PointCloudEntity.hpp"
