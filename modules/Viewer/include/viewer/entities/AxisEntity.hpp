@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <viewer/entities/Entity.hpp>
-#include <viewer/implementations/AxisRenderable.hpp>
+#include <viewer/renderables/AxisRenderable.hpp>
 
 namespace viewer
 {

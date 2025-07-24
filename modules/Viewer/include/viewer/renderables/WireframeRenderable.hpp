@@ -1,7 +1,7 @@
 #pragma once
 #include <core/Logger.hpp>
 
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 #include <math/Point.hpp>
 #include <vector>
 #include <glm/glm.hpp>

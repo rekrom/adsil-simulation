@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 #include <vehicle/Car.hpp>
-#include <viewer/implementations/CarRenderable.hpp>
+#include <viewer/renderables/CarRenderable.hpp>
 #include <viewer/entities/DeviceEntity.hpp>
 #include <viewer/entities/Entity.hpp>
 

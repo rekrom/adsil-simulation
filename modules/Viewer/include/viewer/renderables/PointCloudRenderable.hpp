@@ -1,6 +1,6 @@
 #pragma once
 
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 #include <math/PointCloud.hpp>
 #include <core/Logger.hpp>
 #include <memory>

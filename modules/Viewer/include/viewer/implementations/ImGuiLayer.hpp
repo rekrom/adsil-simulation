@@ -6,9 +6,9 @@
 
 #include <vehicle/Car.hpp>
 #include <viewer/interfaces/Camera.hpp>
-#include <viewer/implementations/Renderable.hpp>
-#include <viewer/implementations/CarRenderable.hpp>
-#include <viewer/implementations/DeviceRenderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
+#include <viewer/renderables/CarRenderable.hpp>
+#include <viewer/renderables/DeviceRenderable.hpp>
 #include <viewer/imgui/panels.hpp>
 
 namespace simulation

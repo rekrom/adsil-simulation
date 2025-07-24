@@ -1,4 +1,4 @@
-#include <viewer/implementations/DeviceRenderable.hpp>
+#include <viewer/renderables/DeviceRenderable.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <stdexcept>

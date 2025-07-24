@@ -1,4 +1,4 @@
-#include <viewer/implementations/GroundRenderable.hpp>
+#include <viewer/renderables/GroundRenderable.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <iostream>

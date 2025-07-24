@@ -1,4 +1,4 @@
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 
 namespace viewer
 {
@@ -8,15 +8,6 @@ namespace viewer
     }
 
     Renderable::~Renderable() = default;
-
-    bool Renderable::getVisible() const
-    {
-        return isVisible_;
-    }
-    void Renderable::setVisible(bool isVisible)
-    {
-        isVisible_ = isVisible;
-    }
 
     float Renderable::getAlpha() const
     {

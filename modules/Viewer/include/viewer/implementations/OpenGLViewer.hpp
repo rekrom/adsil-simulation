@@ -8,7 +8,7 @@
 
 // 3. Diğer includes
 #include <viewer/interfaces/Camera.hpp>
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 #include <viewer/entities/Entity.hpp>
 #include <viewer/implementations/ImGuiLayer.hpp>
 #include <viewer/interfaces/IInputManager.hpp>

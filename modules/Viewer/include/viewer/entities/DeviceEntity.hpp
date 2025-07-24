@@ -4,7 +4,7 @@
 #include <glm/vec3.hpp>
 
 #include <geometry/implementations/Device.hpp>
-#include <viewer/implementations/DeviceRenderable.hpp>
+#include <viewer/renderables/DeviceRenderable.hpp>
 
 namespace viewer
 {

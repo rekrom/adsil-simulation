@@ -5,4 +5,6 @@
 
 #include "implementations/implementations.hpp"
 
+#include "renderables/renderables.hpp"
+
 #include "entities/entities.hpp"

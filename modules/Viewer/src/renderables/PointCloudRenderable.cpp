@@ -1,4 +1,4 @@
-#include <viewer/implementations/PointCloudRenderable.hpp>
+#include <viewer/renderables/PointCloudRenderable.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -94,7 +94,7 @@ namespace viewer
 
     void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (!this->getVisible() || pointCloud_->empty())
+        if (pointCloud_->empty())
         {
             return;
         }

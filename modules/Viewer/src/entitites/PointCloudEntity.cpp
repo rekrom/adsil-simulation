@@ -44,11 +44,12 @@ namespace viewer
 
     void PointCloudEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-
-        if (renderable_)
+        if (!visible_ || !renderable_)
         {
-            renderable_->render(view, projection);
+            return;
         }
+
+        renderable_->render(view, projection);
     }
 
     void PointCloudEntity::cleanup()

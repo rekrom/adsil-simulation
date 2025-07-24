@@ -1,9 +1,9 @@
 #pragma once
 #include <core/Logger.hpp>
 
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 
-#include <viewer/implementations/FovPyramidRenderable.hpp>
+#include <viewer/renderables/FovPyramidRenderable.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <glad/glad.h>
 #include <memory>

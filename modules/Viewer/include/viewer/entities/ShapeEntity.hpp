@@ -2,7 +2,7 @@
 
 #include <geometry/implementations/ShapeBase.hpp>
 #include <viewer/entities/entities.hpp>
-#include <viewer/implementations/ShapeRenderable.hpp>
+#include <viewer/renderables/ShapeRenderable.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>

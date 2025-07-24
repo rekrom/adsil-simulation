@@ -1,4 +1,4 @@
-#include <viewer/implementations/ShapeRenderable.hpp>
+#include <viewer/renderables/ShapeRenderable.hpp>
 #include <math/PointCloud.hpp>
 #include <glad/glad.h>
 #include <iostream>

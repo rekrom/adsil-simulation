@@ -1,4 +1,4 @@
-#include <viewer/implementations/AxisRenderable.hpp>
+#include <viewer/renderables/AxisRenderable.hpp>
 #include <iostream>
 
 namespace viewer

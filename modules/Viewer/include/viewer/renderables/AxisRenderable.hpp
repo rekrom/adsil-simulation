@@ -1,6 +1,6 @@
 #pragma once
 #include <core/Logger.hpp>
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 #include <glad/glad.h>
 
 namespace viewer

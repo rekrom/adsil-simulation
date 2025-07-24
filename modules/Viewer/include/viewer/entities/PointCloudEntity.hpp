@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "viewer/entities/Entity.hpp"
 #include <math/PointCloud.hpp>
-#include "viewer/implementations/PointCloudRenderable.hpp"
+#include <viewer/renderables/PointCloudRenderable.hpp>
 
 namespace viewer
 {

@@ -6,7 +6,7 @@
 #include <vehicle/Car.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <math/RotationUtils.hpp>
-#include <viewer/implementations/CarRenderable.hpp>
+#include <viewer/renderables/CarRenderable.hpp>
 #include <viewer/entities/CarEntity.hpp>
 #include <viewer/entities/DeviceEntity.hpp>
 

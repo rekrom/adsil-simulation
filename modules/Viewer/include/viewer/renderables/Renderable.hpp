@@ -28,9 +28,6 @@ namespace viewer
         Renderable();
         virtual ~Renderable();
 
-        bool getVisible() const;
-        void setVisible(bool isVisible);
-
         float getAlpha() const;
         void setAlpha(float alpha);
 
@@ -49,7 +46,6 @@ namespace viewer
 
         StandardUniformLocations uniforms_;
         glm::vec3 color_{0.5F, 0.5F, 0.5F};
-        bool isVisible_{true};
 
     protected:
         virtual void createBuffers(); // optionally overridden

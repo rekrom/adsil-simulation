@@ -2,7 +2,7 @@
 #include <core/Logger.hpp>
 
 #include <geometry/implementations/ShapeBase.hpp>
-#include <viewer/implementations/Renderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
 #include <memory>
 #include <glm/glm.hpp>
 

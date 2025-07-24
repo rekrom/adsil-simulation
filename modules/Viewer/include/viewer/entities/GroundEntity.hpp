@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <viewer/entities/Entity.hpp>
-#include <viewer/implementations/GroundRenderable.hpp>
+#include <viewer/renderables/GroundRenderable.hpp>
 
 namespace viewer
 {

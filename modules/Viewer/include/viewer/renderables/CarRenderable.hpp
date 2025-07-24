@@ -2,8 +2,8 @@
 #include <core/Logger.hpp>
 
 #include <vehicle/Car.hpp>
-#include <viewer/implementations/Renderable.hpp>
-#include <viewer/implementations/DeviceRenderable.hpp>
+#include <viewer/renderables/Renderable.hpp>
+#include <viewer/renderables/DeviceRenderable.hpp>
 
 #include <memory>
 #include <vector>
