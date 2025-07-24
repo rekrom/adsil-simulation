@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <viewer/interfaces/Camera.hpp>
-#include <core/Car.hpp>
+#include <vehicle/Car.hpp>
 #include <simulation/implementations/FrameBufferManager.hpp>
 
 namespace simulation

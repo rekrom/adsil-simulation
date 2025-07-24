@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include <core/Car.hpp>
+#include <vehicle/Car.hpp>
 #include <viewer/interfaces/Camera.hpp>
 #include <viewer/implementations/Renderable.hpp>
 #include <viewer/implementations/CarRenderable.hpp>

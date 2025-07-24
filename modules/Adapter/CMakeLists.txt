@@ -13,12 +13,12 @@ target_include_directories(Adapter PUBLIC
 )
 
 target_link_libraries(Adapter
+    PUBLIC Vehicle
     PRIVATE Core
-    Spatial
-    Geometry
-    Simulation
-    Utils
-
+            Spatial
+            Geometry
+            Simulation
+            Utils
 )
 
 

@@ -2,7 +2,7 @@
 
 #include <core/Alias.hpp>
 #include <adapter/interfaces/IJsonAdapter.hpp>
-#include <core/Car.hpp>
+#include <vehicle/Car.hpp>
 #include <adapter/implementations/PointJsonAdapter.hpp>
 #include <adapter/implementations/VectorJsonAdapter.hpp>
 #include <adapter/implementations/DeviceJsonAdapter.hpp>

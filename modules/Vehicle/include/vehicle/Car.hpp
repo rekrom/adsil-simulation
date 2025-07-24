@@ -4,7 +4,7 @@
 #include <math/Point.hpp>
 #include <math/Vector.hpp>
 #include <spatial/implementations/TransformNode.hpp>
-#include <core/configs/CarConfig.hpp>
+#include <vehicle/configs/CarConfig.hpp>
 #include <spatial/implementations/implementations.hpp>
 #include <geometry/implementations/Device.hpp>
 #include <vector>

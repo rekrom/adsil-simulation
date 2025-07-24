@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include <core/Car.hpp>
+#include <vehicle/Car.hpp>
 #include <core/ResourceLocator.hpp>
 #include <simulation/SimulationScene.hpp>
 #include <simulation/interfaces/ISimulationScene.hpp>

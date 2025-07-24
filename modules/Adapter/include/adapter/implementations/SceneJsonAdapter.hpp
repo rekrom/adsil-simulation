@@ -1,7 +1,7 @@
 #pragma once
 
 #include <adapter/interfaces/IJsonAdapter.hpp>
-#include <core/Car.hpp>
+#include <vehicle/Car.hpp>
 #include <adapter/implementations/implementations.hpp>
 #include <nlohmann/json.hpp>
 #include <simulation/SimulationScene.hpp>
