@@ -68,6 +68,8 @@ namespace simulation
         frameBuffer_->addFrameObserver(pcEntityObserver_);
 
         detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
+        viewer_->setSelectedPointCloudEntity(detectedPointCloudEntity_);
+
         detectedPointCloudEntity_->setPointSize(10.0F);
         detectedPointCloudEntity_->setAlpha(1.0F);
         detectedPointCloudEntity_->setColor(glm::vec3(1.0F, 0.0F, 0.0F));

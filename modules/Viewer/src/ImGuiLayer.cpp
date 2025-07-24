@@ -71,6 +71,11 @@ namespace viewer
         {
             frameManagerInspector_.draw(frameBuffer_);
         }
+
+        if (selectedPointCloudEntity_)
+        {
+            selectedPointCloudInspector_.draw(frameBuffer_, selectedPointCloudEntity_);
+        }
     }
 
     void ImGuiLayer::setFrameBuffer(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
@@ -78,4 +83,8 @@ namespace viewer
         frameBuffer_ = frameBuffer;
     }
 
+    void ImGuiLayer::setSelectedPointCloudEntity(const std::shared_ptr<viewer::PointCloudEntity> &entity)
+    {
+        selectedPointCloudEntity_ = entity;
+    }
 }

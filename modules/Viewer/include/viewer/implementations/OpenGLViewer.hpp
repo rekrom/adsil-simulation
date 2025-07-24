@@ -43,6 +43,8 @@ namespace viewer
 
         void setFrameManager(std::shared_ptr<simulation::FrameBufferManager> frameBuffer);
 
+        void setSelectedPointCloudEntity(const std::shared_ptr<viewer::PointCloudEntity> &entity);
+
         RenderingMode getRenderingMode() const;
 
         Camera &getCamera() { return camera_; }

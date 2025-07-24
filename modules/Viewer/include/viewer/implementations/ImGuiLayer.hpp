@@ -30,13 +30,16 @@ namespace viewer
         void drawViewerPanel(Camera &camera, RenderingMode &mode, int &fps);
         void drawUI(const SharedVec<Entity> &entities);
         void setFrameBuffer(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer);
+        void setSelectedPointCloudEntity(const std::shared_ptr<viewer::PointCloudEntity> &entity);
 
     private:
         imgui::CarInspectorPanel carInspector_;
         imgui::ViewerInspectorPanel viewerInspector_;
         imgui::FrameManagerInspectorPanel frameManagerInspector_;
+        imgui::SelectedPointCloudInspectorPanel selectedPointCloudInspector_;
 
-        std::shared_ptr<simulation::FrameBufferManager> frameBuffer_; // ✅ NEW
+        std::shared_ptr<simulation::FrameBufferManager> frameBuffer_;        // ✅ NEW
+        std::shared_ptr<viewer::PointCloudEntity> selectedPointCloudEntity_; // ✅ NEW
     };
 
 } // namespace viewer

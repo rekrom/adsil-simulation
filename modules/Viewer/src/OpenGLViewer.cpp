@@ -164,6 +164,11 @@ namespace viewer
         frameManager_ = std::move(frameBuffer);
     }
 
+    void OpenGLViewer::setSelectedPointCloudEntity(const std::shared_ptr<viewer::PointCloudEntity> &entity)
+    {
+        imguiLayer_.setSelectedPointCloudEntity(entity);
+    }
+
     RenderingMode OpenGLViewer::getRenderingMode() const
     {
         return renderingMode_;
