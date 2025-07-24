@@ -21,13 +21,14 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        glm::vec3 getColor() const override;
+        // glm::vec3 getColor() const override;
         glm::vec3 getCenter() const override;
         bool isTransparent() const override;
         std::string getName() const override;
 
         void setPointSize(float pointSize);
         void setColor(glm::vec3 color);
+        glm::vec3 getColor() const { return renderable_->getColor(); }
 
         void setAlpha(float alpha);
 

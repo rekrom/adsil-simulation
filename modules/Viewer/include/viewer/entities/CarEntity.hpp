@@ -20,8 +20,6 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        glm::vec3 getColor() const override { return color_; }
-
         std::string getName() const override
         {
             return car_ ? car_->getName() : "Unnamed Car";

@@ -32,11 +32,6 @@ namespace viewer
             renderable_->cleanup();
     }
 
-    glm::vec3 ShapeEntity::getColor() const
-    {
-        return color_;
-    }
-
     glm::vec3 ShapeEntity::getCenter() const
     {
         if (shape_)

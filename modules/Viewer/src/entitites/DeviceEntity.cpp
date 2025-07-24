@@ -28,6 +28,16 @@ namespace viewer
             std::cout << "renderable not found for [DeviceEntity]" << std::endl;
     }
 
+    void DeviceEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
+    {
+        if (!visible_ || !renderable_)
+        {
+            return;
+        }
+
+        renderable_->render(view, projection);
+    }
+
     void DeviceEntity::cleanup()
     {
         if (renderable_)
@@ -46,15 +56,6 @@ namespace viewer
         color_ = color;
         renderable_ = std::make_shared<DeviceRenderable>(device_, color_);
         renderable_->initGL(); // Re-init GL with new color
-    }
-
-    void DeviceEntity::setVisible(bool visible)
-    {
-        visible_ = visible;
-    }
-    bool DeviceEntity::getVisible()
-    {
-        return visible_;
     }
 
     void DeviceEntity::setFovRenderableColor(glm::vec3 color)

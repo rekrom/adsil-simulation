@@ -4,6 +4,7 @@
 #include <memory>
 #include <viewer/entities/Entity.hpp>
 #include <viewer/renderables/AxisRenderable.hpp>
+#include <core/Logger.hpp>
 
 namespace viewer
 {

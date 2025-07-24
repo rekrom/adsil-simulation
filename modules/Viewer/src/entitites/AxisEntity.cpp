@@ -10,24 +10,29 @@ namespace viewer
 
     void AxisEntity::initGL()
     {
-        // std::cout << "initGl started for [AxisEntity]" << std::endl;
+        if (!renderable_)
+        {
+            LOGGER_ERROR("AxisEntity::initGL: renderable not found");
+        }
 
-        if (renderable_)
-            renderable_->initGL();
-        else
-            std::cout << "renderable not found for [AxisEntity]" << std::endl;
+        renderable_->initGL();
     }
 
     void AxisEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (!visible_ || !renderable_)
+        if (!isVisible() || !renderable_)
+        {
             return;
+        }
         renderable_->render(view, projection);
     }
 
     void AxisEntity::cleanup()
     {
-        if (renderable_)
-            renderable_->cleanup();
+        if (!renderable_)
+        {
+            return;
+        }
+        renderable_->cleanup();
     }
 }

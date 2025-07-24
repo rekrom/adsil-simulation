@@ -58,11 +58,6 @@ namespace viewer
             renderable_->cleanup();
     }
 
-    glm::vec3 PointCloudEntity::getColor() const
-    {
-        return color_;
-    }
-
     glm::vec3 PointCloudEntity::getCenter() const
     {
         return glm::vec3(0.0F); // or compute cloud center if needed
@@ -91,7 +86,6 @@ namespace viewer
     void PointCloudEntity::setColor(glm::vec3 color)
     {
         renderable_->setColor(color);
-        color_ = color; // Update internal color state
     }
 
 }

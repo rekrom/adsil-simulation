@@ -13,10 +13,15 @@ namespace viewer
 
         // Provide default fallback behavior
         bool isTransparent() const override { return false; }
+
         glm::vec3 getCenter() const override { return glm::vec3(0.0F); }
+
+        std::string getName() const override { return name_; }
+        void setName(const std::string &name) { name_ = name; }
 
     protected:
         bool visible_ = true;
+        std::string name_;
     };
 
 }
