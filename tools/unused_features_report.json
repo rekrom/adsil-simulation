@@ -1,91 +1,91 @@
 {
   "all_modules": [
-    "Core",
-    "Viewer",
-    "Math",
-    "Geometry",
-    "Vehicle",
     "Utils",
+    "Spatial",
+    "Core",
     "Simulation",
+    "Vehicle",
+    "Geometry",
+    "Viewer",
     "Adapter",
-    "Spatial"
+    "Math"
   ],
   "linked_modules": [
-    "Core",
-    "Viewer",
-    "Math",
-    "Geometry",
-    "Vehicle",
     "Utils",
+    "Spatial",
+    "Core",
     "Simulation",
+    "Vehicle",
+    "Geometry",
+    "Viewer",
     "Adapter",
-    "Spatial"
+    "Math"
   ],
   "used_modules": [
-    "Core",
-    "Viewer",
-    "Spatial",
-    "Math",
-    "Geometry",
-    "Vehicle",
     "Utils",
+    "Spatial",
+    "Core",
+    "Simulation",
+    "Vehicle",
+    "Geometry",
+    "Viewer",
     "Adapter",
-    "Simulation"
+    "Math"
   ],
   "unused_linked": [],
   "missing_linked": [],
   "truly_unused": [],
   "module_dependencies": {
     "Geometry": [
-      "Spatial",
-      "Math",
       "Geometry",
+      "Math",
+      "Spatial",
       "Core"
     ],
     "Spatial": [
       "Math",
-      "Core",
-      "Spatial"
+      "Spatial",
+      "Core"
     ],
     "Utils": [
       "Utils"
     ],
     "Viewer": [
-      "Viewer",
       "Spatial",
-      "Math",
-      "Geometry",
-      "Vehicle",
+      "Core",
       "Simulation",
-      "Core"
+      "Vehicle",
+      "Geometry",
+      "Viewer",
+      "Math"
     ],
     "Adapter": [
-      "Math",
-      "Geometry",
-      "Vehicle",
       "Utils",
+      "Core",
       "Simulation",
+      "Vehicle",
+      "Geometry",
       "Adapter",
-      "Core"
+      "Math"
     ],
     "Math": [
       "Math"
     ],
     "Simulation": [
+      "Adapter",
       "Core",
-      "Viewer",
-      "Math",
+      "Simulation",
       "Vehicle",
       "Geometry",
-      "Adapter",
-      "Simulation"
+      "Viewer",
+      "Math"
     ],
     "Vehicle": [
+      "Spatial",
       "Core",
-      "Math",
-      "Geometry",
       "Vehicle",
-      "Spatial"
+      "Geometry",
+      "Math"
     ]
   },
   "total_files": 271,

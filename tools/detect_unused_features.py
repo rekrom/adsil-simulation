@@ -170,6 +170,17 @@ class UsageAnalyzer:
                 if link_match:
                     libs_section = link_match.group(1)
                     
+                    # Remove comments from the section
+                    lines = libs_section.split('\n')
+                    filtered_lines = []
+                    for line in lines:
+                        # Remove everything after # (comments)
+                        comment_pos = line.find('#')
+                        if comment_pos != -1:
+                            line = line[:comment_pos]
+                        filtered_lines.append(line)
+                    libs_section = '\n'.join(filtered_lines)
+                    
                     # Extract individual library names, skipping keywords and external libs
                     all_words = re.findall(r'\b([A-Za-z]\w+)\b', libs_section)
                     
