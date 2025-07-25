@@ -118,7 +118,9 @@ namespace simulation
             update(deltaTime);
             frameBuffer_->update(deltaTime);
 
-            detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
+            // detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
+            detectedPointCloudEntity_->setPointCloud(signalSolver_->solve());
+
             render();
             // car_->moveForward(0.01F);
         }
