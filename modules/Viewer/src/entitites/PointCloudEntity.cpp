@@ -58,19 +58,13 @@ namespace viewer
             renderable_->cleanup();
     }
 
-    glm::vec3 PointCloudEntity::getCenter() const
-    {
-        return glm::vec3(0.0F); // or compute cloud center if needed
-    }
-
     bool PointCloudEntity::isTransparent() const
     {
-        return false; // or configurable
-    }
-
-    std::string PointCloudEntity::getName() const
-    {
-        return "PointCloudEntity";
+        if (!renderable_)
+        {
+            return false;
+        }
+        return renderable_->isTransparent();
     }
 
     void PointCloudEntity::setPointSize(float pointSize)
@@ -86,6 +80,17 @@ namespace viewer
     void PointCloudEntity::setColor(glm::vec3 color)
     {
         renderable_->setColor(color);
+    }
+
+    glm::vec3 PointCloudEntity::getCenter() const
+    {
+        if (renderable_)
+        {
+            LOGGER_ERROR("PointCloudEntity::getCenter() called, but this method is deprecated. Use renderable_->getCenter() instead.");
+
+            // return renderable_->getCenter();
+        }
+        return glm::vec3(0.0f);
     }
 
 }

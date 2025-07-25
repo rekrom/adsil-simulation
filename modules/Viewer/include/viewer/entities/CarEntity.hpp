@@ -20,14 +20,10 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        std::string getName() const override
-        {
-            return car_ ? car_->getName() : "Unnamed Car";
-        }
+        glm::vec3 getCenter() const override;
+        std::string getName() const override { return car_ ? car_->getName() : "CarEntity"; }
 
-        bool isTransparent() const;
-
-        glm::vec3 getCenter() const;
+        bool isTransparent() const override;
 
         std::shared_ptr<Car> getCar() const;
         std::shared_ptr<CarRenderable> getRenderable() const;

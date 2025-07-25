@@ -67,4 +67,23 @@ namespace viewer
         return renderable_->getFovPyramidColor();
     }
 
+    bool DeviceEntity::isTransparent() const
+    {
+        if (!renderable_)
+        {
+            return false;
+        }
+        return renderable_->isTransparent();
+    }
+
+    glm::vec3 DeviceEntity::getCenter() const
+    {
+        if (renderable_)
+        {
+            LOGGER_ERROR("DeviceEntity::getCenter() called, but this method is deprecated. Use renderable_->getCenter() instead.");
+            // return renderable_->getCenter();
+        }
+        return glm::vec3(0.0f);
+    }
+
 }

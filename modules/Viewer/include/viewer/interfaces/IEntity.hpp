@@ -19,9 +19,7 @@ namespace viewer
 
         virtual bool isTransparent() const = 0;
 
-        virtual glm::vec3 getCenter() const = 0;
-
-        // Optional: for debug, scene selection, etc.
-        virtual std::string getName() const = 0;
+        virtual glm::vec3 getCenter() const = 0; // to fix the depth sorting issue
+        virtual std::string getName() const = 0; // to get the name of the entity
     };
 }

@@ -18,10 +18,9 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        std::string getName() const override
-        {
-            return device_ ? device_->getName() : "Unnamed Device";
-        }
+        bool isTransparent() const override;
+        glm::vec3 getCenter() const override;
+        std::string getName() const override { return device_ ? device_->getName() : "DeviceEntity"; }
 
         std::shared_ptr<Device> getDevice() const;
         std::shared_ptr<DeviceRenderable> getRenderable() const;

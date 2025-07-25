@@ -43,12 +43,11 @@ namespace viewer
 
     bool ShapeEntity::isTransparent() const
     {
-        return false; // For now
-    }
-
-    std::string ShapeEntity::getName() const
-    {
-        return shape_->getName();
+        if (!renderable_)
+        {
+            return false;
+        }
+        return renderable_->isTransparent();
     }
 
 }

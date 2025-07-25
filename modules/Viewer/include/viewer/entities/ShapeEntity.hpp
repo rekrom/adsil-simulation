@@ -19,9 +19,9 @@ namespace viewer
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
-        glm::vec3 getCenter() const override;
+        glm::vec3 getCenter() const;
         bool isTransparent() const override;
-        std::string getName() const override;
+        std::string getName() const override { return shape_ ? shape_->getName() : "ShapeEntity"; }
 
     private:
         std::shared_ptr<ShapeBase> shape_;

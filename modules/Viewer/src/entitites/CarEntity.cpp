@@ -73,6 +73,10 @@ namespace viewer
 
     bool CarEntity::isTransparent() const
     {
+        if (!renderable_)
+        {
+            return false;
+        }
         return renderable_->isTransparent();
     }
 
