@@ -23,6 +23,8 @@ target_link_libraries(${PROJECT_NAME}
         Viewer
         Adapter
         Utils
+        Math
+        Vehicle
 )
 
 # add_custom_command(

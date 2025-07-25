@@ -1,0 +1,94 @@
+{
+  "all_modules": [
+    "Utils",
+    "Spatial",
+    "Core",
+    "Simulation",
+    "Vehicle",
+    "Geometry",
+    "Viewer",
+    "Adapter",
+    "Math"
+  ],
+  "linked_modules": [
+    "Utils",
+    "Spatial",
+    "Core",
+    "Simulation",
+    "Vehicle",
+    "Geometry",
+    "Viewer",
+    "Adapter",
+    "Math"
+  ],
+  "used_modules": [
+    "Utils",
+    "Spatial",
+    "Core",
+    "Simulation",
+    "Vehicle",
+    "Geometry",
+    "Viewer",
+    "Adapter",
+    "Math"
+  ],
+  "unused_linked": [],
+  "missing_linked": [],
+  "truly_unused": [],
+  "module_dependencies": {
+    "Geometry": [
+      "Geometry",
+      "Math",
+      "Spatial",
+      "Core"
+    ],
+    "Spatial": [
+      "Math",
+      "Spatial",
+      "Core"
+    ],
+    "Utils": [
+      "Utils"
+    ],
+    "Viewer": [
+      "Spatial",
+      "Core",
+      "Simulation",
+      "Vehicle",
+      "Geometry",
+      "Viewer",
+      "Math"
+    ],
+    "Adapter": [
+      "Utils",
+      "Core",
+      "Simulation",
+      "Vehicle",
+      "Geometry",
+      "Adapter",
+      "Math"
+    ],
+    "Math": [
+      "Math"
+    ],
+    "Simulation": [
+      "Adapter",
+      "Core",
+      "Simulation",
+      "Vehicle",
+      "Geometry",
+      "Viewer",
+      "Math"
+    ],
+    "Vehicle": [
+      "Spatial",
+      "Core",
+      "Vehicle",
+      "Geometry",
+      "Math"
+    ]
+  },
+  "total_files": 271,
+  "unused_files": 0,
+  "has_issues": false
+}
