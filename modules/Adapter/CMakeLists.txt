@@ -20,5 +20,3 @@ target_link_libraries(Adapter
             Simulation
             Utils
 )
-
-
