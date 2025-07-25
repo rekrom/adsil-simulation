@@ -27,7 +27,7 @@
                     "y": 0.0,
                     "z": 0.0
                 },
-                "vertical_fov_deg": 10,
+                "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
                 "range": 5.0,
                 "name": "rx0"
@@ -43,7 +43,7 @@
                     "y": 0.0,
                     "z": 0.0
                 },
-                "vertical_fov_deg": 10,
+                "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
                 "range": 5.0,
                 "name": "rx1"
@@ -59,7 +59,7 @@
                     "y": 0.0,
                     "z": 0.0
                 },
-                "vertical_fov_deg": 10,
+                "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
                 "range": 5.0,
                 "name": "rx2"
@@ -75,7 +75,7 @@
                     "y": 0.0,
                     "z": 0.0
                 },
-                "vertical_fov_deg": 10,
+                "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
                 "range": 5.0,
                 "name": "rx3"
@@ -89,7 +89,7 @@
                     "z": 0.0
                 },
                 "orientation": {
-                    "x": 0.0,
+                    "x": -12.5,
                     "y": -45.0,
                     "z": 0.0
                 },
@@ -105,7 +105,7 @@
                     "z": 0.0
                 },
                 "orientation": {
-                    "x": 0.0,
+                    "x": -12.5,
                     "y": -15.0,
                     "z": 0.0
                 },
@@ -121,7 +121,7 @@
                     "z": 0.0
                 },
                 "orientation": {
-                    "x": 0.0,
+                    "x": -12.5,
                     "y": 15.0,
                     "z": 0.0
                 },
@@ -137,7 +137,7 @@
                     "z": 0.0
                 },
                 "orientation": {
-                    "x": 0.0,
+                    "x": -12.5,
                     "y": 45.0,
                     "z": 0.0
                 },
