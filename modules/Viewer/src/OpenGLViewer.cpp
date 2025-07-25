@@ -261,19 +261,34 @@ namespace viewer
         glm::mat4 view = camera_.getViewMatrix();
         glm::mat4 projection = getProjectionMatrix();
 
-        SharedVec<Entity> opaque;
-        SharedVec<Entity> transparent;
+        SharedVec<Renderable> flatRenderables;
 
         for (auto &e : entities_)
         {
-            if (e->isTransparent())
+            auto main = e->getRenderable();
+            if (!main)
+                continue;
+
+            flatRenderables.push_back(main);
+
+            for (const auto &sub : main->getSubRenderables())
             {
-                transparent.push_back(e);
+                flatRenderables.push_back(sub);
             }
+        }
+
+        SharedVec<Renderable> opaque;
+        SharedVec<Renderable> transparent;
+
+        for (auto &r : flatRenderables)
+        {
+            if (!r)
+                continue;
+
+            if (r->isTransparent())
+                transparent.push_back(r);
             else
-            {
-                opaque.push_back(e);
-            }
+                opaque.push_back(r);
         }
 
         // Debug: Check if we have transparent entities
@@ -282,13 +297,11 @@ namespace viewer
 
             // Sort transparent entities back-to-front for proper alpha blending
             std::sort(transparent.begin(), transparent.end(),
-                      [this](const std::shared_ptr<Entity> &a, const std::shared_ptr<Entity> &b)
+                      [this](const std::shared_ptr<Renderable> &a, const std::shared_ptr<Renderable> &b)
                       {
                           glm::vec3 camPos = camera_.getPosition();
                           glm::vec3 aPos = a->getCenter();
                           glm::vec3 bPos = b->getCenter();
-                          LOGGER_INFO("Sorting transparent entities: " + a->getName() + " and " + b->getName());
-                          // Remove the debug print - it's called for every comparison!
                           return glm::distance(camPos, aPos) > glm::distance(camPos, bPos);
                       });
         }
@@ -350,5 +363,4 @@ namespace viewer
     {
         entities_ = e;
     }
-
 }

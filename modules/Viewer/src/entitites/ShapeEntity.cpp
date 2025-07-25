@@ -6,20 +6,20 @@ namespace viewer
 
     ShapeEntity::ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color)
         : shape_(shape),
-          renderable_(std::make_shared<ShapeRenderable>(shape_, color)),
           color_(color)
     {
+        renderable_ = std::make_shared<ShapeRenderable>(shape_, color_);
     }
 
-    void ShapeEntity::initGL()
-    {
-        // std::cout << "initGl started for [ShapeEntity]" << std::endl;
+    // void ShapeEntity::initGL()
+    // {
+    //     // std::cout << "initGl started for [ShapeEntity]" << std::endl;
 
-        if (renderable_)
-            renderable_->initGL();
-        else
-            std::cout << "renderable not found for [ShapeEntity]" << std::endl;
-    }
+    //     if (renderable_)
+    //         renderable_->initGL();
+    //     else
+    //         std::cout << "renderable not found for [ShapeEntity]" << std::endl;
+    // }
 
     void ShapeEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {

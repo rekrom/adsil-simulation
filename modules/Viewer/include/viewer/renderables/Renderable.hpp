@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <viewer/shaders/ShaderUtils.hpp>
 #include <core/ResourceLocator.hpp>
+#include <vector>
 
 namespace viewer
 {
@@ -34,8 +35,14 @@ namespace viewer
         glm::vec3 getColor() const;
         void setColor(glm::vec3 color);
 
-        bool isTransparent() const;              // todo: deprectaed
-        virtual glm::vec3 getCenter() const = 0; // todo: deprecated
+        bool isTransparent() const;
+        virtual glm::vec3 getCenter() const = 0;
+
+        // Sub-renderables (default = none)
+        virtual std::vector<std::shared_ptr<Renderable>> getSubRenderables() const
+        {
+            return {};
+        }
 
     protected:
         float alpha_{1.0F};

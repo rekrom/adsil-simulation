@@ -18,7 +18,7 @@ namespace viewer
         cloud_->addPoints(points);
         if (renderable_)
         {
-            renderable_->updatePointCloud(cloud_);
+            std::dynamic_pointer_cast<PointCloudRenderable>(renderable_)->updatePointCloud(cloud_);
         }
     }
 
@@ -27,7 +27,7 @@ namespace viewer
         cloud_ = cloud;
         if (renderable_)
         {
-            renderable_->updatePointCloud(cloud);
+            std::dynamic_pointer_cast<PointCloudRenderable>(renderable_)->updatePointCloud(cloud);
         }
     }
 
@@ -36,11 +36,11 @@ namespace viewer
         return cloud_;
     }
 
-    void PointCloudEntity::initGL()
-    {
-        if (renderable_)
-            renderable_->initGL();
-    }
+    // void PointCloudEntity::initGL()
+    // {
+    //     if (renderable_)
+    //         renderable_->initGL();
+    // }
 
     void PointCloudEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
@@ -69,7 +69,7 @@ namespace viewer
 
     void PointCloudEntity::setPointSize(float pointSize)
     {
-        renderable_->setPointSize(pointSize);
+        std::dynamic_pointer_cast<PointCloudRenderable>(renderable_)->setPointSize(pointSize);
     }
 
     void PointCloudEntity::setAlpha(float alpha)

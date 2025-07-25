@@ -15,18 +15,16 @@ namespace viewer
 
     std::shared_ptr<DeviceRenderable> DeviceEntity::getRenderable() const
     {
-        return renderable_;
+        return std::dynamic_pointer_cast<DeviceRenderable>(renderable_);
     }
 
-    void DeviceEntity::initGL()
-    {
-        // std::cout << "initGl started for [DeviceEntity]" << std::endl;
-
-        if (renderable_)
-            renderable_->initGL();
-        else
-            std::cout << "renderable not found for [DeviceEntity]" << std::endl;
-    }
+    // void DeviceEntity::initGL()
+    // {
+    //     if (renderable_)
+    //         renderable_->initGL();
+    //     else
+    //         std::cout << "renderable not found for [DeviceEntity]" << std::endl;
+    // }
 
     void DeviceEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
@@ -47,24 +45,25 @@ namespace viewer
     void DeviceEntity::setFoVVisible(bool visible)
     {
         if (renderable_)
-            renderable_->enableFoV(visible);
+            std::dynamic_pointer_cast<DeviceRenderable>(renderable_)->enableFoV(visible);
     }
 
     void DeviceEntity::setColor(glm::vec3 color)
     {
-        std::cout << "[devEntity] setColor called" << std::endl;
         color_ = color;
-        renderable_ = std::make_shared<DeviceRenderable>(device_, color_);
-        renderable_->initGL(); // Re-init GL with new color
+        if (renderable_)
+        {
+            std::dynamic_pointer_cast<DeviceRenderable>(renderable_)->setColor(color_);
+        }
     }
 
     void DeviceEntity::setFovRenderableColor(glm::vec3 color)
     {
-        renderable_->setFovPyramidColor(color);
+        std::dynamic_pointer_cast<DeviceRenderable>(renderable_)->setFovPyramidColor(color);
     }
     glm::vec3 DeviceEntity::getFovRenderableColor() const
     {
-        return renderable_->getFovPyramidColor();
+        return std::dynamic_pointer_cast<DeviceRenderable>(renderable_)->getFovPyramidColor();
     }
 
     bool DeviceEntity::isTransparent() const

@@ -14,7 +14,7 @@ namespace viewer
     public:
         explicit DeviceEntity(std::shared_ptr<Device> device, glm::vec3 color = {1.0F, 1.0F, 1.0F}, bool visible = true);
 
-        void initGL() override;
+        // void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
@@ -32,7 +32,6 @@ namespace viewer
 
     private:
         std::shared_ptr<Device> device_;
-        std::shared_ptr<DeviceRenderable> renderable_;
         glm::vec3 color_;
         bool visible_;
     };

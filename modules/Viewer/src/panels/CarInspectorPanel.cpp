@@ -71,7 +71,7 @@ namespace viewer::imgui
         if (ImGui::CollapsingHeader("Dimension", ImGuiTreeNodeFlags_DefaultOpen))
         {
             auto car = carEntity->getCar();
-            auto renderable = carEntity->getRenderable();
+            std::shared_ptr<CarRenderable> renderable = std::dynamic_pointer_cast<CarRenderable>(carEntity->getRenderable());
 
             CarDimension dim = car->getDimension();
             float size[3] = {dim.length, dim.width, dim.height};

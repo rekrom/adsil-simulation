@@ -22,6 +22,8 @@ namespace viewer
         void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
+        std::vector<std::shared_ptr<Renderable>> getSubRenderables() const override;
+
         void enableFoV(bool enable);
 
         [[nodiscard]] glm::vec3 getFovPyramidColor() const;
@@ -33,7 +35,7 @@ namespace viewer
         GLuint arrowVAO_{0}, arrowVBO_{0};
 
         bool showFoV_ = true;
-        std::unique_ptr<FoVPyramidRenderable> fovRenderable_;
+        std::shared_ptr<FoVPyramidRenderable> fovRenderable_;
 
     protected:
         void createShader() override;

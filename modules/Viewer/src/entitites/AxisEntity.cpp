@@ -4,19 +4,19 @@
 namespace viewer
 {
     AxisEntity::AxisEntity()
-        : renderable_(std::make_shared<AxisRenderable>())
     {
+        renderable_ = std::make_shared<AxisRenderable>();
     }
 
-    void AxisEntity::initGL()
-    {
-        if (!renderable_)
-        {
-            LOGGER_ERROR("AxisEntity::initGL: renderable not found");
-        }
+    // void AxisEntity::initGL()
+    // {
+    //     if (!renderable_)
+    //     {
+    //         LOGGER_ERROR("AxisEntity::initGL: renderable not found");
+    //     }
 
-        renderable_->initGL();
-    }
+    //     renderable_->initGL();
+    // }
 
     void AxisEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {

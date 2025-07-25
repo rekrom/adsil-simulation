@@ -16,7 +16,7 @@ namespace viewer
     public:
         explicit CarEntity(std::shared_ptr<Car> car, glm::vec3 color = {0.2F, 0.6F, 1.0F});
 
-        void initGL() override;
+        // void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
@@ -26,7 +26,7 @@ namespace viewer
         bool isTransparent() const override;
 
         std::shared_ptr<Car> getCar() const;
-        std::shared_ptr<CarRenderable> getRenderable() const;
+        // std::shared_ptr<CarRenderable> getRenderable() const;
 
         const SharedVec<DeviceEntity> &getTxEntities() const;
         const SharedVec<DeviceEntity> &getRxEntities() const;
@@ -36,7 +36,6 @@ namespace viewer
 
     private:
         std::shared_ptr<Car> car_;
-        std::shared_ptr<CarRenderable> renderable_;
         SharedVec<DeviceEntity> txEntities_;
         SharedVec<DeviceEntity> rxEntities_;
         glm::vec3 color_;

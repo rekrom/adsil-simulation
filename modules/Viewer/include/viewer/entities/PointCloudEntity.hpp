@@ -17,7 +17,7 @@ namespace viewer
         void setPointCloud(std::shared_ptr<math::PointCloud> cloud);
         std::shared_ptr<math::PointCloud> getPointCloud() const;
 
-        void initGL() override;
+        // void initGL() override;
         void render(const glm::mat4 &view, const glm::mat4 &projection) override;
         void cleanup() override;
 
@@ -33,7 +33,6 @@ namespace viewer
 
     private:
         std::shared_ptr<math::PointCloud> cloud_;
-        std::shared_ptr<PointCloudRenderable> renderable_;
         glm::vec3 color_;
     };
 }

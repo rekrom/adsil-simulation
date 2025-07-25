@@ -3,8 +3,10 @@
 namespace viewer
 {
     CarEntity::CarEntity(std::shared_ptr<Car> car, glm::vec3 color)
-        : car_(std::move(car)), renderable_(std::make_shared<CarRenderable>(car_, color)), color_(color)
+        : car_(std::move(car)), color_(color)
     {
+        renderable_ = std::make_shared<CarRenderable>(car_, color_);
+
         for (const auto &tx : car_->getTransmitters())
         {
             txEntities_.emplace_back(std::make_shared<DeviceEntity>(tx, glm::vec3(1.0F, 0.0F, 0.0F)));
@@ -16,29 +18,29 @@ namespace viewer
         } // green for RX
     }
 
-    void CarEntity::initGL()
-    {
-        // std::cout << "initGl started for [CarEntity]" << std::endl;
+    // void CarEntity::initGL()
+    // {
+    //     // std::cout << "initGl started for [CarEntity]" << std::endl;
 
-        if (renderable_)
-        {
-            renderable_->initGL();
-        }
-        else
-            std::cout << "renderable not found for [CarEntity]" << std::endl;
+    //     if (renderable_)
+    //     {
+    //         renderable_->initGL();
+    //     }
+    //     else
+    //         std::cout << "renderable not found for [CarEntity]" << std::endl;
 
-        for (auto &tx : txEntities_)
-        {
-            tx->initGL();
-            tx->setFovRenderableColor({0.7F, 0.1F, 0.1F});
-        }
+    //     // for (auto &tx : txEntities_)
+    //     // {
+    //     //     tx->initGL();
+    //     //     tx->setFovRenderableColor({0.7F, 0.1F, 0.1F});
+    //     // }
 
-        for (auto &rx : rxEntities_)
-        {
-            rx->initGL();
-            rx->setFovRenderableColor({0.1F, 0.1F, 0.7F});
-        }
-    }
+    //     // for (auto &rx : rxEntities_)
+    //     // {
+    //     //     rx->initGL();
+    //     //     rx->setFovRenderableColor({0.1F, 0.1F, 0.7F});
+    //     // }
+    // }
 
     void CarEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
@@ -48,15 +50,6 @@ namespace viewer
         }
 
         renderable_->render(view, projection);
-
-        for (auto &tx : txEntities_)
-        {
-            tx->render(view, projection);
-        }
-        for (auto &rx : rxEntities_)
-        {
-            rx->render(view, projection);
-        }
     }
 
     void CarEntity::cleanup()
@@ -82,7 +75,8 @@ namespace viewer
 
     glm::vec3 CarEntity::getCenter() const
     {
-        return renderable_->getCar()->getGlobalTransform().getPosition().toGlmVec3();
+        // return renderable_->getCar()->getGlobalTransform().getPosition().toGlmVec3();
+        return renderable_->getCenter();
     }
 
     std::shared_ptr<Car> CarEntity::getCar() const
@@ -90,10 +84,10 @@ namespace viewer
         return car_;
     }
 
-    std::shared_ptr<CarRenderable> CarEntity::getRenderable() const
-    {
-        return renderable_;
-    }
+    // std::shared_ptr<CarRenderable> CarEntity::getRenderable() const
+    // {
+    //     // return renderable_;
+    // }
 
     const SharedVec<DeviceEntity> &CarEntity::getTxEntities() const
     {

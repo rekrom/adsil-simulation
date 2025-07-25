@@ -13,10 +13,8 @@ namespace viewer
     DeviceRenderable::DeviceRenderable(std::shared_ptr<Device> device, glm::vec3 color)
         : device_(std::move(device))
     {
-
         this->setColor(color);
-
-        fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_);
+        fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, color);
     }
 
     DeviceRenderable::~DeviceRenderable()
@@ -179,9 +177,6 @@ namespace viewer
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);
         glUseProgram(0);
-
-        if (showFoV_ && fovRenderable_)
-            fovRenderable_->render(view, projection);
     }
 
     void DeviceRenderable::enableFoV(bool enable)
@@ -243,5 +238,12 @@ namespace viewer
     glm::vec3 DeviceRenderable::getCenter() const
     {
         return device_->getGlobalTransform().getPosition().toGlmVec3(); // Or however you access position
+    }
+
+    std::vector<std::shared_ptr<Renderable>> DeviceRenderable::getSubRenderables() const
+    {
+        if (showFoV_ && fovRenderable_)
+            return {fovRenderable_};
+        return {};
     }
 }

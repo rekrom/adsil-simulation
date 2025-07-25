@@ -12,7 +12,7 @@ namespace viewer
     {
     public:
         FoVPyramidRenderable(std::shared_ptr<Device> device,
-                             glm::vec3 color = glm::vec3{0.8F, 0.1F, 0.1F},
+                             glm::vec3 color = glm::vec3{0.5F, 0.5F, 0.5F},
                              float alpha = 0.25F);
 
         ~FoVPyramidRenderable();

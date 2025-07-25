@@ -49,10 +49,20 @@ namespace simulation
         auto axisEntity = std::make_shared<viewer::AxisEntity>();
         auto groundEntity = std::make_shared<viewer::GroundEntity>();
         auto carEntity = std::make_shared<viewer::CarEntity>(scene_->getCar(), glm::vec3(0.2F, 0.6F, 0.9F));
+        auto rxDevices = carEntity->getRxEntities();
+        auto txDevices = carEntity->getTxEntities();
 
         entities.push_back(axisEntity);
         entities.push_back(groundEntity);
         entities.push_back(carEntity);
+        for (const auto &tx : txDevices)
+        {
+            entities.push_back(tx);
+        }
+        for (const auto &rx : rxDevices)
+        {
+            entities.push_back(rx);
+        }
 
         for (auto shape : scene_->getShapes())
         {
@@ -70,9 +80,9 @@ namespace simulation
         detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
         viewer_->setSelectedPointCloudEntity(detectedPointCloudEntity_);
 
-        detectedPointCloudEntity_->setPointSize(10.0F);
+        detectedPointCloudEntity_->setPointSize(2.0F);
         detectedPointCloudEntity_->setAlpha(1.0F);
-        detectedPointCloudEntity_->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
+        detectedPointCloudEntity_->setColor(glm::vec3(110.0F / 255.0F, 1.0F, 160.0F / 255.0F));
 
         entities.push_back(detectedPointCloudEntity_);
 
