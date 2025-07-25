@@ -17,6 +17,7 @@
 #include <memory>
 #include <chrono>
 #include <viewer/common/RenderingTypes.hpp> // instead of defining the enum
+#include <core/Logger.hpp>
 
 namespace simulation
 {

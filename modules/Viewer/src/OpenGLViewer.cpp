@@ -251,12 +251,7 @@ namespace viewer
         inputManager_->update();
         processInput(deltaTime_);
 
-        // Start new ImGui frame
-        imguiLayer_.beginFrame();
-
-        // GUI interaction logic
-        imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
-        imguiLayer_.drawUI(entities_);
+        // Clear screen FIRST
         glClearColor(0.1F, 0.1F, 0.15F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -272,19 +267,31 @@ namespace viewer
         for (auto &e : entities_)
         {
             if (e->isTransparent())
+            {
                 transparent.push_back(e);
+            }
             else
+            {
                 opaque.push_back(e);
+            }
         }
 
-        std::sort(transparent.begin(), transparent.end(),
-                  [this](const std::shared_ptr<Entity> &a, const std::shared_ptr<Entity> &b)
-                  {
-                      glm::vec3 camPos = camera_.getPosition();
-                      glm::vec3 aPos = a->getCenter(); // You'll implement this
-                      glm::vec3 bPos = b->getCenter();
-                      return glm::distance(camPos, aPos) > glm::distance(camPos, bPos); // back-to-front
-                  });
+        // Debug: Check if we have transparent entities
+        if (!transparent.empty())
+        {
+
+            // Sort transparent entities back-to-front for proper alpha blending
+            std::sort(transparent.begin(), transparent.end(),
+                      [this](const std::shared_ptr<Entity> &a, const std::shared_ptr<Entity> &b)
+                      {
+                          glm::vec3 camPos = camera_.getPosition();
+                          glm::vec3 aPos = a->getCenter();
+                          glm::vec3 bPos = b->getCenter();
+                          LOGGER_INFO("Sorting transparent entities: " + a->getName() + " and " + b->getName());
+                          // Remove the debug print - it's called for every comparison!
+                          return glm::distance(camPos, aPos) > glm::distance(camPos, bPos);
+                      });
+        }
 
         for (auto &e : opaque)
         {
@@ -299,6 +306,13 @@ namespace viewer
         glDepthMask(GL_TRUE); // ✅ restore
 
         // /// render ends here
+
+        // Start new ImGui frame
+        imguiLayer_.beginFrame();
+
+        // GUI interaction logic
+        imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
+        imguiLayer_.drawUI(entities_);
 
         // End and render ImGui
         imguiLayer_.endFrame();
