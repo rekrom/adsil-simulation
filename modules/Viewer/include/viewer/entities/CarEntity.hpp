@@ -16,10 +16,6 @@ namespace viewer
     public:
         explicit CarEntity(std::shared_ptr<Car> car, glm::vec3 color = {0.2F, 0.6F, 1.0F});
 
-        // void initGL() override;
-        void render(const glm::mat4 &view, const glm::mat4 &projection) override;
-        void cleanup() override;
-
         glm::vec3 getCenter() const override;
         std::string getName() const override { return car_ ? car_->getName() : "CarEntity"; }
 

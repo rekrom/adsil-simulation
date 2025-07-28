@@ -9,6 +9,16 @@ namespace viewer
     public:
         virtual ~Entity() = default;
 
+        void setName(const std::string &name) override { name_ = name; }
+        std::string getName() const override
+        {
+            if (name_ == "Entity")
+            {
+                LOGGER_WARN("Entity::getName: Default name 'Entity' used, consider setting a specific name for better identification.");
+            }
+            return name_;
+        }
+
         void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
 
@@ -20,15 +30,36 @@ namespace viewer
         {
             if (!renderable_)
             {
-                std::string name = getName();
-                LOGGER_ERROR("Entity::initGL: renderable not found for " + name);
-                throw std::runtime_error("Entity::initGL: renderable not found for " + name);
+                LOGGER_ERROR("Entity::initGL: renderable not found for " + getName());
+                throw std::runtime_error("Entity::initGL: renderable not found for " + getName());
             }
 
             renderable_->initGL();
         }
 
+        virtual void render(const glm::mat4 &view, const glm::mat4 &projection) override
+        {
+            if (!isVisible() || !renderable_)
+            {
+                LOGGER_ERROR("Entity::render: renderable not found for " + getName());
+                // Optionally throw an exception or log a warning
+                return;
+            }
+            renderable_->render(view, projection);
+        }
+
+        virtual void cleanup() override
+        {
+            if (!renderable_)
+            {
+                LOGGER_ERROR("Entity::cleanup: renderable not found for " + getName());
+                return;
+            }
+            renderable_->cleanup();
+        }
+
     protected:
+        std::string name_{"Entity"};
         std::shared_ptr<Renderable> renderable_; // 🆙 moved here
         bool visible_ = true;
     };

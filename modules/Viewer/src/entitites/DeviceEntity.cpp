@@ -18,30 +18,6 @@ namespace viewer
         return std::dynamic_pointer_cast<DeviceRenderable>(renderable_);
     }
 
-    // void DeviceEntity::initGL()
-    // {
-    //     if (renderable_)
-    //         renderable_->initGL();
-    //     else
-    //         std::cout << "renderable not found for [DeviceEntity]" << std::endl;
-    // }
-
-    void DeviceEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
-    {
-        if (!visible_ || !renderable_)
-        {
-            return;
-        }
-
-        renderable_->render(view, projection);
-    }
-
-    void DeviceEntity::cleanup()
-    {
-        if (renderable_)
-            renderable_->cleanup();
-    }
-
     void DeviceEntity::setFoVVisible(bool visible)
     {
         if (renderable_)

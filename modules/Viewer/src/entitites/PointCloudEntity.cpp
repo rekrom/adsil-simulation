@@ -36,28 +36,6 @@ namespace viewer
         return cloud_;
     }
 
-    // void PointCloudEntity::initGL()
-    // {
-    //     if (renderable_)
-    //         renderable_->initGL();
-    // }
-
-    void PointCloudEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
-    {
-        if (!visible_ || !renderable_)
-        {
-            return;
-        }
-
-        renderable_->render(view, projection);
-    }
-
-    void PointCloudEntity::cleanup()
-    {
-        if (renderable_)
-            renderable_->cleanup();
-    }
-
     bool PointCloudEntity::isTransparent() const
     {
         if (!renderable_)

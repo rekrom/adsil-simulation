@@ -18,52 +18,6 @@ namespace viewer
         } // green for RX
     }
 
-    // void CarEntity::initGL()
-    // {
-    //     // std::cout << "initGl started for [CarEntity]" << std::endl;
-
-    //     if (renderable_)
-    //     {
-    //         renderable_->initGL();
-    //     }
-    //     else
-    //         std::cout << "renderable not found for [CarEntity]" << std::endl;
-
-    //     // for (auto &tx : txEntities_)
-    //     // {
-    //     //     tx->initGL();
-    //     //     tx->setFovRenderableColor({0.7F, 0.1F, 0.1F});
-    //     // }
-
-    //     // for (auto &rx : rxEntities_)
-    //     // {
-    //     //     rx->initGL();
-    //     //     rx->setFovRenderableColor({0.1F, 0.1F, 0.7F});
-    //     // }
-    // }
-
-    void CarEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
-    {
-        if (!visible_ || !renderable_)
-        {
-            return;
-        }
-
-        renderable_->render(view, projection);
-    }
-
-    void CarEntity::cleanup()
-    {
-        if (renderable_)
-            renderable_->cleanup();
-
-        for (auto &tx : txEntities_)
-            tx->cleanup();
-
-        for (auto &rx : rxEntities_)
-            rx->cleanup();
-    }
-
     bool CarEntity::isTransparent() const
     {
         if (!renderable_)

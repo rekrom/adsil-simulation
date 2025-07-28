@@ -15,10 +15,6 @@ namespace viewer
     public:
         ShapeEntity(std::shared_ptr<ShapeBase> shape, const glm::vec3 &color = glm::vec3(0.6F, 0.6F, 0.9F));
 
-        // void initGL() override;
-        void render(const glm::mat4 &view, const glm::mat4 &projection) override;
-        void cleanup() override;
-
         glm::vec3 getCenter() const;
         bool isTransparent() const override;
         std::string getName() const override { return shape_ ? shape_->getName() : "ShapeEntity"; }
