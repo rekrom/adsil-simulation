@@ -56,56 +56,91 @@ namespace simulation
         fireCallback();
     }
 
-    void FrameBufferManager::stepForward()
+    bool FrameBufferManager::canAdvance(int direction) const
     {
-        if (currentFrameIndex_ + 1 >= totalFrameCount_)
+        int targetIndex = currentFrameIndex_ + direction;
+        return (targetIndex >= 0 && targetIndex < totalFrameCount_);
+    }
+
+    void FrameBufferManager::notifyObservers()
+    {
+        if (frameWindow_.empty())
+        {
+            LOGGER_WARN("Frame window is empty, cannot notify observers.");
             return;
+        }
 
-        ++currentFrameIndex_;
+        const auto &frame = frameWindow_[windowSize_];
 
-        // Remove the oldest frame at the front (left side)
-        if (!frameWindow_.empty())
+        if (onFrameChanged_)
+            onFrameChanged_(currentFrameIndex_, frame->cloud, frame->timestamp);
+
+        for (auto it = frameObservers_.begin(); it != frameObservers_.end();)
+        {
+            if (auto observer = it->lock())
+            {
+                LOGGER_WARN("Notifying frame [" + observer->getObserverName() + "] of frame change");
+                observer->onFrameChanged(frame);
+                ++it;
+            }
+            else
+            {
+                it = frameObservers_.erase(it);
+            }
+        }
+    }
+
+    void FrameBufferManager::shiftWindow(int direction)
+    {
+        if (direction == +1)
+        {
+            if (!frameWindow_.empty() && frameWindow_.front())
+                frameWindow_.front()->clear();
             frameWindow_.pop_front();
 
-        // Load new frame at the back (right side)
-        int newFrameIndex = currentFrameIndex_ + windowSize_;
-        if (newFrameIndex < totalFrameCount_)
-            frameWindow_.push_back(loadFrame(newFrameIndex));
-        else
-            frameWindow_.push_back(std::make_shared<Frame>()); // placeholder if out of range
+            int newFrameIndex = currentFrameIndex_ + windowSize_;
+            if (newFrameIndex < totalFrameCount_)
+                frameWindow_.push_back(loadFrame(newFrameIndex));
+            else
+                frameWindow_.push_back(std::make_shared<Frame>());
+        }
+        else if (direction == -1)
+        {
+            if (!frameWindow_.empty() && frameWindow_.back())
+                frameWindow_.back()->clear();
+            frameWindow_.pop_back();
 
-        // Fire callback with center frame
-        const auto &center = frameWindow_[windowSize_];
-        if (onFrameChanged_ && center && center->cloud)
-            onFrameChanged_(currentFrameIndex_, center->cloud, center->timestamp);
+            int newFrameIndex = currentFrameIndex_ - windowSize_;
+            if (newFrameIndex >= 0)
+                frameWindow_.push_front(loadFrame(newFrameIndex));
+            else
+                frameWindow_.push_front(std::make_shared<Frame>());
+        }
+    }
 
-        fireCallback();
+    void FrameBufferManager::advanceFrame(int direction)
+    {
+        currentFrameIndex_ += direction;
+    }
+
+    void FrameBufferManager::stepForward()
+    {
+        if (canAdvance(+1))
+        {
+            advanceFrame(+1);
+            shiftWindow(+1);
+            notifyObservers();
+        }
     }
 
     void FrameBufferManager::stepBackward()
     {
-        if (currentFrameIndex_ - 1 < 0)
-            return;
-
-        --currentFrameIndex_;
-
-        // Remove the newest frame at the back (right side)
-        if (!frameWindow_.empty())
-            frameWindow_.pop_back();
-
-        // Load new frame at the front (left side)
-        int newFrameIndex = currentFrameIndex_ - windowSize_;
-        if (newFrameIndex >= 0)
-            frameWindow_.push_front(loadFrame(newFrameIndex));
-        else
-            frameWindow_.push_front(std::make_shared<Frame>()); // placeholder if out of range
-
-        // Fire callback with center frame
-        const auto &center = frameWindow_[windowSize_];
-        if (onFrameChanged_ && center && center->cloud)
-            onFrameChanged_(currentFrameIndex_, center->cloud, center->timestamp);
-
-        fireCallback();
+        if (canAdvance(-1))
+        {
+            advanceFrame(-1);
+            shiftWindow(-1);
+            notifyObservers();
+        }
     }
 
     std::shared_ptr<math::PointCloud> FrameBufferManager::getCurrentCloud() const
@@ -121,18 +156,6 @@ namespace simulation
             return frameWindow_[windowSize_]->timestamp;
         return 0.0;
     }
-
-    // void FrameBufferManager::setOnFrameChanged(std::function<void(int, std::shared_ptr<math::PointCloud>, double)> cb)
-    // {
-    //     onFrameChanged_ = std::move(cb);
-    //     // 🔥 Trigger immediately for current frame, if valid
-    //     if (!frameWindow_.empty() && frameWindow_[windowSize_]->cloud)
-    //     {
-    //         onFrameChanged_(currentFrameIndex_,
-    //                         frameWindow_[windowSize_]->cloud,
-    //                         frameWindow_[windowSize_]->timestamp);
-    //     }
-    // }
 
     void FrameBufferManager::loadWindowAround(int centerFrame)
     {
@@ -172,18 +195,21 @@ namespace simulation
 
     void FrameBufferManager::fireCallback()
     {
-        if (frameWindow_.empty())
+        if (!onFrameChanged_ && frameObservers_.empty())
+            return;
+
+        if (frameWindow_.size() <= static_cast<size_t>(windowSize_))
             return;
 
         auto &frame = frameWindow_[windowSize_];
+        if (!frame)
+            return;
 
-        // 🔹 Existing lambda callback
         if (onFrameChanged_)
         {
             onFrameChanged_(currentFrameIndex_, frame->cloud, frame->timestamp);
         }
 
-        // 🔹 Notify all registered observers
         for (auto it = frameObservers_.begin(); it != frameObservers_.end();)
         {
             if (auto observer = it->lock())
@@ -193,7 +219,6 @@ namespace simulation
             }
             else
             {
-                // Remove expired observers
                 it = frameObservers_.erase(it);
             }
         }

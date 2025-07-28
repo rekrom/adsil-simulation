@@ -25,6 +25,11 @@ namespace simulation
         void stepForward();
         void stepBackward();
 
+        void advanceFrame(int direction);
+        void shiftWindow(int direction);
+        void notifyObservers();
+        bool canAdvance(int direction) const;
+
         std::shared_ptr<math::PointCloud> getCurrentCloud() const;
         double getCurrentTimestamp() const;
         int getCurrentFrameIndex() const { return currentFrameIndex_; }
