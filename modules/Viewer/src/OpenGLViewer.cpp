@@ -39,6 +39,7 @@ namespace viewer
     {
         for (auto &e : entities_)
         {
+            LOGGER_DEBUG("Initializing entity: " + e->getName());
             e->initGL();
         }
     }
@@ -257,7 +258,24 @@ namespace viewer
 
         ///////// render start here
         updateFPSCounter();
+        renderEntities();
+        // /// render ends here
 
+        // Start new ImGui frame
+        imguiLayer_.beginFrame();
+
+        // GUI interaction logic
+        imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
+        imguiLayer_.drawUI(entities_);
+
+        // End and render ImGui
+        imguiLayer_.endFrame();
+        glfwSwapBuffers(window_);
+        glfwPollEvents();
+    }
+
+    void OpenGLViewer::renderEntities()
+    {
         glm::mat4 view = camera_.getViewMatrix();
         glm::mat4 projection = getProjectionMatrix();
 
@@ -317,20 +335,6 @@ namespace viewer
             e->render(view, projection);
         }
         glDepthMask(GL_TRUE); // ✅ restore
-
-        // /// render ends here
-
-        // Start new ImGui frame
-        imguiLayer_.beginFrame();
-
-        // GUI interaction logic
-        imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
-        imguiLayer_.drawUI(entities_);
-
-        // End and render ImGui
-        imguiLayer_.endFrame();
-        glfwSwapBuffers(window_);
-        glfwPollEvents();
     }
 
     void OpenGLViewer::cleanup()
