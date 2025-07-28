@@ -21,6 +21,11 @@ namespace math
         return Vector(x_ / mag, y_ / mag, z_ / mag);
     }
 
+    float Vector::magnitude() const
+    {
+        return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
+    }
+
     float Vector::dot(const Vector &other) const
     {
         return x_ * other.x_ + y_ * other.y_ + z_ * other.z_;
