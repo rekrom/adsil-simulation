@@ -18,7 +18,6 @@ namespace viewer
         std::string getName() const override { return device_ ? device_->getName() : "DeviceEntity"; }
 
         std::shared_ptr<Device> getDevice() const;
-        std::shared_ptr<DeviceRenderable> getRenderable() const;
 
         void setFoVVisible(bool visible);
         void setFovRenderableColor(glm::vec3 color);

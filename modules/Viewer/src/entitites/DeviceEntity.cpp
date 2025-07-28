@@ -13,11 +13,6 @@ namespace viewer
         return device_;
     }
 
-    std::shared_ptr<DeviceRenderable> DeviceEntity::getRenderable() const
-    {
-        return std::dynamic_pointer_cast<DeviceRenderable>(renderable_);
-    }
-
     void DeviceEntity::setFoVVisible(bool visible)
     {
         if (renderable_)
@@ -40,15 +35,6 @@ namespace viewer
     glm::vec3 DeviceEntity::getFovRenderableColor() const
     {
         return std::dynamic_pointer_cast<DeviceRenderable>(renderable_)->getFovPyramidColor();
-    }
-
-    bool DeviceEntity::isTransparent() const
-    {
-        if (!renderable_)
-        {
-            return false;
-        }
-        return renderable_->isTransparent();
     }
 
     glm::vec3 DeviceEntity::getCenter() const
