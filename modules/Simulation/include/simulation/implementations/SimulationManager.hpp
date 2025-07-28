@@ -40,7 +40,7 @@ namespace simulation
         std::unique_ptr<adapter::AdapterManager> adapters_;
         std::shared_ptr<SimulationScene> scene_;
         // std::shared_ptr<ISimulationScene> scene_;
-        std::unique_ptr<SignalSolver> signalSolver_;
+        std::shared_ptr<SignalSolver> signalSolver_;
 
         std::shared_ptr<viewer::PointCloudEntity> detectedPointCloudEntity_;
 
