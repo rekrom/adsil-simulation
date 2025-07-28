@@ -20,13 +20,4 @@ namespace viewer
         return glm::vec3(0.0F);
     }
 
-    bool ShapeEntity::isTransparent() const
-    {
-        if (!renderable_)
-        {
-            return false;
-        }
-        return renderable_->isTransparent();
-    }
-
 }

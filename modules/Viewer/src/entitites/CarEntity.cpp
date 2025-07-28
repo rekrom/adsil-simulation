@@ -18,15 +18,6 @@ namespace viewer
         } // green for RX
     }
 
-    bool CarEntity::isTransparent() const
-    {
-        if (!renderable_)
-        {
-            return false;
-        }
-        return renderable_->isTransparent();
-    }
-
     glm::vec3 CarEntity::getCenter() const
     {
         // return renderable_->getCar()->getGlobalTransform().getPosition().toGlmVec3();

@@ -46,6 +46,15 @@ namespace viewer
                 return;
             }
             renderable_->render(view, projection);
+
+            for (const auto &subRenderable : renderable_->getSubRenderables())
+            {
+                if (!subRenderable)
+                {
+                    return;
+                }
+                subRenderable->render(view, projection);
+            }
         }
 
         virtual void cleanup() override
@@ -56,6 +65,26 @@ namespace viewer
                 return;
             }
             renderable_->cleanup();
+        }
+
+        virtual glm::vec3 getCenter() const override
+        {
+            if (!renderable_)
+            {
+                LOGGER_ERROR("Entity::getCenter: renderable not found for " + getName());
+                return glm::vec3(0.0f); // Default center if no renderable
+            }
+            return renderable_->getCenter();
+        }
+
+        virtual bool isTransparent() const override
+        {
+            if (!renderable_)
+            {
+                LOGGER_ERROR("Entity::isTransparent: renderable not found for " + getName());
+                return false; // Default to non-transparent if no renderable
+            }
+            return renderable_->isTransparent();
         }
 
     protected:

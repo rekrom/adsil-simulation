@@ -36,15 +36,6 @@ namespace viewer
         return cloud_;
     }
 
-    bool PointCloudEntity::isTransparent() const
-    {
-        if (!renderable_)
-        {
-            return false;
-        }
-        return renderable_->isTransparent();
-    }
-
     void PointCloudEntity::setPointSize(float pointSize)
     {
         std::dynamic_pointer_cast<PointCloudRenderable>(renderable_)->setPointSize(pointSize);
