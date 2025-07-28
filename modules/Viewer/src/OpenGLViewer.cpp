@@ -26,8 +26,7 @@ namespace viewer
 
     OpenGLViewer::~OpenGLViewer()
     {
-        std::cout << "[DESTRUCTOR] OpenGLViewer" << std::endl;
-        // cleanup();
+        LOGGER_INFO("OpenGLViewer destructor called");
     }
 
     void OpenGLViewer::initGraphics()
@@ -39,7 +38,6 @@ namespace viewer
     {
         for (auto &e : entities_)
         {
-            LOGGER_DEBUG("Initializing entity: " + e->getName());
             e->initGL();
         }
     }

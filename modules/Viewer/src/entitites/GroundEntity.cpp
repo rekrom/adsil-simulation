@@ -6,6 +6,7 @@ namespace viewer
     GroundEntity::GroundEntity()
     {
         renderable_ = std::make_shared<GroundRenderable>();
+        setName("GroundEntity");
     }
 
 }

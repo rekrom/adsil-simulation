@@ -22,10 +22,6 @@ namespace viewer
         void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
 
-        // 🆕 Unified renderable ownership
-        void setRenderable(std::shared_ptr<Renderable> renderable) { renderable_ = std::move(renderable); }
-        std::shared_ptr<Renderable> getRenderable() const { return renderable_; }
-
         virtual void initGL() override
         {
             if (!renderable_)
@@ -85,6 +81,17 @@ namespace viewer
                 return false; // Default to non-transparent if no renderable
             }
             return renderable_->isTransparent();
+        }
+
+        // 🆕 Unified renderable ownership
+        void setRenderable(std::shared_ptr<Renderable> renderable)
+        {
+            renderable_ = std::move(renderable);
+        }
+
+        std::shared_ptr<Renderable> getRenderable() const
+        {
+            return renderable_;
         }
 
     protected:

@@ -9,15 +9,7 @@ namespace viewer
           color_(color)
     {
         renderable_ = std::make_shared<ShapeRenderable>(shape_, color_);
-    }
-
-    glm::vec3 ShapeEntity::getCenter() const
-    {
-        if (shape_)
-        {
-            return renderable_->getCenter();
-        }
-        return glm::vec3(0.0F);
+        setName("ShapeEntity");
     }
 
 }

@@ -6,5 +6,6 @@ namespace viewer
     AxisEntity::AxisEntity()
     {
         renderable_ = std::make_shared<AxisRenderable>();
+        setName("AxisEntity");
     }
 }

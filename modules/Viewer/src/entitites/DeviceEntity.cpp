@@ -6,6 +6,7 @@ namespace viewer
         : device_(std::move(device)), color_(color), visible_(visible)
     {
         renderable_ = std::make_shared<DeviceRenderable>(device_, color_);
+        setName("DeviceEntity - " + device_->getName());
     }
 
     std::shared_ptr<Device> DeviceEntity::getDevice() const
@@ -35,16 +36,6 @@ namespace viewer
     glm::vec3 DeviceEntity::getFovRenderableColor() const
     {
         return std::dynamic_pointer_cast<DeviceRenderable>(renderable_)->getFovPyramidColor();
-    }
-
-    glm::vec3 DeviceEntity::getCenter() const
-    {
-        if (renderable_)
-        {
-            LOGGER_ERROR("DeviceEntity::getCenter() called, but this method is deprecated. Use renderable_->getCenter() instead.");
-            // return renderable_->getCenter();
-        }
-        return glm::vec3(0.0f);
     }
 
 }

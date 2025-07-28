@@ -51,15 +51,4 @@ namespace viewer
         renderable_->setColor(color);
     }
 
-    glm::vec3 PointCloudEntity::getCenter() const
-    {
-        if (renderable_)
-        {
-            LOGGER_ERROR("PointCloudEntity::getCenter() called, but this method is deprecated. Use renderable_->getCenter() instead.");
-
-            // return renderable_->getCenter();
-        }
-        return glm::vec3(0.0f);
-    }
-
 }
