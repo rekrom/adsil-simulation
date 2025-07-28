@@ -21,8 +21,6 @@ namespace viewer
 
     void GroundRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for GroundRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("ground");
     }
 

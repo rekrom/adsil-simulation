@@ -32,8 +32,6 @@ namespace viewer
 
     void FoVPyramidRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for FoVPyramidRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("fov_pyramid");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");

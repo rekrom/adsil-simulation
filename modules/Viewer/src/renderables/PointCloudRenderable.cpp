@@ -32,8 +32,6 @@ namespace viewer
 
     void PointCloudRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for PointCloudRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("point_cloud");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");

@@ -27,8 +27,6 @@ namespace viewer
 
     void AxisRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for AxisRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("axis");
     }
 
