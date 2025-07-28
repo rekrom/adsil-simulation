@@ -10,5 +10,10 @@ namespace simulation
     public:
         virtual ~IFrameObserver() = default;
         virtual void onFrameChanged(const std::shared_ptr<Frame> &frame) = 0;
+
+        std::string getObserverName() const { return observerName_; }
+
+    protected:
+        std::string observerName_;
     };
 }

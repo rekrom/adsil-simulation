@@ -17,12 +17,18 @@ namespace viewer
     {
     public:
         PointCloudEntityObserver(std::shared_ptr<viewer::PointCloudEntity> entity)
-            : entity_(entity) {}
+            : entity_(entity)
+        {
+            observerName_ = "PointCloudEntityObserver";
+        }
 
         void onFrameChanged(const std::shared_ptr<simulation::Frame> &frame) override
         {
+            LOGGER_INFO("PointCloudEntityObserver received frame change notification");
             if (entity_ && frame && frame->cloud)
+            {
                 entity_->setPointCloud(frame->cloud);
+            }
         }
 
     private:

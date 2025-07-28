@@ -6,6 +6,7 @@ SimulationScene::SimulationScene()
       externalCloud_(nullptr),
       timestamp_(0.0)
 {
+    observerName_ = "SimulationSceneObserver";
 }
 
 void SimulationScene::addShape(std::shared_ptr<ShapeBase> shape)
@@ -94,37 +95,12 @@ std::shared_ptr<math::PointCloud> SimulationScene::getExternalPointCloud() const
 
 void SimulationScene::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
 {
-    if (frame)
+    LOGGER_INFO("SimulationScene received frame change notification");
+    if (!frame)
     {
-        overrideTimestamp(frame->timestamp);
-        setExternalPointCloud(frame->cloud);
-        // LOGGER_INFO("SimulationScene: Frame changed, timestamp updated to " + std::to_string(frame->timestamp));
-        if (this->getCar())
-        {
-            // LOGGER_INFO("SimulationScene: Updating car position and orientation based on frame data");
-
-            if (!frame || frame->linearAcceleration.size() != 3 || frame->angularVelocity.size() != 3)
-            {
-                return;
-            }
-            // Update car's IMU data if available
-            const auto &acc = frame->linearAcceleration;
-            const auto &angVel = frame->angularVelocity;
-
-            float frameInterval = 0.1f; // or inject this from SimulationManager
-
-            Vector acceleration(acc[0] * 100, acc[1] * 100, acc[2] * 100);
-            Vector angularVelocity(angVel[0], angVel[1], angVel[2]);
-
-            Vector carVelocity_;
-            carVelocity_ += acceleration * frameInterval;
-            Vector displacement = carVelocity_ * frameInterval;
-            this->getCar()->moveBy(displacement);
-
-            Vector deltaEuler = angularVelocity * frameInterval;
-            Vector carOrientation_;
-            carOrientation_ += deltaEuler;
-            this->getCar()->rotateByYawPitchRoll(carOrientation_.x(), carOrientation_.y(), carOrientation_.z());
-        }
+        LOGGER_WARN("SimulationScene: Received empty frame");
+        return;
     }
+    // setExternalPointCloud(frame->cloud);
+    // overrideTimestamp(frame->timestamp);
 }
