@@ -4,7 +4,7 @@
 #include <viewer/interfaces/Camera.hpp>
 #include <vehicle/Car.hpp>
 #include <simulation/implementations/FrameBufferManager.hpp>
-
+#include <core/Logger.hpp>
 namespace simulation
 {
 
