@@ -4,7 +4,7 @@
 
 int main()
 {
-    simulation::SimulationManager sim;
-    sim.run();
+    auto sim = std::make_shared<simulation::SimulationManager>();
+    sim->run();
     return 0;
 }

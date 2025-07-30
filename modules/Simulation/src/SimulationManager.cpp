@@ -44,7 +44,7 @@ namespace simulation
         // Register the signal solver as a frame observer
         frameBuffer_->addFrameObserver(signalSolver_);
         // Register the scene as a frame observer
-        frameBuffer_->addFrameObserver(scene_);
+        frameBuffer_->addFrameObserver(shared_from_this());
     }
 
     void SimulationManager::createEntities()
@@ -141,4 +141,15 @@ namespace simulation
         viewer_->cleanup();
     }
 
+    void SimulationManager::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
+    {
+        LOGGER_INFO("SimulationManager received frame change notification");
+        if (!frame)
+        {
+            LOGGER_ERROR("Received null frame in onFrameChanged");
+            return;
+        }
+        LOGGER_INFO("Frame Cloud Size: " + std::to_string(frame->cloud->size()));
+        pcEntity_->setPointCloud(frame->cloud);
+    }
 } // namespace simulation

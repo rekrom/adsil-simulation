@@ -14,11 +14,12 @@
 #include <simulation/SignalSolver.hpp>
 #include <core/Logger.hpp>
 #include <viewer/entities/PointCloudEntityObserver.hpp>
+#include <simulation/interfaces/IFrameObserver.hpp>
 
 namespace simulation
 {
 
-    class SimulationManager
+    class SimulationManager : public simulation::IFrameObserver, public std::enable_shared_from_this<SimulationManager>
     {
     public:
         void init();
@@ -29,6 +30,8 @@ namespace simulation
         void play();
         void pause();
         void seek(int frameIndex);
+
+        void onFrameChanged(const std::shared_ptr<simulation::Frame> &frame) override;
 
     private:
         void createEntities();
