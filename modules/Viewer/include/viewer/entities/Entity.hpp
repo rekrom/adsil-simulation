@@ -18,7 +18,7 @@ namespace viewer
         {
             if (name_ == "Entity")
             {
-                LOGGER_WARN("Entity::getName: Default name 'Entity' used, consider setting a specific name for better identification.");
+                LOGGER_WARN_F("Entity::getName: Default name '%s' used, consider setting a specific name for better identification.", name_.c_str());
             }
             return name_;
         }
@@ -30,8 +30,8 @@ namespace viewer
         {
             if (!renderable_)
             {
-                LOGGER_ERROR("Entity::initGL: renderable not found for " + getName());
-                throw std::runtime_error("Entity::initGL: renderable not found for " + getName());
+                LOGGER_ERROR_F("Entity::initGL: renderable not found for %s", name_.c_str());
+                throw std::runtime_error("Entity::initGL: renderable not found for " + name_);
             }
 
             renderable_->initGL();
@@ -45,7 +45,7 @@ namespace viewer
             }
             if (!isVisible())
             {
-                LOGGER_DEBUG("Entity::render: " + getName() + " is not visible, skipping render.");
+                LOGGER_DEBUG_F("Entity::render: %s is not visible, skipping render.", getName().c_str());
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace viewer
         {
             if (!renderable_)
             {
-                LOGGER_ERROR("Entity::cleanup: renderable not found for " + getName());
+                LOGGER_ERROR_F("Entity::cleanup: renderable not found for %s", name_.c_str());
                 return;
             }
             renderable_->cleanup();
@@ -75,7 +75,7 @@ namespace viewer
         {
             if (!renderable_)
             {
-                LOGGER_ERROR("Entity::getCenter: renderable not found for " + getName());
+                LOGGER_ERROR_F("Entity::getCenter: renderable not found for %s", name_.c_str());
                 return glm::vec3(0.0f); // Default center if no renderable
             }
             return renderable_->getCenter();
@@ -85,7 +85,7 @@ namespace viewer
         {
             if (!renderable_)
             {
-                LOGGER_ERROR("Entity::isTransparent: renderable not found for " + getName());
+                LOGGER_ERROR_F("Entity::isTransparent: renderable not found for %s", name_.c_str());
                 return false;
             }
 

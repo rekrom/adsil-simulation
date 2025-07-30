@@ -28,7 +28,7 @@ namespace simulation
     void SimulationManager::init()
     {
         // Set observer name for debugging
-        observerName_ = "SimulationManager";
+        observerName_ = "SimulationManagerObserver";
 
         try
         {
@@ -322,7 +322,7 @@ namespace simulation
 
     void SimulationManager::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
     {
-        LOGGER_INFO(std::string("SimulationManager (") + observerName_ + ") received frame change notification");
+        LOGGER_INFO_F("(%s) received frame change notification", observerName_.c_str());
 
         if (!frame)
         {
@@ -336,6 +336,11 @@ namespace simulation
             if (pcEntity_)
             {
                 pcEntity_->setPointCloud(frame->cloud);
+                LOGGER_INFO_F("Updated external point cloud with %zu points", frame->cloud->size());
+                LOGGER_ERROR_F("Updated external point cloud with %zu points", frame->cloud->size());
+                LOGGER_WARN_F("Updated external point cloud with %zu points", frame->cloud->size());
+                LOGGER_DEBUG_F("Updated external point cloud with %zu points", frame->cloud->size());
+                LOGGER_TRACE_F("Updated external point cloud with %zu points", frame->cloud->size());
             }
             else
             {
