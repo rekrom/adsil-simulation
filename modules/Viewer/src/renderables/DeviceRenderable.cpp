@@ -157,8 +157,6 @@ namespace viewer
 
         glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
 
-        model = glm::scale(model, glm::vec3(0.51f)); // <-- Check if this differs!
-
         glUseProgram(shader_);
 
         glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));

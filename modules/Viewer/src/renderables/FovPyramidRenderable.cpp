@@ -100,7 +100,6 @@ namespace viewer
         updateVertices();
 
         glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
-        model = glm::scale(model, glm::vec3(0.51f)); // <-- Check if this differs!
 
         glBindVertexArray(vao_);
         glUseProgram(shader_);
