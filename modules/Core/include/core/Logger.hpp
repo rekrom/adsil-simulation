@@ -24,7 +24,7 @@
 #define LOGGER_INFO_F(fmt, ...)                                                                     \
     do                                                                                              \
     {                                                                                               \
-        char buffer[1024];                                                                          \
+        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                       \
         std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                    \
         core::Logger::getInstance().log("INFO", std::string(buffer), __FILE__, __LINE__, __func__); \
     } while (0)
@@ -32,7 +32,7 @@
 #define LOGGER_WARN_F(fmt, ...)                                                                     \
     do                                                                                              \
     {                                                                                               \
-        char buffer[1024];                                                                          \
+        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                       \
         std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                    \
         core::Logger::getInstance().log("WARN", std::string(buffer), __FILE__, __LINE__, __func__); \
     } while (0)
@@ -40,7 +40,7 @@
 #define LOGGER_ERROR_F(fmt, ...)                                                                     \
     do                                                                                               \
     {                                                                                                \
-        char buffer[1024];                                                                           \
+        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                        \
         std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                     \
         core::Logger::getInstance().log("ERROR", std::string(buffer), __FILE__, __LINE__, __func__); \
     } while (0)
@@ -48,7 +48,7 @@
 #define LOGGER_DEBUG_F(fmt, ...)                                                                     \
     do                                                                                               \
     {                                                                                                \
-        char buffer[1024];                                                                           \
+        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                        \
         std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                     \
         core::Logger::getInstance().log("DEBUG", std::string(buffer), __FILE__, __LINE__, __func__); \
     } while (0)
@@ -56,7 +56,7 @@
 #define LOGGER_TRACE_F(fmt, ...)                                                                     \
     do                                                                                               \
     {                                                                                                \
-        char buffer[1024];                                                                           \
+        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                        \
         std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                     \
         core::Logger::getInstance().log("TRACE", std::string(buffer), __FILE__, __LINE__, __func__); \
     } while (0)
@@ -81,6 +81,11 @@ namespace core
     class Logger
     {
     public:
+        // Constants for buffer sizes and limits
+        static constexpr size_t FORMATTED_LOG_BUFFER_SIZE = 1024;
+        static constexpr size_t DEFAULT_MESSAGE_RESERVE_SIZE = 256;
+        static constexpr size_t DEFAULT_MAX_MESSAGE_LENGTH = 4096;
+
         enum class Level
         {
             TRACE = 0,
@@ -200,9 +205,15 @@ namespace core
         }
 
     private:
+        // Buffer size constants
+        static constexpr size_t TIMESTAMP_BUFFER_SIZE = 32;
+        static constexpr size_t TIMESTAMP_RESULT_SIZE = 48;
+        static constexpr size_t THREAD_ID_BUFFER_SIZE = 32;
+        static constexpr unsigned int THREAD_ID_HASH_MASK = 0xFFFFFFFF;
+
         Logger() : minLevel_(Level::TRACE), useSyslog_(false), showThreadId_(false),
                    showFileLineFunc_(false), logFileFailed_(false), colorOutput_(true),
-                   maxMessageLength_(4096)
+                   maxMessageLength_(DEFAULT_MAX_MESSAGE_LENGTH)
         {
             initializeFromEnvironment();
         }
@@ -278,11 +289,11 @@ namespace core
             auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
             // Use char buffer for better performance
-            char buffer[32];
+            char buffer[TIMESTAMP_BUFFER_SIZE];
             std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&in_time_t));
 
-            // Append milliseconds efficiently
-            char result[36];
+            // Append milliseconds efficiently - increased buffer size to prevent truncation
+            char result[TIMESTAMP_RESULT_SIZE];
             std::snprintf(result, sizeof(result), "%s.%03d", buffer, static_cast<int>(ms.count()));
             return std::string(result);
         }
@@ -292,8 +303,8 @@ namespace core
             // More efficient thread ID formatting
             std::hash<std::thread::id> hasher;
             auto hash = hasher(std::this_thread::get_id());
-            char buffer[32];
-            std::snprintf(buffer, sizeof(buffer), "%08x", static_cast<unsigned int>(hash & 0xFFFFFFFF));
+            char buffer[THREAD_ID_BUFFER_SIZE];
+            std::snprintf(buffer, sizeof(buffer), "%08x", static_cast<unsigned int>(hash & THREAD_ID_HASH_MASK));
             return std::string(buffer);
         }
 
@@ -303,7 +314,7 @@ namespace core
         {
             // Pre-calculate approximate size to reduce reallocations
             std::string result;
-            result.reserve(256); // Most log messages are under 256 chars
+            result.reserve(DEFAULT_MESSAGE_RESERVE_SIZE); // Most log messages are under 256 chars
 
             // Bold timestamp (only if color is enabled)
             if (colorOutput_)
