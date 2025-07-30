@@ -40,10 +40,11 @@ namespace simulation
         // Initialize the signal solver (sensor signal processing, etc.)
         signalSolver_ = std::make_shared<SignalSolver>(scene_);
 
-        //
         // Register the signal solver as a frame observer
-        frameBuffer_->addFrameObserver(signalSolver_);
+        // frameBuffer_->addFrameObserver(signalSolver_);
         // Register the scene as a frame observer
+        // frameBuffer_->addFrameObserver(scene_);
+
         frameBuffer_->addFrameObserver(shared_from_this());
     }
 
@@ -75,16 +76,12 @@ namespace simulation
             entities.push_back(shapeEntity);
         }
 
-        auto pcEntity = std::make_shared<viewer::PointCloudEntity>(this->scene_->getExternalPointCloud());
-        pcEntity->setName("Outside Point Cloud");
-        // In createEntities():
-        pcEntityObserver_ = std::make_shared<viewer::PointCloudEntityObserver>(pcEntity);
-        frameBuffer_->addFrameObserver(pcEntityObserver_);
-
-        entities.push_back(pcEntity);
+        pcEntity_ = std::make_shared<viewer::PointCloudEntity>(this->scene_->getExternalPointCloud());
+        pcEntity_->setName("PointCloudEntity - Outside Point Cloud");
+        entities.push_back(pcEntity_);
 
         detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
-        detectedPointCloudEntity_->setName("Detected Point Cloud");
+        detectedPointCloudEntity_->setName("PointCloudEntity - Selected Point Cloud");
         viewer_->setSelectedPointCloudEntity(detectedPointCloudEntity_);
 
         detectedPointCloudEntity_->setPointSize(2.0F);
@@ -135,7 +132,8 @@ namespace simulation
             update(deltaTime);
             frameBuffer_->update(deltaTime);
 
-            detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
+            // detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
+            detectedPointCloudEntity_->setPointCloud(signalSolver_->solve());
             render();
         }
         viewer_->cleanup();

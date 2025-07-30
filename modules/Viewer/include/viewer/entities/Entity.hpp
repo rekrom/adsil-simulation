@@ -1,6 +1,7 @@
 #pragma once
 #include <viewer/interfaces/IEntity.hpp>
 #include <viewer/renderables/Renderable.hpp>
+#include <viewer/renderables/renderables.hpp>
 #include <core/Logger.hpp>
 namespace viewer
 {
@@ -9,7 +10,10 @@ namespace viewer
     public:
         virtual ~Entity() = default;
 
-        void setName(const std::string &name) override { name_ = name; }
+        void setName(const std::string &name) override
+        {
+            name_ = name;
+        }
         std::string getName() const override
         {
             if (name_ == "Entity")
@@ -78,9 +82,19 @@ namespace viewer
             if (!renderable_)
             {
                 LOGGER_ERROR("Entity::isTransparent: renderable not found for " + getName());
-                return false; // Default to non-transparent if no renderable
+                return false;
             }
-            return renderable_->isTransparent();
+
+            if (renderable_->isTransparent())
+                return true;
+
+            for (const auto &sub : renderable_->getSubRenderables())
+            {
+                if (sub && sub->isTransparent())
+                    return true;
+            }
+
+            return false;
         }
 
         // 🆕 Unified renderable ownership

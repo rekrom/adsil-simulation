@@ -45,11 +45,8 @@ namespace simulation
         // std::shared_ptr<ISimulationScene> scene_;
         std::shared_ptr<SignalSolver> signalSolver_;
 
+        std::shared_ptr<viewer::PointCloudEntity> pcEntity_;
         std::shared_ptr<viewer::PointCloudEntity> detectedPointCloudEntity_;
-
-        // In SimulationManager.hpp:
-        std::shared_ptr<viewer::PointCloudEntityObserver> pcEntityObserver_;
-        // Future: simulation time, sensor updates, etc.3
     };
 
 } // namespace simulation

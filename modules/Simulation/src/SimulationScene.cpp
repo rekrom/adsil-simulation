@@ -3,7 +3,7 @@
 SimulationScene::SimulationScene()
     : car_(nullptr),
       shapes_(),
-      externalCloud_(nullptr),
+      externalCloud_(std::make_shared<math::PointCloud>()),
       timestamp_(0.0)
 {
     observerName_ = "SimulationSceneObserver";
@@ -85,7 +85,7 @@ void SimulationScene::overrideTimestamp(double ts)
 
 void SimulationScene::setExternalPointCloud(std::shared_ptr<math::PointCloud> cloud)
 {
-    externalCloud_ = std::move(cloud);
+    *externalCloud_ = *cloud; // ✅ overwrite contents, not pointer
 }
 
 std::shared_ptr<math::PointCloud> SimulationScene::getExternalPointCloud() const
@@ -101,6 +101,7 @@ void SimulationScene::onFrameChanged(const std::shared_ptr<simulation::Frame> &f
         LOGGER_WARN("SimulationScene: Received empty frame");
         return;
     }
-    // setExternalPointCloud(frame->cloud);
+    LOGGER_INFO("External point cloud updated with frame data");
+    setExternalPointCloud(frame->cloud);
     // overrideTimestamp(frame->timestamp);
 }

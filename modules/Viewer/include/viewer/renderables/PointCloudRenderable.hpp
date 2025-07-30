@@ -24,6 +24,15 @@ namespace viewer
 
         void setPointSize(float pointSize);
 
+        std::size_t getPointCloudSize() const
+        {
+            if (pointCloud_)
+            {
+                return pointCloud_->size();
+            }
+            return 0;
+        }
+
     private:
         bool dirty_ = true;
         std::shared_ptr<math::PointCloud> pointCloud_;

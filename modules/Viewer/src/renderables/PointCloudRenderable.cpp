@@ -19,9 +19,23 @@ namespace viewer
 
     void PointCloudRenderable::cleanup()
     {
-        glDeleteVertexArrays(1, &vao_);
-        glDeleteBuffers(1, &vbo_);
-        glDeleteProgram(shader_);
+        if (vao_ != 0)
+        {
+            glDeleteVertexArrays(1, &vao_);
+            vao_ = 0;
+        }
+
+        if (vbo_ != 0)
+        {
+            glDeleteBuffers(1, &vbo_);
+            vbo_ = 0;
+        }
+
+        if (shader_ != 0)
+        {
+            glDeleteProgram(shader_);
+            shader_ = 0;
+        }
     }
 
     void PointCloudRenderable::initGL()
@@ -71,8 +85,10 @@ namespace viewer
 
     void PointCloudRenderable::updateBuffers()
     {
-        if (!pointCloud_ || pointCloud_->empty())
+        if (!pointCloud_ || pointCloud_->empty() || vbo_ == 0)
+        {
             return;
+        }
 
         vertices_.clear();
         vertices_.reserve(pointCloud_->size() * 3);
@@ -84,7 +100,7 @@ namespace viewer
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices_.size() * sizeof(float), vertices_.data());
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         dirty_ = false;
@@ -92,14 +108,22 @@ namespace viewer
 
     void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
+
         if (pointCloud_->empty())
         {
             return;
         }
         if (dirty_)
         {
-            createBuffers();
-            // updateBuffers();
+            if (vao_ == 0 || vbo_ == 0)
+            {
+                createBuffers();
+            }
+            else
+            {
+                LOGGER_DEBUG("PointCloudRenderable::render: Updating buffers for point cloud.");
+                updateBuffers();
+            }
         }
 
         // Enable just before rendering
@@ -131,7 +155,7 @@ namespace viewer
 
     void PointCloudRenderable::updatePointCloud(std::shared_ptr<math::PointCloud> newCloud)
     {
-        pointCloud_ = newCloud;
+        pointCloud_ = std::move(newCloud);
         dirty_ = true;
     }
 

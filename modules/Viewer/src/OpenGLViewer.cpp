@@ -277,62 +277,43 @@ namespace viewer
         glm::mat4 view = camera_.getViewMatrix();
         glm::mat4 projection = getProjectionMatrix();
 
-        SharedVec<Renderable> flatRenderables;
+        SharedVec<Entity> opaqueEntities;
+        SharedVec<Entity> transparentEntities;
 
-        for (auto &e : entities_)
+        for (auto &entity : entities_)
         {
-            auto main = e->getRenderable();
-            if (!main)
+            if (!entity || !entity->getRenderable())
                 continue;
 
-            flatRenderables.push_back(main);
-
-            for (const auto &sub : main->getSubRenderables())
-            {
-                flatRenderables.push_back(sub);
-            }
-        }
-
-        SharedVec<Renderable> opaque;
-        SharedVec<Renderable> transparent;
-
-        for (auto &r : flatRenderables)
-        {
-            if (!r)
-                continue;
-
-            if (r->isTransparent())
-                transparent.push_back(r);
+            if (entity->isTransparent())
+                transparentEntities.push_back(entity);
             else
-                opaque.push_back(r);
+                opaqueEntities.push_back(entity);
         }
 
-        // Debug: Check if we have transparent entities
-        if (!transparent.empty())
+        if (!transparentEntities.empty())
         {
-
-            // Sort transparent entities back-to-front for proper alpha blending
-            std::sort(transparent.begin(), transparent.end(),
-                      [this](const std::shared_ptr<Renderable> &a, const std::shared_ptr<Renderable> &b)
+            std::sort(transparentEntities.begin(), transparentEntities.end(),
+                      [this](const std::shared_ptr<Entity> &a, const std::shared_ptr<Entity> &b)
                       {
                           glm::vec3 camPos = camera_.getPosition();
                           glm::vec3 aPos = a->getCenter();
                           glm::vec3 bPos = b->getCenter();
-                          return glm::distance(camPos, aPos) > glm::distance(camPos, bPos);
+                          return glm::distance(camPos, aPos) > glm::distance(camPos, bPos); // back-to-front
                       });
         }
 
-        for (auto &e : opaque)
+        for (auto &entity : opaqueEntities)
         {
-            e->render(view, projection);
+            entity->render(view, projection);
         }
 
-        glDepthMask(GL_FALSE); // ⛔ prevent depth writes
-        for (auto &e : transparent)
+        glDepthMask(GL_FALSE);
+        for (auto &entity : transparentEntities)
         {
-            e->render(view, projection);
+            entity->render(view, projection);
         }
-        glDepthMask(GL_TRUE); // ✅ restore
+        glDepthMask(GL_TRUE);
     }
 
     void OpenGLViewer::cleanup()

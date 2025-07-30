@@ -79,7 +79,7 @@ namespace simulation
         {
             if (auto observer = it->lock())
             {
-                LOGGER_WARN("Notifying frame [" + observer->getObserverName() + "] of frame change");
+                // LOGGER_WARN("Notifying frame [" + observer->getObserverName() + "] of frame change");
                 observer->onFrameChanged(frame);
                 ++it;
             }
