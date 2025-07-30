@@ -147,7 +147,8 @@ namespace simulation
             LOGGER_ERROR("Received null frame in onFrameChanged");
             return;
         }
-        LOGGER_INFO("Frame Cloud Size: " + std::to_string(frame->cloud->size()));
         pcEntity_->setPointCloud(frame->cloud);
+        // Notify the signal solver to process the new frame data
+        scene_->setExternalPointCloud(frame->cloud);
     }
 } // namespace simulation
