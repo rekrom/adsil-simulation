@@ -58,27 +58,35 @@ namespace viewer
 
     void PointCloudRenderable::createBuffers()
     {
-        if (!pointCloud_ || pointCloud_->empty())
-            return;
-
-        vertices_.clear();
-        vertices_.reserve(pointCloud_->size() * 3);
-        for (const auto &pt : pointCloud_->getPoints())
-        {
-            vertices_.push_back(pt.x());
-            vertices_.push_back(pt.y());
-            vertices_.push_back(pt.z());
-        }
-
+        // Always create the OpenGL objects
         glGenVertexArrays(1, &vao_);
         glGenBuffers(1, &vbo_);
 
         glBindVertexArray(vao_);
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_STATIC_DRAW);
 
+        // Set up vertex attributes
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
+
+        // If we have data, populate the buffer
+        if (pointCloud_ && !pointCloud_->empty())
+        {
+            vertices_.clear();
+            vertices_.reserve(pointCloud_->size() * 3);
+            for (const auto &pt : pointCloud_->getPoints())
+            {
+                vertices_.push_back(pt.x());
+                vertices_.push_back(pt.y());
+                vertices_.push_back(pt.z());
+            }
+            glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_STATIC_DRAW);
+        }
+        else
+        {
+            // Create empty buffer that can be updated later
+            glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+        }
 
         glBindVertexArray(0);
     }
@@ -100,7 +108,7 @@ namespace viewer
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices_.size() * sizeof(float), vertices_.data());
+        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         dirty_ = false;
@@ -115,15 +123,7 @@ namespace viewer
         }
         if (dirty_)
         {
-            if (vao_ == 0 || vbo_ == 0)
-            {
-                createBuffers();
-            }
-            else
-            {
-                LOGGER_DEBUG("PointCloudRenderable::render: Updating buffers for point cloud.");
-                updateBuffers();
-            }
+            updateBuffers();
         }
 
         // Enable just before rendering
