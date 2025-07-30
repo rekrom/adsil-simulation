@@ -83,7 +83,7 @@ namespace core
             }
             else
             {
-                std::cerr << getColor(levelStr) << formatted << "\033[0m" << std::endl;
+                std::cerr << formatted << std::endl;
             }
         }
 
@@ -178,10 +178,13 @@ namespace core
                               const char *file, int line, const char *func) const
         {
             std::stringstream ss;
-            ss << "[" << timestamp << "] ";
+            ss << "\033[1m[" << timestamp << "]\033[0m ";
             if (showThreadId_)
                 ss << "[" << threadId << "] ";
-            ss << "[" << level << "] ";
+
+            // Only colorize the level part
+            ss << getColor(level) << "[" << level << "]" << "\033[0m" << " ";
+
             if (showFileLineFunc_)
             {
                 if (file)
