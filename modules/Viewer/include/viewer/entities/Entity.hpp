@@ -45,7 +45,6 @@ namespace viewer
             }
             if (!isVisible())
             {
-                LOGGER_DEBUG_F("Entity::render: %s is not visible, skipping render.", getName().c_str());
                 return;
             }
 

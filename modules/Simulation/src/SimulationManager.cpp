@@ -121,11 +121,11 @@ namespace simulation
 
         // Create basic scene entities
         auto axisEntity = std::make_shared<viewer::AxisEntity>();
-        auto groundEntity = std::make_shared<viewer::GroundEntity>();
+        // auto groundEntity = std::make_shared<viewer::GroundEntity>();
         auto carEntity = std::make_shared<viewer::CarEntity>(scene_->getCar(), carConfig.color);
 
         entities.push_back(axisEntity);
-        entities.push_back(groundEntity);
+        // entities.push_back(groundEntity);
         entities.push_back(carEntity);
 
         // Add vehicle device entities
@@ -322,8 +322,6 @@ namespace simulation
 
     void SimulationManager::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
     {
-        LOGGER_INFO_F("(%s) received frame change notification", observerName_.c_str());
-
         if (!frame)
         {
             LOGGER_ERROR("Received null frame in onFrameChanged");
@@ -333,19 +331,12 @@ namespace simulation
         try
         {
             // Update external point cloud entity
-            if (pcEntity_)
-            {
-                pcEntity_->setPointCloud(frame->cloud);
-                LOGGER_INFO_F("Updated external point cloud with %zu points", frame->cloud->size());
-                LOGGER_ERROR_F("Updated external point cloud with %zu points", frame->cloud->size());
-                LOGGER_WARN_F("Updated external point cloud with %zu points", frame->cloud->size());
-                LOGGER_DEBUG_F("Updated external point cloud with %zu points", frame->cloud->size());
-                LOGGER_TRACE_F("Updated external point cloud with %zu points", frame->cloud->size());
-            }
-            else
+            if (!pcEntity_)
             {
                 LOGGER_WARN("Point cloud entity is null, cannot update external point cloud");
+                return;
             }
+            pcEntity_->setPointCloud(frame->cloud);
 
             // Notify the scene about the new external point cloud
             if (scene_)
