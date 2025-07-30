@@ -210,6 +210,7 @@ namespace core
         static constexpr size_t TIMESTAMP_RESULT_SIZE = 48;
         static constexpr size_t THREAD_ID_BUFFER_SIZE = 32;
         static constexpr unsigned int THREAD_ID_HASH_MASK = 0xFFFFFFFF;
+        static constexpr size_t LOG_LEVEL_WIDTH = 5; // Width for log level alignment
 
         Logger() : minLevel_(Level::TRACE), useSyslog_(false), showThreadId_(false),
                    showFileLineFunc_(false), logFileFailed_(false), colorOutput_(true),
@@ -334,10 +335,21 @@ namespace core
                 result += "] ";
             }
 
-            // Colorized level
+            // Colorized level with fixed width for alignment
             result += getColor(level);
             result += "[";
-            result += level;
+
+            // Pad level to fixed width for better alignment
+            if (level.length() < LOG_LEVEL_WIDTH)
+            {
+                result += level;
+                result += std::string(LOG_LEVEL_WIDTH - level.length(), ' '); // Right-pad with spaces
+            }
+            else
+            {
+                result += level.substr(0, LOG_LEVEL_WIDTH); // Truncate if too long
+            }
+
             result += "]";
             if (colorOutput_)
                 result += "\033[0m";
