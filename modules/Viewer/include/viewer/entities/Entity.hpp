@@ -39,12 +39,16 @@ namespace viewer
 
         virtual void render(const glm::mat4 &view, const glm::mat4 &projection) override
         {
-            if (!isVisible() || !renderable_)
+            if (!renderable_)
             {
-                LOGGER_ERROR("Entity::render: renderable not found for " + getName());
-                // Optionally throw an exception or log a warning
+                throw std::runtime_error("Entity::render: renderable not found for " + getName());
+            }
+            if (!isVisible())
+            {
+                LOGGER_DEBUG("Entity::render: " + getName() + " is not visible, skipping render.");
                 return;
             }
+
             renderable_->render(view, projection);
 
             for (const auto &subRenderable : renderable_->getSubRenderables())
