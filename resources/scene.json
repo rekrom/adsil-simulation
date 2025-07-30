@@ -28,6 +28,7 @@
                     "z": 0.0
                 },
                 "vertical_fov_deg": 120,
+                "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
                 "range": 5.0,
                 "name": "rx0"
