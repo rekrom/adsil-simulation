@@ -36,37 +36,6 @@ namespace viewer
         return cloud_;
     }
 
-    // void PointCloudEntity::initGL()
-    // {
-    //     if (renderable_)
-    //         renderable_->initGL();
-    // }
-
-    void PointCloudEntity::render(const glm::mat4 &view, const glm::mat4 &projection)
-    {
-        if (!visible_ || !renderable_)
-        {
-            return;
-        }
-
-        renderable_->render(view, projection);
-    }
-
-    void PointCloudEntity::cleanup()
-    {
-        if (renderable_)
-            renderable_->cleanup();
-    }
-
-    bool PointCloudEntity::isTransparent() const
-    {
-        if (!renderable_)
-        {
-            return false;
-        }
-        return renderable_->isTransparent();
-    }
-
     void PointCloudEntity::setPointSize(float pointSize)
     {
         std::dynamic_pointer_cast<PointCloudRenderable>(renderable_)->setPointSize(pointSize);
@@ -80,17 +49,6 @@ namespace viewer
     void PointCloudEntity::setColor(glm::vec3 color)
     {
         renderable_->setColor(color);
-    }
-
-    glm::vec3 PointCloudEntity::getCenter() const
-    {
-        if (renderable_)
-        {
-            LOGGER_ERROR("PointCloudEntity::getCenter() called, but this method is deprecated. Use renderable_->getCenter() instead.");
-
-            // return renderable_->getCenter();
-        }
-        return glm::vec3(0.0f);
     }
 
 }

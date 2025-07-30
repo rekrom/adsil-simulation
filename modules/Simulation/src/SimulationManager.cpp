@@ -29,7 +29,6 @@ namespace simulation
 
         // Initialize frame buffer with a ±3 frame window (total = 7)
         frameBuffer_ = std::make_shared<FrameBufferManager>(3);
-        frameBuffer_->addFrameObserver(scene_);
 
         // Initialize the OpenGL viewer
         viewer_ = std::make_unique<viewer::OpenGLViewer>(1280, 720, "ADSIL Analyzer - OpenGL");
@@ -39,7 +38,14 @@ namespace simulation
         inputManager_ = std::make_shared<simulation::InputManager>();
 
         // Initialize the signal solver (sensor signal processing, etc.)
-        signalSolver_ = std::make_unique<SignalSolver>(scene_);
+        signalSolver_ = std::make_shared<SignalSolver>(scene_);
+
+        // Register the signal solver as a frame observer
+        // frameBuffer_->addFrameObserver(signalSolver_);
+        // Register the scene as a frame observer
+        // frameBuffer_->addFrameObserver(scene_);
+
+        frameBuffer_->addFrameObserver(shared_from_this());
     }
 
     void SimulationManager::createEntities()
@@ -70,14 +76,12 @@ namespace simulation
             entities.push_back(shapeEntity);
         }
 
-        auto pcEntity = std::make_shared<viewer::PointCloudEntity>(this->scene_->getExternalPointCloud());
-        entities.push_back(pcEntity);
-
-        // In createEntities():
-        pcEntityObserver_ = std::make_shared<viewer::PointCloudEntityObserver>(pcEntity);
-        frameBuffer_->addFrameObserver(pcEntityObserver_);
+        pcEntity_ = std::make_shared<viewer::PointCloudEntity>(this->scene_->getExternalPointCloud());
+        pcEntity_->setName("PointCloudEntity - Outside Point Cloud");
+        entities.push_back(pcEntity_);
 
         detectedPointCloudEntity_ = std::make_shared<viewer::PointCloudEntity>();
+        detectedPointCloudEntity_->setName("PointCloudEntity - Selected Point Cloud");
         viewer_->setSelectedPointCloudEntity(detectedPointCloudEntity_);
 
         detectedPointCloudEntity_->setPointSize(2.0F);
@@ -128,11 +132,23 @@ namespace simulation
             update(deltaTime);
             frameBuffer_->update(deltaTime);
 
-            detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
+            // detectedPointCloudEntity_->addPoints(signalSolver_->solve()->getPoints());
+            detectedPointCloudEntity_->setPointCloud(signalSolver_->solve());
             render();
-            // car_->moveForward(0.01F);
         }
         viewer_->cleanup();
     }
 
+    void SimulationManager::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
+    {
+        LOGGER_INFO("SimulationManager received frame change notification");
+        if (!frame)
+        {
+            LOGGER_ERROR("Received null frame in onFrameChanged");
+            return;
+        }
+        pcEntity_->setPointCloud(frame->cloud);
+        // Notify the signal solver to process the new frame data
+        scene_->setExternalPointCloud(frame->cloud);
+    }
 } // namespace simulation

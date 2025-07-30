@@ -71,6 +71,8 @@ namespace viewer
         void updateFPSCounter();
         int getFPS();
 
+        void renderEntities();
+
     private:
         GLFWwindow *window_;
         int width_;

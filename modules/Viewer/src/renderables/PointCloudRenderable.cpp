@@ -19,9 +19,23 @@ namespace viewer
 
     void PointCloudRenderable::cleanup()
     {
-        glDeleteVertexArrays(1, &vao_);
-        glDeleteBuffers(1, &vbo_);
-        glDeleteProgram(shader_);
+        if (vao_ != 0)
+        {
+            glDeleteVertexArrays(1, &vao_);
+            vao_ = 0;
+        }
+
+        if (vbo_ != 0)
+        {
+            glDeleteBuffers(1, &vbo_);
+            vbo_ = 0;
+        }
+
+        if (shader_ != 0)
+        {
+            glDeleteProgram(shader_);
+            shader_ = 0;
+        }
     }
 
     void PointCloudRenderable::initGL()
@@ -32,8 +46,6 @@ namespace viewer
 
     void PointCloudRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for PointCloudRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("point_cloud");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");
@@ -46,35 +58,45 @@ namespace viewer
 
     void PointCloudRenderable::createBuffers()
     {
-        if (!pointCloud_ || pointCloud_->empty())
-            return;
-
-        vertices_.clear();
-        vertices_.reserve(pointCloud_->size() * 3);
-        for (const auto &pt : pointCloud_->getPoints())
-        {
-            vertices_.push_back(pt.x());
-            vertices_.push_back(pt.y());
-            vertices_.push_back(pt.z());
-        }
-
+        // Always create the OpenGL objects
         glGenVertexArrays(1, &vao_);
         glGenBuffers(1, &vbo_);
 
         glBindVertexArray(vao_);
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_STATIC_DRAW);
 
+        // Set up vertex attributes
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
+
+        // If we have data, populate the buffer
+        if (pointCloud_ && !pointCloud_->empty())
+        {
+            vertices_.clear();
+            vertices_.reserve(pointCloud_->size() * 3);
+            for (const auto &pt : pointCloud_->getPoints())
+            {
+                vertices_.push_back(pt.x());
+                vertices_.push_back(pt.y());
+                vertices_.push_back(pt.z());
+            }
+            glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_STATIC_DRAW);
+        }
+        else
+        {
+            // Create empty buffer that can be updated later
+            glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+        }
 
         glBindVertexArray(0);
     }
 
     void PointCloudRenderable::updateBuffers()
     {
-        if (!pointCloud_ || pointCloud_->empty())
+        if (!pointCloud_ || pointCloud_->empty() || vbo_ == 0)
+        {
             return;
+        }
 
         vertices_.clear();
         vertices_.reserve(pointCloud_->size() * 3);
@@ -94,14 +116,14 @@ namespace viewer
 
     void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
+
         if (pointCloud_->empty())
         {
             return;
         }
         if (dirty_)
         {
-            createBuffers();
-            // updateBuffers();
+            updateBuffers();
         }
 
         // Enable just before rendering
@@ -133,7 +155,7 @@ namespace viewer
 
     void PointCloudRenderable::updatePointCloud(std::shared_ptr<math::PointCloud> newCloud)
     {
-        pointCloud_ = newCloud;
+        pointCloud_ = std::move(newCloud);
         dirty_ = true;
     }
 

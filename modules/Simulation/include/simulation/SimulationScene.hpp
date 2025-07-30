@@ -52,7 +52,7 @@ private:
     SharedVec<ShapeBase> shapes_;
 
     // Real-frame override
-    std::shared_ptr<math::PointCloud> externalCloud_ = nullptr;
+    std::shared_ptr<math::PointCloud> externalCloud_ = std::make_shared<math::PointCloud>();
     double timestamp_ = 0.0;
 
     // Internal helper

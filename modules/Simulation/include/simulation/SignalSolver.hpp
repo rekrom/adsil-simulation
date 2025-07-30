@@ -7,11 +7,13 @@
 #include <vector>
 #include <tuple>
 #include <memory>
+#include <simulation/interfaces/IFrameObserver.hpp>
 
-class SignalSolver
+class SignalSolver : public simulation::IFrameObserver
 {
 public:
     explicit SignalSolver(std::shared_ptr<SimulationScene> scene);
+    void onFrameChanged(const std::shared_ptr<simulation::Frame> &frame) override;
 
     // Runs the solver and returns closest points for each (Tx, Rx) pair
     std::shared_ptr<math::PointCloud> solve();

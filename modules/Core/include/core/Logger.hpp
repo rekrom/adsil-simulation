@@ -95,7 +95,7 @@ namespace core
         }
 
     private:
-        Logger() : minLevel_(Level::INFO), useSyslog_(false), showThreadId_(false) {}
+        Logger() : minLevel_(Level::TRACE), useSyslog_(false), showThreadId_(false), showFileLineFunc_(false) {}
         ~Logger()
         {
             if (logFile_.is_open())
@@ -109,12 +109,19 @@ namespace core
         std::mutex mutex_;
         bool useSyslog_;
         bool showThreadId_;
+        bool showFileLineFunc_;
 
     public:
         void showThreadId(bool show = true)
         {
             std::lock_guard<std::mutex> lock(mutex_);
             showThreadId_ = show;
+        }
+
+        void showFileLineFunc(bool show = true)
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            showFileLineFunc_ = show;
         }
 
     private:
@@ -175,8 +182,11 @@ namespace core
             if (showThreadId_)
                 ss << "[" << threadId << "] ";
             ss << "[" << level << "] ";
-            if (file)
-                ss << file << ":" << line << " (" << func << ") ";
+            if (showFileLineFunc_)
+            {
+                if (file)
+                    ss << file << ":" << line << " (" << func << ") ";
+            }
             ss << msg;
             return ss.str();
         }

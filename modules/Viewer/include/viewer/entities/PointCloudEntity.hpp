@@ -17,14 +17,6 @@ namespace viewer
         void setPointCloud(std::shared_ptr<math::PointCloud> cloud);
         std::shared_ptr<math::PointCloud> getPointCloud() const;
 
-        // void initGL() override;
-        void render(const glm::mat4 &view, const glm::mat4 &projection) override;
-        void cleanup() override;
-
-        glm::vec3 getCenter() const override;
-        bool isTransparent() const override;
-        std::string getName() const override { return "PointCloudEntity"; }
-
         void setPointSize(float pointSize);
         void setColor(glm::vec3 color);
         glm::vec3 getColor() const { return renderable_->getColor(); }

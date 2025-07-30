@@ -143,8 +143,6 @@ namespace viewer
 
     void DeviceRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for DeviceRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("device");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");

@@ -26,8 +26,6 @@ namespace viewer
 
     void ShapeRenderable::createShader()
     {
-        LOGGER_INFO("Compiling shaders for ShapeRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("shape");
 
         uniforms_.model = glGetUniformLocation(shader_, "model");

@@ -4,6 +4,31 @@
 SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
     : scene_(std::move(scene))
 {
+    observerName_ = "SignalSolverObserver";
+}
+
+void SignalSolver::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
+{
+    LOGGER_INFO("SignalSolver received frame change notification");
+    if (!frame)
+    {
+        LOGGER_WARN("SignalSolver: Received empty frame");
+        return;
+    }
+
+    // // id like to solve the signal for the current frame
+    // // but we need to ensure the scene is updated first
+    // scene_->onFrameChanged(frame);
+    // // std::cout << "SignalSolver: Frame changed, solving..." << std::endl;
+    // auto result = solve();
+    // if (result)
+    // {
+    //     LOGGER_INFO("SignalSolver: Solved signal with " + std::to_string(result->size()) + " points");
+    // }
+    // else
+    // {
+    //     LOGGER_WARN("SignalSolver: No points found in the solution");
+    // }
 }
 
 std::shared_ptr<math::PointCloud> SignalSolver::solve()

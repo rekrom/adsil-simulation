@@ -254,8 +254,6 @@ namespace viewer
 
     void CarRenderable::createShader()
     {
-        LOGGER_DEBUG("Compiling shaders for CarRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("car");
 
         // Cache uniform locations

@@ -28,8 +28,6 @@ namespace viewer
 
     void WireframeRenderable::createShader()
     {
-        LOGGER_INFO("Compiling shaders for WireframeRenderable");
-
         shader_ = shader::ShaderUtils::createProgramFromFiles("wireframe");
     }
 
