@@ -27,6 +27,7 @@ namespace math
         [[nodiscard]] float z() const { return z_; }
 
         [[nodiscard]] Vector normalized() const;
+        [[nodiscard]] float magnitude() const;
         [[nodiscard]] float dot(const Vector &other) const;
         [[nodiscard]] Vector cross(const Vector &other) const;
         [[nodiscard]] Point rotatePoint(const Point &point) const;
