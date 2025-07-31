@@ -45,6 +45,7 @@ namespace simulation
 
     void FrameBufferManager::play() { isPlaying_ = true; }
     void FrameBufferManager::pause() { isPlaying_ = false; }
+    void FrameBufferManager::togglePlayPause() { isPlaying_ = !isPlaying_; }
 
     void FrameBufferManager::seek(int frameIndex)
     {

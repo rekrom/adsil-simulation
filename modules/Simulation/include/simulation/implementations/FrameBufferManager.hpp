@@ -21,6 +21,8 @@ namespace simulation
         void update(float deltaTime); // Called every simulation tick
         void play();
         void pause();
+        void togglePlayPause();
+        bool isPlaying() const { return isPlaying_; }
         void seek(int frameId);
         void stepForward();
         void stepBackward();
