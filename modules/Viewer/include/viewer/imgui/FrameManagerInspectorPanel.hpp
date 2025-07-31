@@ -18,7 +18,5 @@ namespace viewer::imgui
         void drawJumpToFrame(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer);
 
         int jumpTarget_ = 0;
-
-        float playbackSpeed_ = 1.0f; // frames per second
     };
 }
