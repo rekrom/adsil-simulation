@@ -26,6 +26,8 @@ namespace simulation
         void seek(int frameId);
         void stepForward();
         void stepBackward();
+        void setFPS(float fps) { frameInterval_ = 1.0f / fps; }
+        float getFPS() const { return 1.0f / frameInterval_; }
 
         void advanceFrame(int direction);
         void shiftWindow(int direction);

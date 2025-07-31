@@ -58,7 +58,11 @@ namespace viewer::imgui
         }
         ImGui::SameLine();
 
-        ImGui::SliderFloat("Speed (fps)", &playbackSpeed_, 0.1f, 60.0f, "%.1f");
+        static float playbackSpeed_ = frameBuffer->getFPS();
+        if (ImGui::SliderFloat("Speed (fps)", &playbackSpeed_, 0.1f, 60.0f, "%.1f"))
+        {
+            frameBuffer->setFPS(playbackSpeed_);
+        }
     }
 
     void FrameManagerInspectorPanel::drawJumpToFrame(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
