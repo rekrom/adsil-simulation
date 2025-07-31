@@ -47,12 +47,12 @@ namespace simulation
     void FrameBufferManager::pause() { isPlaying_ = false; }
     void FrameBufferManager::togglePlayPause() { isPlaying_ = !isPlaying_; }
 
-    void FrameBufferManager::seek(int frameIndex)
+    void FrameBufferManager::seek(int frameId)
     {
-        if (frameIndex < 0 || frameIndex >= totalFrameCount_)
+        if (frameId < 0 || frameId >= totalFrameCount_)
             return;
 
-        currentFrameIndex_ = frameIndex;
+        currentFrameIndex_ = frameId;
         loadWindowAround(currentFrameIndex_);
         fireCallback();
     }
