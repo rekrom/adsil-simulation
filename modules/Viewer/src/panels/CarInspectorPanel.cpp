@@ -201,7 +201,7 @@ namespace viewer::imgui
         if (ImGui::DragFloat("Range", &range, 1.0F, 1.0F, 50.0F))
             deviceEntity->getDevice()->setRange(range);
 
-        static bool visible = true; // placeholder state
+        bool visible = deviceEntity->isVisible();
         if (ImGui::Checkbox("Visible", &visible))
         {
             deviceEntity->setVisible(visible);
