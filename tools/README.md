@@ -1,52 +1,94 @@
-# Unused Features Detection
+# Development Tools
 
-This directory contains tools to detect unused features in the ADSIL Simulation codebase.
+This directory contains essential tools for performance analysis and code quality checks.
 
-## Tools
+## 🚀 Build Performance Tools
+
+### `benchmark_build.sh`
+
+Main script for comprehensive build performance analysis with ccache optimization.
+
+**Quick Start:**
+
+```bash
+# Test ccache effectiveness
+./tools/benchmark_build.sh --clean      # Establish cache
+./tools/benchmark_build.sh --incremental # Test performance
+```
+
+**All Options:**
+
+```bash
+./tools/benchmark_build.sh [OPTIONS]
+
+Options:
+  --clean        Clean build directory before building
+  --no-ccache    Disable ccache for this build
+  --incremental  Test incremental build performance
+  --build-type   Build type (Debug|Release|RelWithDebInfo|MinSizeRel)
+  --jobs N       Number of parallel jobs
+  --help         Show help message
+```
+
+**Features:**
+
+- ✅ Real-time performance measurement
+- ✅ ccache statistics and effectiveness tracking
+- ✅ JSON reports for trend analysis
+- ✅ Incremental build testing
+- ✅ Colorized progress output
+
+### `analyze_benchmarks.py`
+
+Analyzes benchmark results to track performance trends over time.
+
+**Usage:**
+
+```bash
+./tools/analyze_benchmarks.py              # Analyze all results
+./tools/analyze_benchmarks.py --recent 5   # Show recent trends
+```
+
+**Features:**
+
+- 📊 Performance trend analysis
+- 📈 Statistical summaries (mean, median, std dev)
+- 💡 Optimization recommendations
+- 🔍 ccache effectiveness tracking
+
+## 🔧 Code Quality Tools
 
 ### `detect_unused_features.py`
 
-The main tool that analyzes the C++ modular codebase to detect:
+Analyzes C++ modular codebase for unused modules and missing dependencies.
 
-1. **Unused modules** - Entire libraries that are compiled but not used
-2. **Missing links** - Modules that are used but not linked in CMakeLists.txt
-3. **Linking issues** - Modules that are linked but not actually used
-4. **Dependency analysis** - Complete dependency graph of module relationships
-
-### Usage
+**Usage:**
 
 ```bash
-# Run the detection tool
 python3 tools/detect_unused_features.py
-
-# Or use the integration script
-./tools/check_unused_features.sh
 ```
 
-### Output
+**Features:**
 
-The tool generates:
-- Console report with detailed analysis
-- JSON report saved to `tools/unused_features_report.json`
-- Exit code 0 if no issues, 1 if issues found
+- 🔍 Unused modules detection
+- 🔗 Missing dependency analysis
+- 📊 Module usage statistics
+- ⚠️ Linking issue identification
 
-### Example Output
+## 📈 Expected Performance Results
 
-```
-📊 MODULE USAGE ANALYSIS
-   Total modules: 9
-   Linked in CMake: 9
-   Actually used: 9
-   Linked but unused: 0
-   Used but not linked: 0
-   Completely unused: 0
+| Build Type      | Time      | ccache Hit Rate | Notes                           |
+| --------------- | --------- | --------------- | ------------------------------- |
+| **Cold build**  | 3-4 min   | 0%              | First build, establishing cache |
+| **Warm build**  | 1-2 min   | 70-90%          | Full rebuild with cache         |
+| **Incremental** | 30s-1 min | 90-98%          | Small changes only              |
 
-✅ All modules are properly configured!
-```
+## 🎯 CI Integration
 
-## Integration
+The tools integrate with GitHub Actions workflows:
 
-### With CI/CD
+- **Main CI**: `cmake-single-platform.yml` - Real-time performance tracking
+- **Weekly Analysis**: `enhanced-benchmark.yml` - Comprehensive performance analysis
 
 Add to your CI pipeline:
 

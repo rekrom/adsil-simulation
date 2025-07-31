@@ -1,4 +1,4 @@
-name: CMake on a single platform
+name: CMake Build and Test
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
 
 jobs:
   build:
@@ -21,29 +22,118 @@ jobs:
       - name: List extern contents
         run: ls -l external/
 
+      - name: Benchmark - Start Time
+        id: start-time
+        run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+
       - name: Install dependencies
+        id: deps-install
         run: |
+          echo "deps_start=$(date +%s)" >> $GITHUB_OUTPUT
           sudo apt update
           sudo apt install -y libgl1-mesa-dev libx11-dev libglfw3-dev libglm-dev ccache
+          echo "deps_end=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - name: Cache CMake build
+      - name: Setup ccache
+        run: |
+          ccache --version
+          ccache --zero-stats
+          ccache --max-size=1G
+          mkdir -p ${{ env.CCACHE_DIR }}
+
+      - name: Cache ccache files
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cpp', '**/*.hpp', '**/*.h', '**/*.c') }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-ccache-
+
+      - name: Cache CMake build directory
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-build-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}
+          key: ${{ runner.os }}-cmake-build-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-cmake-build-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-cmake-build-
 
       - name: Configure CMake
-        run: >
-          cmake -B ${{github.workspace}}/build
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache
-          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        id: cmake-config
+        run: |
+          echo "config_start=$(date +%s)" >> $GITHUB_OUTPUT
+          cmake -B ${{github.workspace}}/build \
+            -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          echo "config_end=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        id: cmake-build
+        run: |
+          echo "build_start=$(date +%s)" >> $GITHUB_OUTPUT
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel $(nproc)
+          echo "build_end=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: ccache statistics
+        run: |
+          echo "📊 ccache Statistics:"
+          ccache --show-stats
 
       - name: Test
+        id: cmake-test
         working-directory: ${{github.workspace}}/build
-        run: ctest --output-on-failure -C ${{env.BUILD_TYPE}}
+        run: |
+          echo "test_start=$(date +%s)" >> $GITHUB_OUTPUT
+          ctest --output-on-failure -C ${{env.BUILD_TYPE}} --parallel $(nproc)
+          echo "test_end=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Calculate and Report Benchmarks
+        run: |
+          # Calculate durations
+          DEPS_DURATION=$((${{ steps.deps-install.outputs.deps_end }} - ${{ steps.deps-install.outputs.deps_start }}))
+          CONFIG_DURATION=$((${{ steps.cmake-config.outputs.config_end }} - ${{ steps.cmake-config.outputs.config_start }}))
+          BUILD_DURATION=$((${{ steps.cmake-build.outputs.build_end }} - ${{ steps.cmake-build.outputs.build_start }}))
+          TEST_DURATION=$((${{ steps.cmake-test.outputs.test_end }} - ${{ steps.cmake-test.outputs.test_start }}))
+          TOTAL_DURATION=$((${{ steps.cmake-test.outputs.test_end }} - ${{ steps.start-time.outputs.start_time }}))
+
+          # Format durations
+          DEPS_MIN=$((DEPS_DURATION / 60))
+          DEPS_SEC=$((DEPS_DURATION % 60))
+          CONFIG_MIN=$((CONFIG_DURATION / 60))
+          CONFIG_SEC=$((CONFIG_DURATION % 60))
+          BUILD_MIN=$((BUILD_DURATION / 60))
+          BUILD_SEC=$((BUILD_DURATION % 60))
+          TEST_MIN=$((TEST_DURATION / 60))
+          TEST_SEC=$((TEST_DURATION % 60))
+          TOTAL_MIN=$((TOTAL_DURATION / 60))
+          TOTAL_SEC=$((TOTAL_DURATION % 60))
+
+          # Create benchmark report
+          echo "## 🚀 CI Pipeline Performance Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Duration | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependencies | ${DEPS_MIN}m ${DEPS_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| CMake Configure | ${CONFIG_MIN}m ${CONFIG_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${BUILD_MIN}m ${BUILD_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${TEST_MIN}m ${TEST_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total** | **${TOTAL_MIN}m ${TOTAL_SEC}s** | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # ccache stats
+          echo "### 🎯 ccache Statistics" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ccache --show-stats >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Print to workflow log as well
+          echo "=== PERFORMANCE REPORT ==="
+          echo "Dependencies: ${DEPS_MIN}m ${DEPS_SEC}s"
+          echo "CMake Configure: ${CONFIG_MIN}m ${CONFIG_SEC}s" 
+          echo "Build: ${BUILD_MIN}m ${BUILD_SEC}s"
+          echo "Tests: ${TEST_MIN}m ${TEST_SEC}s"
+          echo "Total: ${TOTAL_MIN}m ${TOTAL_SEC}s"
+          echo "=========================="
