@@ -90,6 +90,25 @@ namespace viewer
         ImGui::End(); // End the dockspace window
     }
 
+    void ImGuiLayer::renderUI(Camera &camera, RenderingMode &mode, int &fps, const SharedVec<Entity> &entities)
+    {
+        // Start new ImGui frame
+        beginFrame();
+
+        // Begin dockspace
+        beginDockSpace();
+
+        // GUI interaction logic
+        drawViewerPanel(camera, mode, fps);
+        drawUI(entities);
+
+        // End dockspace
+        endDockSpace();
+
+        // End and render ImGui
+        endFrame();
+    }
+
     void ImGuiLayer::endFrame()
     {
         ImGui::Render();
