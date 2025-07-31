@@ -29,6 +29,10 @@ namespace viewer
 
         void beginDockSpace();
         void endDockSpace();
+
+        // Unified method to render complete UI
+        void renderUI(Camera &camera, RenderingMode &mode, int &fps, const SharedVec<Entity> &entities);
+
         void drawViewerPanel(Camera &camera, RenderingMode &mode, int &fps);
         void drawUI(const SharedVec<Entity> &entities);
         void setFrameBuffer(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer);

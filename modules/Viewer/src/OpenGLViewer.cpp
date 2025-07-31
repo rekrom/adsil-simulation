@@ -259,21 +259,9 @@ namespace viewer
         renderEntities();
         // /// render ends here
 
-        // Start new ImGui frame
-        imguiLayer_.beginFrame();
+        // Render complete UI
+        imguiLayer_.renderUI(camera_, renderingMode_, displayedFPS_, entities_);
 
-        // Begin dockspace
-        imguiLayer_.beginDockSpace();
-
-        // GUI interaction logic
-        imguiLayer_.drawViewerPanel(camera_, renderingMode_, displayedFPS_);
-        imguiLayer_.drawUI(entities_);
-
-        // End dockspace
-        imguiLayer_.endDockSpace();
-
-        // End and render ImGui
-        imguiLayer_.endFrame();
         glfwSwapBuffers(window_);
         glfwPollEvents();
     }
