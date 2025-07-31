@@ -4,12 +4,11 @@
 
 namespace viewer::imgui
 {
-    void SelectedPointCloudInspectorPanel::draw(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer,
-                                                const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity)
+    void SelectedPointCloudInspectorPanel::draw(const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity)
     {
         if (ImGui::Begin("Captured Point Cloud Inspector"))
         {
-            auto currentCloud = frameBuffer ? frameBuffer->getCurrentCloud() : nullptr;
+            auto currentCloud = pointCloudEntity ? pointCloudEntity->getPointCloud() : nullptr;
 
             if (!currentCloud || currentCloud->empty())
             {
@@ -26,9 +25,6 @@ namespace viewer::imgui
                 lastCloud = currentCloud;
             }
 
-            if (showFrameInfo_)
-                drawFrameInfoSection(frameBuffer);
-
             if (showStats_)
                 drawPointCloudStatsSection(currentCloud);
 
@@ -41,22 +37,6 @@ namespace viewer::imgui
                 drawPointCloudDataSection(currentCloud);
         }
         ImGui::End();
-    }
-
-    void SelectedPointCloudInspectorPanel::drawFrameInfoSection(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
-    {
-        if (ImGui::CollapsingHeader("Frame Information", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            ImGui::Checkbox("Show Frame Info", &showFrameInfo_);
-
-            if (frameBuffer)
-            {
-                ImGui::Text("Current Frame: %d / %d",
-                            frameBuffer->getCurrentFrameIndex(),
-                            frameBuffer->getTotalFrameCount());
-                ImGui::Text("Timestamp: %.4f", frameBuffer->getCurrentTimestamp());
-            }
-        }
     }
 
     void SelectedPointCloudInspectorPanel::drawPointCloudInfoSection(const std::shared_ptr<math::PointCloud> &pointCloud)

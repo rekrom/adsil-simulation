@@ -155,7 +155,7 @@ namespace viewer
 
         if (selectedPointCloudEntity_)
         {
-            selectedPointCloudInspector_.draw(frameBuffer_, selectedPointCloudEntity_);
+            selectedPointCloudInspector_.draw(selectedPointCloudEntity_);
         }
     }
 

@@ -11,19 +11,16 @@ namespace viewer::imgui
     class SelectedPointCloudInspectorPanel
     {
     public:
-        void draw(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer,
-                  const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity);
+        void draw(const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity);
 
     private:
         void drawPointCloudInfoSection(const std::shared_ptr<math::PointCloud> &pointCloud);
         void drawPointCloudStatsSection(const std::shared_ptr<math::PointCloud> &pointCloud);
         void drawPointCloudVisualizationSection(const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity);
         void drawPointCloudDataSection(const std::shared_ptr<math::PointCloud> &pointCloud);
-        void drawFrameInfoSection(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer);
 
         // Visualization settings
         bool showPointCloudData_ = false;
-        bool showFrameInfo_ = true;
         bool showStats_ = true;
         bool showVisualization_ = true;
 
