@@ -1,10 +1,60 @@
-# Unused Features Detection
+# Development Tools
 
-This directory contains tools to detect unused features in the ADSIL Simulation codebase.
+This directory contains various tools for analyzing and benchmarking the ADSIL Simulation codebase.
 
 ## Tools
 
-### `detect_unused_features.py`
+### Build Performance Tools
+
+#### `benchmark_build.sh`
+
+A comprehensive script for benchmarking build performance with and without ccache.
+
+**Usage:**
+```bash
+# Normal build with ccache
+./tools/benchmark_build.sh
+
+# Clean build without ccache (for comparison)
+./tools/benchmark_build.sh --clean --no-ccache
+
+# Debug build with custom parallel jobs
+./tools/benchmark_build.sh --build-type Debug --jobs 4
+```
+
+**Features:**
+- Measures configure, build, and test times
+- Supports ccache optimization
+- Generates JSON reports with timing data
+- Shows ccache statistics and hit rates
+- Colorized output with progress indicators
+
+#### `analyze_benchmarks.py`
+
+Analyzes benchmark results over time to track performance trends.
+
+**Usage:**
+```bash
+# Analyze all benchmark results in current directory
+./tools/analyze_benchmarks.py
+
+# Analyze results from specific directory
+./tools/analyze_benchmarks.py --directory /path/to/results
+
+# Show trend for last 10 runs
+./tools/analyze_benchmarks.py --recent 10
+```
+
+**Features:**
+- Performance trend analysis
+- ccache effectiveness comparison
+- Statistical analysis (mean, median, std dev)
+- Recent performance trends
+- Optimization recommendations
+
+### Code Quality Tools
+
+#### `detect_unused_features.py`
 
 The main tool that analyzes the C++ modular codebase to detect:
 

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-07-31T09:07:36Z",
+  "build_type": "Release",
+  "use_ccache": true,
+  "clean_build": false,
+  "parallel_jobs": 20,
+  "system_info": {
+    "os": "Linux",
+    "arch": "x86_64",
+    "cpu_count": 20,
+    "memory_gb": 15
+  },
+  "timing": {
+    "configure_seconds": 0,
+    "build_seconds": 16,
+    "test_seconds": 0,
+    "total_seconds": 16
+  }
+}

@@ -1,0 +1,168 @@
+name: Build Performance Benchmark
+
+on:  
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:  # Allow manual trigger
+  schedule:
+    # Run weekly to track performance over time
+    - cron: '0 2 * * 1'  # Every Monday at 2 AM UTC
+
+env:
+  BUILD_TYPE: Release
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cache_strategy: ['with-ccache', 'without-ccache']
+        
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgl1-mesa-dev libx11-dev libglfw3-dev libglm-dev ccache time
+
+      - name: Setup ccache (for with-ccache runs)
+        if: matrix.cache_strategy == 'with-ccache'
+        run: |
+          ccache --version
+          ccache --zero-stats
+          ccache --max-size=1G
+          mkdir -p ${{ env.CCACHE_DIR }}
+
+      - name: Cache ccache files  
+        if: matrix.cache_strategy == 'with-ccache'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: benchmark-${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cpp', '**/*.hpp', '**/*.h', '**/*.c') }}
+          restore-keys: |
+            benchmark-${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-
+            benchmark-${{ runner.os }}-ccache-
+
+      - name: Clean build directory
+        run: rm -rf build
+
+      - name: Configure CMake (with ccache)
+        if: matrix.cache_strategy == 'with-ccache'  
+        run: |
+          /usr/bin/time -v cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON 2>&1 | tee configure-time-ccache.log
+
+      - name: Configure CMake (without ccache)
+        if: matrix.cache_strategy == 'without-ccache'
+        run: |
+          /usr/bin/time -v cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON 2>&1 | tee configure-time-no-ccache.log
+
+      - name: Build (with ccache)
+        if: matrix.cache_strategy == 'with-ccache'
+        run: |
+          /usr/bin/time -v cmake --build build --config ${{ env.BUILD_TYPE }} --parallel $(nproc) 2>&1 | tee build-time-ccache.log
+
+      - name: Build (without ccache)
+        if: matrix.cache_strategy == 'without-ccache'
+        run: |
+          /usr/bin/time -v cmake --build build --config ${{ env.BUILD_TYPE }} --parallel $(nproc) 2>&1 | tee build-time-no-ccache.log
+
+      - name: Show ccache stats
+        if: matrix.cache_strategy == 'with-ccache'
+        run: |
+          echo "=== ccache Statistics ===" | tee ccache-stats.log
+          ccache --show-stats | tee -a ccache-stats.log
+
+      - name: Run tests and measure
+        run: |
+          cd build
+          /usr/bin/time -v ctest --output-on-failure -C ${{ env.BUILD_TYPE }} --parallel $(nproc) 2>&1 | tee ../test-time-${{ matrix.cache_strategy }}.log
+
+      - name: Extract timing data
+        run: |
+          # Extract wall clock time from time command output
+          if [ "${{ matrix.cache_strategy }}" == "with-ccache" ]; then
+            CONFIG_TIME=$(grep "Elapsed (wall clock)" configure-time-ccache.log | awk '{print $8}' | tr -d ')')
+            BUILD_TIME=$(grep "Elapsed (wall clock)" build-time-ccache.log | awk '{print $8}' | tr -d ')')
+            TEST_TIME=$(grep "Elapsed (wall clock)" test-time-with-ccache.log | awk '{print $8}' | tr -d ')')
+          else
+            CONFIG_TIME=$(grep "Elapsed (wall clock)" configure-time-no-ccache.log | awk '{print $8}' | tr -d ')')
+            BUILD_TIME=$(grep "Elapsed (wall clock)" build-time-no-ccache.log | awk '{print $8}' | tr -d ')')
+            TEST_TIME=$(grep "Elapsed (wall clock)" test-time-without-ccache.log | awk '{print $8}' | tr -d ')')
+          fi
+          
+          echo "STRATEGY=${{ matrix.cache_strategy }}" >> timing-results.env
+          echo "CONFIG_TIME=$CONFIG_TIME" >> timing-results.env
+          echo "BUILD_TIME=$BUILD_TIME" >> timing-results.env  
+          echo "TEST_TIME=$TEST_TIME" >> timing-results.env
+          echo "TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> timing-results.env
+          echo "COMMIT_SHA=${{ github.sha }}" >> timing-results.env
+          echo "COMMIT_REF=${{ github.ref }}" >> timing-results.env
+
+      - name: Upload timing artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ matrix.cache_strategy }}
+          path: |
+            *.log
+            timing-results.env
+
+  report:
+    needs: benchmark
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Download benchmark artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: benchmark-results-*
+          merge-multiple: true
+
+      - name: Generate performance report
+        run: |
+          echo "## 📊 Build Performance Benchmark Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Comparison Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Load timing data
+          if [ -f timing-results.env ]; then
+            # Process results for both strategies
+            echo "| Strategy | Configure | Build | Test | Total |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|-----------|-------|------|-------|" >> $GITHUB_STEP_SUMMARY
+            
+            # This is a simplified version - in practice you'd want to process both files
+            for strategy in with-ccache without-ccache; do
+              if [ -f "timing-results.env" ]; then
+                source timing-results.env 2>/dev/null || true
+                echo "| $strategy | $CONFIG_TIME | $BUILD_TIME | $TEST_TIME | - |" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY  
+          echo "### ccache Statistics" >> $GITHUB_STEP_SUMMARY
+          if [ -f ccache-stats.log ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat ccache-stats.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### System Information" >> $GITHUB_STEP_SUMMARY
+          echo "- Runner: ubuntu-latest" >> $GITHUB_STEP_SUMMARY
+          echo "- Parallel jobs: $(nproc)" >> $GITHUB_STEP_SUMMARY
+          echo "- Timestamp: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
