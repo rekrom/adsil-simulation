@@ -27,6 +27,8 @@ namespace viewer
         void beginFrame();
         void endFrame();
 
+        void beginDockSpace();
+        void endDockSpace();
         void drawViewerPanel(Camera &camera, RenderingMode &mode, int &fps);
         void drawUI(const SharedVec<Entity> &entities);
         void setFrameBuffer(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer);
