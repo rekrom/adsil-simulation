@@ -23,40 +23,6 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
     int tx_no = -1;
     for (const auto &tx : txs)
     {
-        float fovH = tx->getHorizontalFovRad();
-        float fovV = tx->getVerticalFovRad();
-        float range = tx->getRange();
-
-        float halfW = range * tanf(fovH / math::constants::HALF_DIVISOR_F);
-        float halfH = range * tanf(fovV / math::constants::HALF_DIVISOR_F);
-
-        auto newPoint1 = std::make_shared<spatial::TransformNode>();
-        auto newPoint2 = std::make_shared<spatial::TransformNode>();
-        auto newPoint3 = std::make_shared<spatial::TransformNode>();
-        auto newPoint4 = std::make_shared<spatial::TransformNode>();
-
-        tx->getTransformNode()->addChild(newPoint1);
-        tx->getTransformNode()->addChild(newPoint2);
-        tx->getTransformNode()->addChild(newPoint3);
-        tx->getTransformNode()->addChild(newPoint4);
-
-        // Set local transforms for each FOV corner
-        newPoint1->setLocalTransform(spatial::Transform({-halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
-        newPoint2->setLocalTransform(spatial::Transform({halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
-        newPoint3->setLocalTransform(spatial::Transform({halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
-        newPoint4->setLocalTransform(spatial::Transform({-halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
-
-        // Now get the global positions (which will include the transmitter's orientation)
-        math::Point v1 = newPoint1->getGlobalTransform().getPosition();
-        math::Point v2 = newPoint2->getGlobalTransform().getPosition();
-        math::Point v3 = newPoint3->getGlobalTransform().getPosition();
-        math::Point v4 = newPoint4->getGlobalTransform().getPosition();
-
-        // Add the FOV points to the result
-        result->addPoint(v1);
-        result->addPoint(v2);
-        result->addPoint(v3);
-        result->addPoint(v4);
 
         tx_no++;
         int rx_no = -1;
@@ -104,11 +70,7 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
             // result->addPoints(points);
         }
     }
-    return result;
-    // return ToFVals
 
-    // seperate the func
-    // std::shared_ptr<math::PointCloud> SignalSolver::TofVals2AdsilPoints(const std::vector<std::vector<float>> &ToFVals)
     if (result->empty())
     {
         return result;
