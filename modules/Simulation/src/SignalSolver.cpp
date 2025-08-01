@@ -66,11 +66,8 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
             // std::cout << solveCount_ << " " << tx->getName() << "-" << rx->getName() << "\t" << closest.toString() << "\t tof:" << minDist << std::endl;
             solveCount_++;
             result->addPoint(closest);
-            // result->clear();
-            // result->addPoints(points);
         }
     }
-
     if (result->empty())
     {
         return result;
