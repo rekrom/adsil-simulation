@@ -12,3 +12,6 @@ target_link_libraries(Math
     PUBLIC Geometry # Device modülü Math'a bağımlıysa
         Spatial
 )
+
+# Add tests subdirectory
+add_subdirectory(tests)
