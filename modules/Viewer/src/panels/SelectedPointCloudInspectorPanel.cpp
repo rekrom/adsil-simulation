@@ -4,11 +4,11 @@
 
 namespace viewer::imgui
 {
-    void SelectedPointCloudInspectorPanel::draw(const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity)
+    void SelectedPointCloudInspectorPanel::draw(const std::shared_ptr<viewer::PointCloudEntity> &selectedPointCloudEntity)
     {
         if (ImGui::Begin("Captured Point Cloud Inspector"))
         {
-            auto currentCloud = pointCloudEntity ? pointCloudEntity->getPointCloud() : nullptr;
+            auto currentCloud = selectedPointCloudEntity ? selectedPointCloudEntity->getPointCloud() : nullptr;
 
             if (!currentCloud || currentCloud->empty())
             {
@@ -28,8 +28,8 @@ namespace viewer::imgui
             if (showStats_)
                 drawPointCloudStatsSection(currentCloud);
 
-            if (showVisualization_ && pointCloudEntity)
-                drawPointCloudVisualizationSection(pointCloudEntity);
+            if (showVisualization_ && selectedPointCloudEntity)
+                drawPointCloudVisualizationSection(selectedPointCloudEntity);
 
             drawPointCloudInfoSection(currentCloud);
 

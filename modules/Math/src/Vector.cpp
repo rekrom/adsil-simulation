@@ -17,8 +17,10 @@ namespace math
     {
         float mag = std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
         if (mag == 0.0F)
+        {
             return Vector(0.0F, 0.0F, 0.0F);
-        return Vector(x_ / mag, y_ / mag, z_ / mag);
+        }
+        return {x_ / mag, y_ / mag, z_ / mag};
     }
 
     float Vector::magnitude() const
@@ -33,10 +35,10 @@ namespace math
 
     Vector Vector::cross(const Vector &other) const
     {
-        return Vector(
+        return {
             y_ * other.z_ - z_ * other.y_,
             z_ * other.x_ - x_ * other.z_,
-            x_ * other.y_ - y_ * other.x_);
+            x_ * other.y_ - y_ * other.x_};
     }
 
     Point Vector::rotatePoint(const Point &point) const
@@ -67,17 +69,17 @@ namespace math
 
     Vector Vector::operator+(const Vector &other) const
     {
-        return Vector(x_ + other.x_, y_ + other.y_, z_ + other.z_);
+        return {x_ + other.x_, y_ + other.y_, z_ + other.z_};
     }
 
     Vector Vector::operator-(const Vector &other) const
     {
-        return Vector(x_ - other.x_, y_ - other.y_, z_ - other.z_);
+        return {x_ - other.x_, y_ - other.y_, z_ - other.z_};
     }
 
     Vector Vector::operator*(float scalar) const
     {
-        return Vector(x_ * scalar, y_ * scalar, z_ * scalar);
+        return {x_ * scalar, y_ * scalar, z_ * scalar};
     }
 
     Vector Vector::operator*(const Vector &other) const

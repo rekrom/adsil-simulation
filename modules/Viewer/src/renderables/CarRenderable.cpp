@@ -74,8 +74,10 @@ namespace viewer
             glDeleteVertexArrays(1, &vao_);
 
         // 📂 Load model from file
-        std::string base_dir = "bin/resources/models/topolino/";
-        std::string inputfile = base_dir + "Topolino.obj";
+
+        std::string base_dir = core::ResourceLocator::getModelPath("topolino");
+
+        std::string inputfile = base_dir + "/Topolino.obj";
 
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;

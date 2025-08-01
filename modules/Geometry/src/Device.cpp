@@ -74,28 +74,6 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
         }
     }
 
-    // const auto &globalTransform = transformNode_->getGlobalTransform();
-
-    // Point origin = globalTransform.getPosition();
-    // Vector direction = globalTransform.get3DDirectionVector();
-
-    // float horizontal_d_angle = std::atan2(direction.x(), direction.z()); // now Z is forward
-    // float vertical_d_angle = std::atan2(direction.y(), direction.z());
-
-    // for (const auto &point : pcd.getPoints())
-    // {
-    //     Vector vec_to_point = point.toVectorFrom(origin);
-
-    //     float horizontal_p_angle = std::atan2(vec_to_point.x(), vec_to_point.z()); // horizontal in XZ plane
-    //     float vertical_p_angle = std::atan2(vec_to_point.y(), vec_to_point.z());   // vertical in YZ plane
-
-    //     if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
-    //         (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
-    //     {
-    //         visible->addPoint(point);
-    //     }
-    // }
-
     return visible;
 }
 

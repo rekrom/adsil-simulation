@@ -11,7 +11,7 @@ namespace viewer::imgui
     class SelectedPointCloudInspectorPanel
     {
     public:
-        void draw(const std::shared_ptr<viewer::PointCloudEntity> &pointCloudEntity);
+        void draw(const std::shared_ptr<viewer::PointCloudEntity> &selectedPointCloudEntity);
 
     private:
         void drawPointCloudInfoSection(const std::shared_ptr<math::PointCloud> &pointCloud);
