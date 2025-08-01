@@ -315,7 +315,7 @@ namespace simulation
 
                         // Time the point cloud update operation
                         core::Timer::measure("PointCloudEntity_setPointCloud", [&]()
-                                             { detectedPointCloudEntity_->setPointCloud(std::move(pointCloud)); });
+                                             { detectedPointCloudEntity_->setPointCloud(pointCloud); });
                     }
                     catch (const std::exception &e)
                     {
