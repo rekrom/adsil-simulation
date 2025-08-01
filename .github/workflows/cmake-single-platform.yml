@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v4
         id: apt-cache
         with:
-          path: /var/cache/apt/archives
+          path: ~/.cache/apt/archives
           key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/*.yml') }}
           restore-keys: |
             ${{ runner.os }}-apt-
@@ -41,10 +41,14 @@ jobs:
         run: |
           echo "deps_start=$(date +%s)" >> $GITHUB_OUTPUT
 
-          # Configure apt for faster downloads
+          # Create user-accessible cache directory
+          mkdir -p ~/.cache/apt/archives
+
+          # Configure apt to use our cache directory and faster downloads
           echo 'Acquire::Retries "3";' | sudo tee -a /etc/apt/apt.conf.d/80-retries
           echo 'Acquire::http::Timeout "10";' | sudo tee -a /etc/apt/apt.conf.d/80-timeout
           echo 'Acquire::Queue-Mode "host";' | sudo tee -a /etc/apt/apt.conf.d/80-parallel
+          echo "Dir::Cache::Archives \"$HOME/.cache/apt/archives\";" | sudo tee -a /etc/apt/apt.conf.d/80-cache
 
           # Only update if cache miss or if it's been a while
           if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
