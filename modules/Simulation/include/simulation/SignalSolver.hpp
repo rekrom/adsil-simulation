@@ -3,6 +3,7 @@
 #include "SimulationScene.hpp"
 #include <math/PointCloud.hpp>
 #include <math/Point.hpp>
+#include <math/Constants.hpp>
 
 #include <vector>
 #include <tuple>

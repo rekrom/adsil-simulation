@@ -8,7 +8,6 @@ SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
 
 std::shared_ptr<math::PointCloud> SignalSolver::solve()
 {
-
     // std::cout << "solving..." << std::endl;
     auto result = std::make_shared<math::PointCloud>();
     auto allPoints = scene_->getMergedPointCloud();
@@ -28,8 +27,8 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
         float fovV = tx->getVerticalFovRad();
         float range = tx->getRange();
 
-        float halfW = range * tanf(fovH / 2.0F);
-        float halfH = range * tanf(fovV / 2.0F);
+        float halfW = range * tanf(fovH / math::constants::HALF_DIVISOR_F);
+        float halfH = range * tanf(fovV / math::constants::HALF_DIVISOR_F);
 
         auto newPoint1 = std::make_shared<spatial::TransformNode>();
         auto newPoint2 = std::make_shared<spatial::TransformNode>();
