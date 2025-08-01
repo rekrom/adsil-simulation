@@ -40,18 +40,6 @@ jobs:
         id: start-time
         run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - name: Cache APT packages
-        uses: actions/cache@v4
-        id: apt-cache
-        with:
-          path: |
-            /var/lib/apt/lists
-            /var/cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/workflows/*.yml') }}-${{ env.BUILD_TYPE }}
-          restore-keys: |
-            ${{ runner.os }}-apt-${{ hashFiles('**/workflows/*.yml') }}-
-            ${{ runner.os }}-apt-
-
       - name: Install dependencies
         id: deps-install
         run: |
@@ -59,18 +47,11 @@ jobs:
 
           # Configure apt for faster downloads only
           echo 'Acquire::Retries "3";' | sudo tee -a /etc/apt/apt.conf.d/80-retries
-          echo 'Acquire::http::Timeout "10";' | sudo tee -a /etc/apt/apt.conf.d/80-timeout
+          echo 'Acquire::http::Timeout "10";' | sudo tee -a /etc/apt/apt.conf.d/80-timeout  
           echo 'Acquire::Queue-Mode "host";' | sudo tee -a /etc/apt/apt.conf.d/80-parallel
 
-          # Only update if cache miss
-          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
-            echo "📦 Cache miss - updating package lists"
-            sudo apt update
-          else
-            echo "🎯 Cache hit - skipping apt update"
-          fi
-
-          # Install packages with optimized flags for speed
+          # Update and install packages with optimized flags
+          sudo apt update
           sudo apt install -y --no-install-recommends --no-install-suggests \
             -o Dpkg::Options::="--force-confdef" \
             -o Dpkg::Options::="--force-confold" \
@@ -103,14 +84,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-
             ${{ runner.os }}-ccache-
-
-      - name: Cache pip packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
 
       - name: Cache CMake build directory
         uses: actions/cache@v4
