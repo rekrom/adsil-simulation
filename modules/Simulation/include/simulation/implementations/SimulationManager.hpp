@@ -16,6 +16,7 @@
 #include <viewer/entities/PointCloudEntityObserver.hpp>
 #include <simulation/interfaces/IFrameObserver.hpp>
 #include <simulation/configs/SimulationConfig.hpp>
+#include <core/Timer.hpp>
 
 namespace simulation
 {
@@ -44,6 +45,10 @@ namespace simulation
         // Configuration
         void setConfig(std::shared_ptr<SimulationConfig> config) { config_ = config; }
         std::shared_ptr<SimulationConfig> getConfig() const { return config_; }
+
+        // Performance monitoring
+        void reportPerformanceStats() const;
+        void resetPerformanceStats();
 
     private:
         void createEntities();

@@ -4,36 +4,10 @@
 SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
     : scene_(std::move(scene))
 {
-    observerName_ = "SignalSolverObserver";
-}
-
-void SignalSolver::onFrameChanged(const std::shared_ptr<simulation::Frame> &frame)
-{
-    LOGGER_INFO("SignalSolver received frame change notification");
-    if (!frame)
-    {
-        LOGGER_WARN("SignalSolver: Received empty frame");
-        return;
-    }
-
-    // // id like to solve the signal for the current frame
-    // // but we need to ensure the scene is updated first
-    // scene_->onFrameChanged(frame);
-    // // std::cout << "SignalSolver: Frame changed, solving..." << std::endl;
-    // auto result = solve();
-    // if (result)
-    // {
-    //     LOGGER_INFO("SignalSolver: Solved signal with " + std::to_string(result->size()) + " points");
-    // }
-    // else
-    // {
-    //     LOGGER_WARN("SignalSolver: No points found in the solution");
-    // }
 }
 
 std::shared_ptr<math::PointCloud> SignalSolver::solve()
 {
-
     // std::cout << "solving..." << std::endl;
     auto result = std::make_shared<math::PointCloud>();
     auto allPoints = scene_->getMergedPointCloud();
@@ -49,40 +23,6 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
     int tx_no = -1;
     for (const auto &tx : txs)
     {
-        float fovH = tx->getHorizontalFovRad();
-        float fovV = tx->getVerticalFovRad();
-        float range = tx->getRange();
-
-        float halfW = range * tanf(fovH / 2.0F);
-        float halfH = range * tanf(fovV / 2.0F);
-
-        auto newPoint1 = std::make_shared<spatial::TransformNode>();
-        auto newPoint2 = std::make_shared<spatial::TransformNode>();
-        auto newPoint3 = std::make_shared<spatial::TransformNode>();
-        auto newPoint4 = std::make_shared<spatial::TransformNode>();
-
-        tx->getTransformNode()->addChild(newPoint1);
-        tx->getTransformNode()->addChild(newPoint2);
-        tx->getTransformNode()->addChild(newPoint3);
-        tx->getTransformNode()->addChild(newPoint4);
-
-        // Set local transforms for each FOV corner
-        newPoint1->setLocalTransform(spatial::Transform({-halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
-        newPoint2->setLocalTransform(spatial::Transform({halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
-        newPoint3->setLocalTransform(spatial::Transform({halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
-        newPoint4->setLocalTransform(spatial::Transform({-halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
-
-        // Now get the global positions (which will include the transmitter's orientation)
-        math::Point v1 = newPoint1->getGlobalTransform().getPosition();
-        math::Point v2 = newPoint2->getGlobalTransform().getPosition();
-        math::Point v3 = newPoint3->getGlobalTransform().getPosition();
-        math::Point v4 = newPoint4->getGlobalTransform().getPosition();
-
-        // Add the FOV points to the result
-        result->addPoint(v1);
-        result->addPoint(v2);
-        result->addPoint(v3);
-        result->addPoint(v4);
 
         tx_no++;
         int rx_no = -1;
@@ -130,11 +70,7 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
             // result->addPoints(points);
         }
     }
-    return result;
-    // return ToFVals
 
-    // seperate the func
-    // std::shared_ptr<math::PointCloud> SignalSolver::TofVals2AdsilPoints(const std::vector<std::vector<float>> &ToFVals)
     if (result->empty())
     {
         return result;

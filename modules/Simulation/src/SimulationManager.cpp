@@ -2,6 +2,7 @@
 #include <viewer/entities/GroundEntity.hpp>
 #include <viewer/entities/AxisEntity.hpp>
 #include <viewer/entities/PointCloudEntity.hpp>
+#include <core/Timer.hpp>
 #include <stdexcept>
 
 // Fallback base resource directory if environment variable is not set
@@ -282,20 +283,39 @@ namespace simulation
 
             // Step 5: Main simulation loop
             LOGGER_INFO("Starting main simulation loop...");
+
+            // Performance monitoring variables
+            static constexpr int PERFORMANCE_REPORT_INTERVAL = 300; // Report every 300 frames (~5 seconds at 60 FPS)
+            int frameCounter = 0;
+
             while (!viewer_->shouldClose())
             {
+                TIMER_SCOPE("SimulationLoop_Frame");
+
                 float deltaTime = viewer_->getDeltaTime();
 
                 // Update simulation state
-                update(deltaTime);
-                frameBuffer_->update(deltaTime);
+                {
+                    TIMER_SCOPE("SimulationLoop_Update");
+                    update(deltaTime);
+                    frameBuffer_->update(deltaTime);
+                }
 
                 // Update detected point cloud from signal solver
                 if (signalSolver_ && detectedPointCloudEntity_)
                 {
                     try
                     {
-                        detectedPointCloudEntity_->setPointCloud(signalSolver_->solve());
+                        TIMER_SCOPE("SignalProcessing_Total");
+
+                        // Time the critical signal solver operation
+                        std::shared_ptr<math::PointCloud> pointCloud;
+                        core::Timer::measure("SignalSolver_solve", [&]()
+                                             { pointCloud = signalSolver_->solve(); });
+
+                        // Time the point cloud update operation
+                        core::Timer::measure("PointCloudEntity_setPointCloud", [&]()
+                                             { detectedPointCloudEntity_->setPointCloud(pointCloud); });
                     }
                     catch (const std::exception &e)
                     {
@@ -304,7 +324,19 @@ namespace simulation
                 }
 
                 // Render frame
-                render();
+                {
+                    TIMER_SCOPE("SimulationLoop_Render");
+                    render();
+                }
+
+                // // Periodic performance reporting
+                // frameCounter++;
+                // if (frameCounter >= PERFORMANCE_REPORT_INTERVAL)
+                // {
+                //     reportPerformanceStats();
+                //     resetPerformanceStats();
+                //     frameCounter = 0;
+                // }
             }
 
             LOGGER_INFO("Simulation loop ended, cleaning up...");
@@ -354,4 +386,70 @@ namespace simulation
             LOGGER_ERROR(std::string("Error processing frame change: ") + e.what());
         }
     }
+
+    void SimulationManager::reportPerformanceStats() const
+    {
+        auto frameStats = core::Timer::getTimerStats("SimulationLoop_Frame");
+
+        // Only report if we have meaningful data
+        if (frameStats.count < 10)
+        {
+            return; // Don't report with too few samples
+        }
+
+        LOGGER_INFO("=== PERFORMANCE WINDOW REPORT ===");
+        LOGGER_INFO_F("Sample size: %lu frames", frameStats.count);
+
+        // Detailed analysis of critical components
+        auto signalSolverStats = core::Timer::getTimerStats("SignalSolver_solve");
+        auto pointCloudStats = core::Timer::getTimerStats("PointCloudEntity_setPointCloud");
+        auto signalProcessingStats = core::Timer::getTimerStats("SignalProcessing_Total");
+        auto updateStats = core::Timer::getTimerStats("SimulationLoop_Update");
+        auto renderStats = core::Timer::getTimerStats("SimulationLoop_Render");
+
+        if (frameStats.count > 0)
+        {
+            double avgFPS = 1000.0 / frameStats.averageMs();
+            LOGGER_INFO("=== FRAME PERFORMANCE ===");
+            LOGGER_INFO_F("  - Average frame time: %.3f ms (%.1f FPS)", frameStats.averageMs(), avgFPS);
+            LOGGER_INFO_F("  - Min frame time: %.3f ms", frameStats.minMs());
+            LOGGER_INFO_F("  - Max frame time: %.3f ms", frameStats.maxMs());
+        }
+
+        if (signalSolverStats.count > 0)
+        {
+            LOGGER_INFO("=== SIGNAL SOLVER PERFORMANCE ===");
+            LOGGER_INFO_F("  - Average solve time: %.3f ms", signalSolverStats.averageMs());
+            LOGGER_INFO_F("  - Min solve time: %.3f ms", signalSolverStats.minMs());
+            LOGGER_INFO_F("  - Max solve time: %.3f ms", signalSolverStats.maxMs());
+
+            if (frameStats.count > 0)
+            {
+                double solverPercentage = (signalSolverStats.averageMs() / frameStats.averageMs()) * 100.0;
+                LOGGER_INFO_F("  - Signal solver: %.1f%% of frame time", solverPercentage);
+            }
+        }
+
+        if (updateStats.count > 0 && renderStats.count > 0)
+        {
+            LOGGER_INFO("=== BREAKDOWN BY COMPONENT ===");
+            double updatePercentage = (updateStats.averageMs() / frameStats.averageMs()) * 100.0;
+            double renderPercentage = (renderStats.averageMs() / frameStats.averageMs()) * 100.0;
+            double signalPercentage = signalProcessingStats.count > 0 ? (signalProcessingStats.averageMs() / frameStats.averageMs()) * 100.0 : 0.0;
+
+            LOGGER_INFO_F("  - Update: %.3f ms (%.1f%%)", updateStats.averageMs(), updatePercentage);
+            LOGGER_INFO_F("  - Signal Processing: %.3f ms (%.1f%%)",
+                          signalProcessingStats.averageMs(), signalPercentage);
+            LOGGER_INFO_F("  - Render: %.3f ms (%.1f%%)", renderStats.averageMs(), renderPercentage);
+        }
+
+        LOGGER_INFO("=== END PERFORMANCE REPORT ===\n");
+    }
+
+    void SimulationManager::resetPerformanceStats()
+    {
+        TIMER_RESET();
+        LOGGER_INFO("Performance statistics have been reset");
+    }
+
 } // namespace simulation
