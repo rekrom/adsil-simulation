@@ -23,7 +23,7 @@ namespace math
 
     Vector Point::toVectorFrom(const Point &origin) const
     {
-        return Vector(x_ - origin.x(), y_ - origin.y(), z_ - origin.z());
+        return {x_ - origin.x(), y_ - origin.y(), z_ - origin.z()};
     }
 
     std::string Point::toString() const
@@ -35,21 +35,21 @@ namespace math
 
     Point Point::operator+(const Vector &other) const
     {
-        return Point(x_ + other.x(), y_ + other.y(), z_ + other.z());
+        return {x_ + other.x(), y_ + other.y(), z_ + other.z()};
     }
 
     Point Point::operator-(const Vector &other) const
     {
-        return Point(x_ - other.x(), y_ - other.y(), z_ - other.z());
+        return {x_ - other.x(), y_ - other.y(), z_ - other.z()};
     }
 
     Point Point::operator+(const Point &other) const
     {
-        return Point(x_ + other.x_, y_ + other.y_, z_ + other.z_);
+        return {x_ + other.x_, y_ + other.y_, z_ + other.z_};
     }
 
     Point Point::operator-(const Point &other) const
     {
-        return Point(x_ - other.x_, y_ - other.y_, z_ - other.z_);
+        return {x_ - other.x_, y_ - other.y_, z_ - other.z_};
     }
 }
