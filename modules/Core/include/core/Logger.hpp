@@ -10,6 +10,9 @@
 #include <cstring>
 #include <cstdlib>
 #include <functional>
+#include <sstream>
+#include <vector>
+#include <type_traits>
 
 #include <thread>
 #include <syslog.h>
@@ -20,45 +23,55 @@
 #define LOGGER_DEBUG(msg) core::Logger::getInstance().log("DEBUG", msg, __FILE__, __LINE__, __func__)
 #define LOGGER_TRACE(msg) core::Logger::getInstance().log("TRACE", msg, __FILE__, __LINE__, __func__)
 
-// Enhanced macros with format support
-#define LOGGER_INFO_F(fmt, ...)                                                                     \
-    do                                                                                              \
-    {                                                                                               \
-        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                       \
-        std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                    \
-        core::Logger::getInstance().log("INFO", std::string(buffer), __FILE__, __LINE__, __func__); \
+// Enhanced macros with format support and early level check
+#define LOGGER_INFO_F(fmt, ...)                                                                   \
+    do                                                                                            \
+    {                                                                                             \
+        if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::INFO)           \
+        {                                                                                         \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                   \
+            core::Logger::getInstance().log("INFO", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                         \
     } while (0)
 
-#define LOGGER_WARN_F(fmt, ...)                                                                     \
-    do                                                                                              \
-    {                                                                                               \
-        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                       \
-        std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                    \
-        core::Logger::getInstance().log("WARN", std::string(buffer), __FILE__, __LINE__, __func__); \
+#define LOGGER_WARN_F(fmt, ...)                                                                   \
+    do                                                                                            \
+    {                                                                                             \
+        if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::WARN)           \
+        {                                                                                         \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                   \
+            core::Logger::getInstance().log("WARN", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                         \
     } while (0)
 
-#define LOGGER_ERROR_F(fmt, ...)                                                                     \
-    do                                                                                               \
-    {                                                                                                \
-        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                        \
-        std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                     \
-        core::Logger::getInstance().log("ERROR", std::string(buffer), __FILE__, __LINE__, __func__); \
+#define LOGGER_ERROR_F(fmt, ...)                                                                   \
+    do                                                                                             \
+    {                                                                                              \
+        if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::ERROR)           \
+        {                                                                                          \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                    \
+            core::Logger::getInstance().log("ERROR", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                          \
     } while (0)
 
-#define LOGGER_DEBUG_F(fmt, ...)                                                                     \
-    do                                                                                               \
-    {                                                                                                \
-        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                        \
-        std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                     \
-        core::Logger::getInstance().log("DEBUG", std::string(buffer), __FILE__, __LINE__, __func__); \
+#define LOGGER_DEBUG_F(fmt, ...)                                                                   \
+    do                                                                                             \
+    {                                                                                              \
+        if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::DEBUG)           \
+        {                                                                                          \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                    \
+            core::Logger::getInstance().log("DEBUG", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                          \
     } while (0)
 
-#define LOGGER_TRACE_F(fmt, ...)                                                                     \
-    do                                                                                               \
-    {                                                                                                \
-        char buffer[core::Logger::FORMATTED_LOG_BUFFER_SIZE];                                        \
-        std::snprintf(buffer, sizeof(buffer), fmt, __VA_ARGS__);                                     \
-        core::Logger::getInstance().log("TRACE", std::string(buffer), __FILE__, __LINE__, __func__); \
+#define LOGGER_TRACE_F(fmt, ...)                                                                   \
+    do                                                                                             \
+    {                                                                                              \
+        if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::TRACE)           \
+        {                                                                                          \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                    \
+            core::Logger::getInstance().log("TRACE", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                          \
     } while (0)
 
 // Conditional logging macros
@@ -78,6 +91,129 @@
 
 namespace core
 {
+    // Optimized formatting utility for logger
+    namespace detail
+    {
+        // Pre-scan format string to find all placeholder positions (done once per format string)
+        inline std::vector<size_t> find_placeholders(const std::string &fmt)
+        {
+            std::vector<size_t> positions;
+            size_t pos = 0;
+            while ((pos = fmt.find("{}", pos)) != std::string::npos)
+            {
+                positions.push_back(pos);
+                pos += 2;
+            }
+            return positions;
+        }
+
+        // Optimized non-recursive implementation
+        template <typename... Args>
+        std::string format(const std::string &fmt, Args &&...args)
+        {
+            if constexpr (sizeof...(args) == 0)
+            {
+                return fmt;
+            }
+            else
+            {
+                // Pre-allocate string with reasonable capacity
+                std::string result;
+                result.reserve(fmt.size() + sizeof...(args) * 16); // Estimate extra space needed
+
+                // Find all placeholder positions
+                static thread_local std::vector<size_t> positions;
+                positions.clear();
+
+                size_t pos = 0;
+                while ((pos = fmt.find("{}", pos)) != std::string::npos)
+                {
+                    positions.push_back(pos);
+                    pos += 2;
+                    if (positions.size() >= sizeof...(args))
+                        break; // Don't search beyond needed
+                }
+
+                if (positions.empty())
+                {
+                    return fmt; // No placeholders found
+                }
+
+                // Build result string efficiently
+                size_t last_pos = 0;
+                size_t arg_index = 0;
+
+                auto append_arg = [&result, &arg_index](auto &&arg)
+                {
+                    if (arg_index < positions.size())
+                    {
+                        if constexpr (std::is_arithmetic_v<std::decay_t<decltype(arg)>>)
+                        {
+                            // Optimize for numeric types
+                            result += std::to_string(arg);
+                        }
+                        else
+                        {
+                            // Use stringstream for other types
+                            std::ostringstream oss;
+                            oss << arg;
+                            result += oss.str();
+                        }
+                    }
+                    ++arg_index;
+                };
+
+                // Process each placeholder
+                size_t placeholder_index = 0;
+                ((placeholder_index < positions.size() ? (result += fmt.substr(last_pos, positions[placeholder_index] - last_pos),
+                                                          append_arg(std::forward<Args>(args)),
+                                                          last_pos = positions[placeholder_index] + 2,
+                                                          ++placeholder_index, void())
+                                                       : void()),
+                 ...);
+
+                // Append remaining format string
+                if (last_pos < fmt.size())
+                {
+                    result += fmt.substr(last_pos);
+                }
+
+                return result;
+            }
+        }
+
+        // Specialized versions for common cases to avoid template overhead
+        inline std::string format(const std::string &fmt)
+        {
+            return fmt;
+        }
+
+        template <typename T>
+        std::string format(const std::string &fmt, T &&arg)
+        {
+            size_t pos = fmt.find("{}");
+            if (pos == std::string::npos)
+                return fmt;
+
+            std::string result;
+            result.reserve(fmt.size() + 16);
+            result += fmt.substr(0, pos);
+
+            if constexpr (std::is_arithmetic_v<std::decay_t<T>>)
+            {
+                result += std::to_string(arg);
+            }
+            else
+            {
+                std::ostringstream oss;
+                oss << arg;
+                result += oss.str();
+            }
+            result += fmt.substr(pos + 2);
+            return result;
+        }
+    }
+
     class Logger
     {
     public:
