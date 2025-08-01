@@ -21,8 +21,6 @@ void test_JsonAdapterRegistry_with_Point()
     assert(adapter != nullptr);
 
     nlohmann::json j = adapter->toJson(p1);
-    std::cout << "Serialized JSON:\n"
-              << j.dump(2) << "\n";
 
     // JSON'dan geri objeyi oluştur
     math::Point p2 = adapter->fromJson(j);

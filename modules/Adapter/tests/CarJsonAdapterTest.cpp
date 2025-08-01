@@ -45,8 +45,6 @@ void testCarJsonAdapter()
 
     // Serialize
     nlohmann::json j = adapter.toJson(car);
-    std::cout << "Serialized Car JSON:\n"
-              << j.dump(4) << std::endl;
 
     // Deserialize
     std::shared_ptr<Car> loadedCar = adapter.fromJson(j);
