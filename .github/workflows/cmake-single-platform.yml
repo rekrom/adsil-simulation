@@ -9,6 +9,7 @@ on:
 env:
   BUILD_TYPE: Release
   CCACHE_DIR: ${{ github.workspace }}/.ccache
+  DEBIAN_FRONTEND: noninteractive
 
 jobs:
   build:
@@ -26,12 +27,49 @@ jobs:
         id: start-time
         run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
 
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        id: apt-cache
+        with:
+          path: ~/.cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/*.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
       - name: Install dependencies
         id: deps-install
         run: |
           echo "deps_start=$(date +%s)" >> $GITHUB_OUTPUT
-          sudo apt update
-          sudo apt install -y libgl1-mesa-dev libx11-dev libglfw3-dev libglm-dev ccache
+
+          # Create user-accessible cache directory
+          mkdir -p ~/.cache/apt/archives
+
+          # Configure apt to use our cache directory and faster downloads
+          echo 'Acquire::Retries "3";' | sudo tee -a /etc/apt/apt.conf.d/80-retries
+          echo 'Acquire::http::Timeout "10";' | sudo tee -a /etc/apt/apt.conf.d/80-timeout
+          echo 'Acquire::Queue-Mode "host";' | sudo tee -a /etc/apt/apt.conf.d/80-parallel
+          echo "Dir::Cache::Archives \"$HOME/.cache/apt/archives\";" | sudo tee -a /etc/apt/apt.conf.d/80-cache
+
+          # Only update if cache miss or if it's been a while
+          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
+            echo "Cache miss - updating package lists"
+            sudo apt update
+          else
+            echo "Cache hit - skipping apt update"
+          fi
+
+          # Install packages with optimized flags for speed
+          sudo apt install -y --no-install-recommends --no-install-suggests \
+            -o Dpkg::Options::="--force-confdef" \
+            -o Dpkg::Options::="--force-confold" \
+            -o APT::Install-Suggests=false \
+            -o APT::Install-Recommends=false \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libglfw3-dev \
+            libglm-dev \
+            ccache
+
           echo "deps_end=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Setup ccache
