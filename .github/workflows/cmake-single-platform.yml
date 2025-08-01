@@ -9,6 +9,9 @@ on:
 env:
   BUILD_TYPE: Release
   CCACHE_DIR: ${{ github.workspace }}/.ccache
+  CCACHE_MAXSIZE: 2G
+  CCACHE_COMPRESS: true
+  CCACHE_COMPRESSLEVEL: 6
   DEBIAN_FRONTEND: noninteractive
 
 jobs:
@@ -20,6 +23,16 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Cache Git submodules
+        uses: actions/cache@v4
+        with:
+          path: |
+            external/
+            .git/modules/
+          key: ${{ runner.os }}-submodules-${{ hashFiles('.gitmodules') }}
+          restore-keys: |
+            ${{ runner.os }}-submodules-
+
       - name: List extern contents
         run: ls -l external/
 
@@ -27,13 +40,16 @@ jobs:
         id: start-time
         run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - name: Cache apt packages
+      - name: Cache APT packages
         uses: actions/cache@v4
         id: apt-cache
         with:
-          path: ~/.cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/*.yml') }}
+          path: |
+            /var/lib/apt/lists
+            /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/workflows/*.yml') }}-${{ env.BUILD_TYPE }}
           restore-keys: |
+            ${{ runner.os }}-apt-${{ hashFiles('**/workflows/*.yml') }}-
             ${{ runner.os }}-apt-
 
       - name: Install dependencies
@@ -41,21 +57,17 @@ jobs:
         run: |
           echo "deps_start=$(date +%s)" >> $GITHUB_OUTPUT
 
-          # Create user-accessible cache directory
-          mkdir -p ~/.cache/apt/archives
-
-          # Configure apt to use our cache directory and faster downloads
+          # Configure apt for faster downloads only
           echo 'Acquire::Retries "3";' | sudo tee -a /etc/apt/apt.conf.d/80-retries
           echo 'Acquire::http::Timeout "10";' | sudo tee -a /etc/apt/apt.conf.d/80-timeout
           echo 'Acquire::Queue-Mode "host";' | sudo tee -a /etc/apt/apt.conf.d/80-parallel
-          echo "Dir::Cache::Archives \"$HOME/.cache/apt/archives\";" | sudo tee -a /etc/apt/apt.conf.d/80-cache
 
-          # Only update if cache miss or if it's been a while
+          # Only update if cache miss
           if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
-            echo "Cache miss - updating package lists"
+            echo "📦 Cache miss - updating package lists"
             sudo apt update
           else
-            echo "Cache hit - skipping apt update"
+            echo "🎯 Cache hit - skipping apt update"
           fi
 
           # Install packages with optimized flags for speed
@@ -76,23 +88,37 @@ jobs:
         run: |
           ccache --version
           ccache --zero-stats
-          ccache --max-size=1G
+          ccache --max-size=2G
+          ccache --set-config compression=true
+          ccache --set-config compression_level=6
+          ccache --set-config sloppiness=file_macro,locale,time_macros
           mkdir -p ${{ env.CCACHE_DIR }}
+          echo "🎯 ccache configured with 2G cache, compression enabled"
 
       - name: Cache ccache files
         uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cpp', '**/*.hpp', '**/*.h', '**/*.c') }}
+          key: ${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cpp', '**/*.hpp', '**/*.h', '**/*.c', '**/*.cc', '**/*.cxx') }}
           restore-keys: |
             ${{ runner.os }}-ccache-${{ env.BUILD_TYPE }}-
             ${{ runner.os }}-ccache-
 
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Cache CMake build directory
         uses: actions/cache@v4
         with:
-          path: build
-          key: ${{ runner.os }}-cmake-build-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}
+          path: |
+            build
+            ~/.cmake
+          key: ${{ runner.os }}-cmake-build-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', 'cmake/**/*') }}
           restore-keys: |
             ${{ runner.os }}-cmake-build-${{ env.BUILD_TYPE }}-
             ${{ runner.os }}-cmake-build-
