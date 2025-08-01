@@ -4,7 +4,7 @@
 #include <vehicle/Car.hpp>
 #include <viewer/renderables/Renderable.hpp>
 #include <viewer/renderables/DeviceRenderable.hpp>
-
+#include <core/ResourceLocator.hpp>
 #include <memory>
 #include <vector>
 #include <glad/glad.h>
