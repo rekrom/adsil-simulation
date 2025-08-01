@@ -14,30 +14,87 @@ Device::Device(const DeviceConfig &config)
 
 std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pcd) const
 {
+
+    float fovH = this->getHorizontalFovRad();
+    float fovV = this->getVerticalFovRad();
+    float range = this->getRange();
+
+    float halfW = range * tanf(fovH / math::constants::HALF_DIVISOR_F);
+    float halfH = range * tanf(fovV / math::constants::HALF_DIVISOR_F);
+
+    auto newPoint1 = std::make_shared<spatial::TransformNode>();
+    auto newPoint2 = std::make_shared<spatial::TransformNode>();
+    auto newPoint3 = std::make_shared<spatial::TransformNode>();
+    auto newPoint4 = std::make_shared<spatial::TransformNode>();
+
+    this->getTransformNode()->addChild(newPoint1);
+    this->getTransformNode()->addChild(newPoint2);
+    this->getTransformNode()->addChild(newPoint3);
+    this->getTransformNode()->addChild(newPoint4);
+
+    // Set local transforms for each FOV corner
+    newPoint1->setLocalTransform(spatial::Transform({-halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
+    newPoint2->setLocalTransform(spatial::Transform({halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
+    newPoint3->setLocalTransform(spatial::Transform({halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
+    newPoint4->setLocalTransform(spatial::Transform({-halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
+
+    // Now get the global positions (which will include the transmitter's orientation)
+    math::Point p1 = newPoint1->getGlobalTransform().getPosition();
+    math::Point p2 = newPoint2->getGlobalTransform().getPosition();
+    math::Point p3 = newPoint3->getGlobalTransform().getPosition();
+    math::Point p4 = newPoint4->getGlobalTransform().getPosition();
+
+    Point device_origin = this->getTransformNode()->getGlobalTransform().getPosition();
+
+    Vector device_front = this->getTransformNode()->getGlobalTransform().get3DDirectionVector();
+
+    math::Vector v1 = p1.toVectorFrom(device_origin);
+    math::Vector v2 = p2.toVectorFrom(device_origin);
+    math::Vector v3 = p3.toVectorFrom(device_origin);
+    math::Vector v4 = p4.toVectorFrom(device_origin);
+
     auto visible = std::make_shared<math::PointCloud>();
-    const auto &globalTransform = transformNode_->getGlobalTransform();
-
-    Point origin = globalTransform.getPosition();
-    Vector direction = globalTransform.get3DDirectionVector();
-
-    float horizontal_d_angle = std::atan2(direction.x(), direction.z()); // now Z is forward
-    float vertical_d_angle = std::atan2(direction.y(), direction.z());
-
-    float epsilon = static_cast<float>(1e-7);
 
     for (const auto &point : pcd.getPoints())
     {
-        Vector vec_to_point = point.toVectorFrom(origin);
+        auto cornerPoint1 = math::helper::intersectLinePlane(point, device_front, device_origin, v1);
+        auto cornerPoint2 = math::helper::intersectLinePlane(point, device_front, device_origin, v2);
+        auto cornerPoint3 = math::helper::intersectLinePlane(point, device_front, device_origin, v3);
+        auto cornerPoint4 = math::helper::intersectLinePlane(point, device_front, device_origin, v4);
 
-        float horizontal_p_angle = std::atan2(vec_to_point.x(), vec_to_point.z()); // horizontal in XZ plane
-        float vertical_p_angle = std::atan2(vec_to_point.y(), vec_to_point.z());   // vertical in YZ plane
+        if (!cornerPoint1 || !cornerPoint2 || !cornerPoint3 || !cornerPoint4)
+        {
+            continue; // Skip points that do not intersect with the plane defined by the FOV corners
+        }
 
-        if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
-            (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
+        auto isInConvex = math::helper::isPointInConvexQuad(point, cornerPoint1.value(), cornerPoint2.value(), cornerPoint3.value(), cornerPoint4.value());
+        if (isInConvex)
         {
             visible->addPoint(point);
         }
     }
+
+    // const auto &globalTransform = transformNode_->getGlobalTransform();
+
+    // Point origin = globalTransform.getPosition();
+    // Vector direction = globalTransform.get3DDirectionVector();
+
+    // float horizontal_d_angle = std::atan2(direction.x(), direction.z()); // now Z is forward
+    // float vertical_d_angle = std::atan2(direction.y(), direction.z());
+
+    // for (const auto &point : pcd.getPoints())
+    // {
+    //     Vector vec_to_point = point.toVectorFrom(origin);
+
+    //     float horizontal_p_angle = std::atan2(vec_to_point.x(), vec_to_point.z()); // horizontal in XZ plane
+    //     float vertical_p_angle = std::atan2(vec_to_point.y(), vec_to_point.z());   // vertical in YZ plane
+
+    //     if ((std::abs(horizontal_p_angle - horizontal_d_angle) - (horizontal_fov_rad_ / 2.0F)) < epsilon &&
+    //         (std::abs(vertical_p_angle - vertical_d_angle) - (vertical_fov_rad_ / 2.0F)) < epsilon)
+    //     {
+    //         visible->addPoint(point);
+    //     }
+    // }
 
     return visible;
 }
