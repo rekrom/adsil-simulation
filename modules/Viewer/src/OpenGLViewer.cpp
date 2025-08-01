@@ -90,25 +90,25 @@ namespace viewer
         lastFrame_ = currentFrame;
     }
 
-    void OpenGLViewer::processInput(float dt)
+    void OpenGLViewer::processInput(float deltaTime)
     {
 
         if (inputManager_->isKeyPressed(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window_, true);
         if (inputManager_->isKeyPressed(GLFW_KEY_W))
-            camera_.processKeyboard('W', dt);
+            camera_.processKeyboard('W', deltaTime);
         if (inputManager_->isKeyPressed(GLFW_KEY_S))
-            camera_.processKeyboard('S', dt);
+            camera_.processKeyboard('S', deltaTime);
         if (inputManager_->isKeyPressed(GLFW_KEY_A))
-            camera_.processKeyboard('A', dt);
+            camera_.processKeyboard('A', deltaTime);
         if (inputManager_->isKeyPressed(GLFW_KEY_D))
-            camera_.processKeyboard('D', dt);
+            camera_.processKeyboard('D', deltaTime);
         if (inputManager_->isKeyPressed(GLFW_KEY_Q))
-            camera_.processKeyboard('Q', dt);
+            camera_.processKeyboard('Q', deltaTime);
         if (inputManager_->isKeyPressed(GLFW_KEY_E))
-            camera_.processKeyboard('E', dt);
+            camera_.processKeyboard('E', deltaTime);
         if (inputManager_->isKeyJustPressed(GLFW_KEY_L))
-            camera_.processKeyboard('L', dt);
+            camera_.processKeyboard('L', deltaTime);
 
         if (inputManager_->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
         {

@@ -63,9 +63,9 @@ CarDimension Car::getDimension() const
     return dimension_;
 }
 
-void Car::setDimension(const CarDimension &newCarDimension)
+void Car::setDimension(const CarDimension &dim)
 {
-    dimension_ = newCarDimension;
+    dimension_ = dim;
 }
 
 const std::vector<math::Point> &Car::getTrajectory() const { return trajectory_; }

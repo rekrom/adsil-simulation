@@ -16,7 +16,7 @@ namespace adapter
     public:
         FrameJsonAdapter();
 
-        nlohmann::json toJson(const std::shared_ptr<simulation::Frame> &car) const override;
+        nlohmann::json toJson(const std::shared_ptr<simulation::Frame> &frame) const override;
         std::shared_ptr<simulation::Frame> fromJson(const nlohmann::json &j) const override;
     };
 }

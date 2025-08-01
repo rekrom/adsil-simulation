@@ -33,14 +33,14 @@ namespace math
         return oss.str();
     }
 
-    Point Point::operator+(const Vector &v) const
+    Point Point::operator+(const Vector &other) const
     {
-        return Point(x_ + v.x(), y_ + v.y(), z_ + v.z());
+        return Point(x_ + other.x(), y_ + other.y(), z_ + other.z());
     }
 
-    Point Point::operator-(const Vector &v) const
+    Point Point::operator-(const Vector &other) const
     {
-        return Point(x_ - v.x(), y_ - v.y(), z_ - v.z());
+        return Point(x_ - other.x(), y_ - other.y(), z_ - other.z());
     }
 
     Point Point::operator+(const Point &other) const
