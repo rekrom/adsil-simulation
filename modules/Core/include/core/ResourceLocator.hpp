@@ -37,6 +37,11 @@ namespace core
             return basePath_ + "/models/" + fileName;
         }
 
+        static std::string getLoggingPath(const std::string &fileName)
+        {
+            return basePath_ + "/logs/" + fileName;
+        }
+
         // General-purpose path resolver (e.g. "shaders/ground.vert.glsl")
         static std::string getPath(const std::string &relativePath)
         {
