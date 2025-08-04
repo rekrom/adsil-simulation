@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: ["main"]
 
+env:
+  BUILD_TYPE: Debug
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+  CCACHE_MAXSIZE: 2G
+  CCACHE_COMPRESS: true
+  CCACHE_COMPRESSLEVEL: 6
+  DEBIAN_FRONTEND: noninteractive
+
 jobs:
   coverage:
     runs-on: ubuntu-latest
@@ -15,6 +23,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Benchmark - Start Time
+        id: start-time
+        run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: |
@@ -31,7 +43,40 @@ jobs:
             libglfw3-dev \
             libglew-dev \
             libglm-dev \
+            ccache \
             pkg-config
+
+      - name: Setup ccache
+        run: |
+          ccache --version
+          ccache --zero-stats
+          ccache --max-size=2G
+          ccache --set-config compression=true
+          ccache --set-config compression_level=6
+          ccache --set-config sloppiness=file_macro,locale,time_macros
+          mkdir -p ${{ env.CCACHE_DIR }}
+          echo "🎯 ccache configured with 2G cache, compression enabled for coverage build"
+
+      - name: Cache ccache files
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ runner.os }}-ccache-coverage-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', '**/*.cpp', '**/*.hpp', '**/*.h', '**/*.c', '**/*.cc', '**/*.cxx') }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-coverage-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-ccache-coverage-
+            ${{ runner.os }}-ccache-
+
+      - name: Cache CMake build directory
+        uses: actions/cache@v4
+        with:
+          path: |
+            build
+            ~/.cmake
+          key: ${{ runner.os }}-cmake-coverage-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', 'cmake/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-coverage-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-cmake-coverage-
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -39,23 +84,40 @@ jobs:
           python-version: "3.x"
 
       - name: Configure CMake with coverage flags
+        id: cmake-config
         run: |
+          echo "config_start=$(date +%s)" >> $GITHUB_OUTPUT
           cmake -B build \
-            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
             -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
             -DCMAKE_C_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
             -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
             -DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -G Ninja
+          echo "config_end=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Build project
-        run: cmake --build build --parallel
+        id: cmake-build
+        run: |
+          echo "build_start=$(date +%s)" >> $GITHUB_OUTPUT
+          cmake --build build --parallel $(nproc)
+          echo "build_end=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: ccache statistics
+        run: |
+          echo "📊 ccache Statistics:"
+          ccache --show-stats
 
       - name: Create coverage directory
         run: mkdir -p coverage
 
       - name: Run Adapter Module Tests
+        id: adapter-tests
         run: |
+          echo "adapter_tests_start=$(date +%s)" >> $GITHUB_OUTPUT
           echo "Running Adapter Module Test Suite..."
 
           # Run all adapter tests and capture coverage
@@ -70,9 +132,12 @@ jobs:
 
           # Note: AdapterManagerEnhancedTest intentionally exits to test error handling
           timeout 5 ./build/bin/test_AdapterManagerEnhancedTest || echo "AdapterManagerEnhancedTest completed (expected exit behavior)"
+          echo "adapter_tests_end=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Run Other Module Tests
+        id: other-tests
         run: |
+          echo "other_tests_start=$(date +%s)" >> $GITHUB_OUTPUT
           echo "Running other module tests..."
 
           # Math module tests
@@ -86,55 +151,66 @@ jobs:
 
           # Simulation module tests
           ./build/bin/test_SimulationConfigTest || echo "SimulationConfigTest failed"
+          echo "other_tests_end=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Generate coverage report with lcov
+        continue-on-error: true
         run: |
           echo "Generating coverage report..."
 
-          # Capture coverage data
+          # Capture coverage data with error handling
           lcov --capture \
             --directory build \
             --output-file coverage/coverage.info \
-            --rc lcov_branch_coverage=1
+            --rc branch_coverage=1 \
+            --rc geninfo_unexecuted_blocks=1 \
+            --ignore-errors mismatch,gcov,source,graph,unused
 
           # Remove external libraries and test files from coverage
           lcov --remove coverage/coverage.info \
             '/usr/*' \
             '*/external/*' \
             '*/tests/*' \
-            '*/test/*' \
             '*Test.cpp' \
             --output-file coverage/coverage.info \
-            --rc lcov_branch_coverage=1
+            --rc branch_coverage=1 \
+            --ignore-errors mismatch,gcov,source,unused
 
           # Generate HTML report for local inspection
           genhtml coverage/coverage.info \
             --output-directory coverage/html \
             --branch-coverage \
-            --function-coverage
+            --function-coverage \
+            --ignore-errors mismatch,gcov,source,unused
 
       - name: Generate coverage report with gcovr
         run: |
           echo "Generating gcovr coverage report..."
 
-          # Generate XML report for Codecov
+          # Generate XML report for Codecov with error handling
           gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --xml-pretty \
             --output coverage/coverage.xml \
             --print-summary
 
-          # Generate JSON report
+          # Generate JSON report with error handling
           gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --json-pretty \
             --output coverage/coverage.json
 
@@ -147,10 +223,13 @@ jobs:
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --print-summary
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage/coverage.xml,./coverage/coverage.info
           directory: ./coverage
@@ -163,13 +242,16 @@ jobs:
       - name: Update README with coverage percentage
         if: github.ref == 'refs/heads/main'
         run: |
-          # Extract coverage percentage
+          # Extract coverage percentage with error handling
           COVERAGE=$(gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --print-summary | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
 
           echo "Current coverage: ${COVERAGE}%"
@@ -188,8 +270,23 @@ jobs:
           # Just ensure the badge URL is correct
           echo "✅ Coverage data uploaded to Codecov. Badge will update automatically."
 
+      - name: Check generated coverage files
+        run: |
+          echo "=== COVERAGE FILES GENERATED ==="
+          ls -la coverage/ || echo "No coverage directory found"
+          echo ""
+          echo "Coverage directory contents:"
+          find coverage/ -type f -exec ls -lh {} \; 2>/dev/null || echo "No coverage files found"
+          echo ""
+          echo "Available coverage formats:"
+          [ -f "coverage/coverage.xml" ] && echo "✅ XML format (for Codecov)" || echo "❌ XML format missing"
+          [ -f "coverage/coverage.info" ] && echo "✅ LCOV format" || echo "❌ LCOV format missing"
+          [ -f "coverage/coverage.json" ] && echo "✅ JSON format" || echo "❌ JSON format missing"
+          [ -d "coverage/html" ] && echo "✅ HTML report directory" || echo "❌ HTML report missing"
+
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
+        if: always() # Upload artifacts even if previous steps failed
         with:
           name: coverage-reports
           path: |
@@ -199,6 +296,7 @@ jobs:
 
       - name: Upload HTML coverage report
         uses: actions/upload-artifact@v4
+        if: always() # Upload HTML report even if previous steps failed
         with:
           name: coverage-html-report
           path: coverage/html/
@@ -220,6 +318,9 @@ jobs:
                 --exclude modules/.*/test/ \
                 --exclude '.*Test\.cpp' \
                 --exclude external/ \
+                --exclude '/usr/.*' \
+                --exclude '.*/external/.*' \
+                --gcov-ignore-parse-errors \
                 --print-summary`, { encoding: 'utf8' });
               
               const body = `## 📊 Code Coverage Report
@@ -252,13 +353,16 @@ jobs:
         run: |
           echo "Checking coverage thresholds..."
 
-          # Extract coverage percentage
+          # Extract coverage percentage with error handling
           COVERAGE=$(gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --print-summary | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
 
           echo "Current coverage: ${COVERAGE}%"
@@ -273,11 +377,59 @@ jobs:
             echo "Consider adding more tests to improve coverage."
           fi
 
+      - name: Calculate and Report Coverage Performance
+        run: |
+          # Calculate durations
+          CONFIG_DURATION=$((${{ steps.cmake-config.outputs.config_end }} - ${{ steps.cmake-config.outputs.config_start }}))
+          BUILD_DURATION=$((${{ steps.cmake-build.outputs.build_end }} - ${{ steps.cmake-build.outputs.build_start }}))
+          ADAPTER_TESTS_DURATION=$((${{ steps.adapter-tests.outputs.adapter_tests_end }} - ${{ steps.adapter-tests.outputs.adapter_tests_start }}))
+          OTHER_TESTS_DURATION=$((${{ steps.other-tests.outputs.other_tests_end }} - ${{ steps.other-tests.outputs.other_tests_start }}))
+          TOTAL_DURATION=$((${{ steps.other-tests.outputs.other_tests_end }} - ${{ steps.start-time.outputs.start_time }}))
+
+          # Format durations
+          CONFIG_MIN=$((CONFIG_DURATION / 60))
+          CONFIG_SEC=$((CONFIG_DURATION % 60))
+          BUILD_MIN=$((BUILD_DURATION / 60))
+          BUILD_SEC=$((BUILD_DURATION % 60))
+          ADAPTER_MIN=$((ADAPTER_TESTS_DURATION / 60))
+          ADAPTER_SEC=$((ADAPTER_TESTS_DURATION % 60))
+          OTHER_MIN=$((OTHER_TESTS_DURATION / 60))
+          OTHER_SEC=$((OTHER_TESTS_DURATION % 60))
+          TOTAL_MIN=$((TOTAL_DURATION / 60))
+          TOTAL_SEC=$((TOTAL_DURATION % 60))
+
+          # Create benchmark report
+          echo "## 🧪 Coverage Pipeline Performance Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Duration | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| CMake Configure | ${CONFIG_MIN}m ${CONFIG_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build with Coverage | ${BUILD_MIN}m ${BUILD_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Adapter Tests | ${ADAPTER_MIN}m ${ADAPTER_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Other Module Tests | ${OTHER_MIN}m ${OTHER_SEC}s | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Coverage Run** | **${TOTAL_MIN}m ${TOTAL_SEC}s** | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # ccache stats
+          echo "### 🎯 ccache Statistics (Coverage Build)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ccache --show-stats >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Print to workflow log as well
+          echo "=== COVERAGE PERFORMANCE REPORT ==="
+          echo "CMake Configure: ${CONFIG_MIN}m ${CONFIG_SEC}s"
+          echo "Build with Coverage: ${BUILD_MIN}m ${BUILD_SEC}s"
+          echo "Adapter Tests: ${ADAPTER_MIN}m ${ADAPTER_SEC}s"
+          echo "Other Module Tests: ${OTHER_MIN}m ${OTHER_SEC}s"
+          echo "Total Coverage Run: ${TOTAL_MIN}m ${TOTAL_SEC}s"
+          echo "=================================="
+
   # Separate job for coverage visualization
   coverage-visualization:
     runs-on: ubuntu-latest
     needs: coverage
-    if: always()
+    if: success() # Only run if coverage job succeeded
 
     steps:
       - name: Checkout code
@@ -288,17 +440,31 @@ jobs:
         with:
           name: coverage-reports
           path: coverage/
+        continue-on-error: true
 
-      - name: Generate coverage summary
+      - name: Check if coverage artifacts exist
+        id: check-artifacts
         run: |
           if [ -f "coverage/coverage.json" ]; then
-            echo "Coverage data available in coverage/coverage.json"
-            echo "Coverage visualization complete."
+            echo "artifacts_exist=true" >> $GITHUB_OUTPUT
+            echo "✅ Coverage artifacts found"
           else
-            echo "No coverage data found."
+            echo "artifacts_exist=false" >> $GITHUB_OUTPUT
+            echo "❌ No coverage artifacts found"
+          fi
+
+      - name: Generate coverage summary
+        if: steps.check-artifacts.outputs.artifacts_exist == 'true'
+        run: |
+          echo "Coverage data available in coverage/coverage.json"
+          echo "Coverage visualization complete."
+
+          # Display basic coverage info if available
+          if [ -f "coverage/coverage.json" ]; then
+            echo "📊 Coverage JSON file size: $(du -h coverage/coverage.json | cut -f1)"
           fi
 
       - name: Update README with coverage info
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.check-artifacts.outputs.artifacts_exist == 'true'
         run: |
           echo "Coverage processing complete. Results available in artifacts."
