@@ -1,5 +1,11 @@
 # ADSIL Analyzer
 
+[![codecov](https://codecov.io/gh/rekrom/adsil-simulation/graph/badge.svg)](https://codecov.io/gh/rekrom/adsil-simulation)
+[![Build Status](https://github.com/rekrom/adsil-simulation/workflows/Code%20Coverage/badge.svg)](https://github.com/rekrom/adsil-simulation/actions)
+[![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
+[![CMake](https://img.shields.io/badge/CMake-3.16+-green.svg)](https://cmake.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ADSIL Analyzer is a comprehensive C++17 simulation platform for analyzing sensor-based geometries and signal interactions. It provides a modular architecture with enhanced logging, real-time visualization, and extensive JSON-based configuration support for automotive and sensor simulation scenarios.
 
 ## 🚀 Features
@@ -132,6 +138,33 @@ ctest
 ./bin/test_GeometryTest
 ./bin/test_AdapterTest
 ```
+
+## 📊 Code Coverage
+
+Test coverage is automatically tracked and reported via [Codecov](https://codecov.io/gh/rekrom/adsil-simulation). The coverage badge above shows the current coverage percentage.
+
+### Coverage Reports
+
+- **Adapter Module**: Comprehensive tests for JSON serialization/deserialization
+- **Math Module**: Unit tests for geometric calculations and transformations
+- **Geometry Module**: Tests for shape primitives and device modeling
+- **Core Module**: Logger and utility function coverage
+- **Simulation Module**: Scene management and signal processing tests
+
+### Local Coverage Generation
+
+```bash
+# Install coverage tools
+sudo apt-get install lcov gcovr
+
+# Generate coverage report locally
+./test_coverage_locally.sh
+
+# View HTML coverage report
+open coverage/html/index.html
+```
+
+The coverage workflow runs automatically on every push and pull request, generating detailed reports and updating the coverage badge.
 
 ---
 

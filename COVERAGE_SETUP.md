@@ -6,7 +6,19 @@ This document explains the code coverage setup for the ADSIL simulation project,
 
 ## 📊 Coverage Tracking Components
 
-### 1. GitHub Actions Workflow (`.github/workflows/coverage.yml`)
+### 1. README Coverage Badge
+
+The project README displays a live coverage badge that automatically updates with each CI run:
+
+- **Badge Location**: Top of README.md after the title
+- **Badge URL**: `https://codecov.io/gh/rekrom/adsil-simulation/graph/badge.svg`
+- **Update Mechanism**: Automatically updates when coverage data is uploaded to Codecov
+- **Badge Colors**:
+  - 🟢 Green: ≥70% coverage
+  - 🟡 Yellow: 50-69% coverage
+  - 🔴 Red: <50% coverage
+
+### 2. GitHub Actions Workflow (`.github/workflows/coverage.yml`)
 
 - **Triggers**: On push to `main`/`develop` branches and pull requests
 - **Build Configuration**: Debug build with coverage flags (`--coverage`, `-fprofile-arcs`, `-ftest-coverage`)
@@ -45,7 +57,14 @@ This document explains the code coverage setup for the ADSIL simulation project,
    ./test_coverage_locally.sh
    ```
 
-3. **View HTML Report**:
+3. **Update README Badge (Optional)**:
+
+   ```bash
+   # Local README badge update with current coverage
+   ./update_coverage_readme.sh
+   ```
+
+4. **View HTML Report**:
    ```bash
    # After running local test
    open coverage/html/index.html
