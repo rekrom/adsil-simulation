@@ -30,19 +30,19 @@ void test_DeviceJsonAdapter_basic()
     nlohmann::json j = adapter.toJson(device);
 
     // Verify JSON structure
-    assert(j.contains("position"));
+    assert(j.contains("origin"));
     assert(j.contains("orientation"));
-    assert(j.contains("hfov"));
-    assert(j.contains("vfov"));
+    assert(j.contains("horizontal_fov_deg"));
+    assert(j.contains("vertical_fov_deg"));
     assert(j.contains("range"));
     assert(j.contains("name"));
 
     // Verify values
-    assert(floatEqual(j["position"]["x"].get<float>(), 1.0f));
-    assert(floatEqual(j["position"]["y"].get<float>(), 2.0f));
-    assert(floatEqual(j["position"]["z"].get<float>(), 3.0f));
-    assert(floatEqual(j["hfov"].get<float>(), 30.0f));
-    assert(floatEqual(j["vfov"].get<float>(), 45.0f));
+    assert(floatEqual(j["origin"]["x"].get<float>(), 1.0f));
+    assert(floatEqual(j["origin"]["y"].get<float>(), 2.0f));
+    assert(floatEqual(j["origin"]["z"].get<float>(), 3.0f));
+    assert(floatEqual(j["vertical_fov_deg"].get<float>(), 30.0f));
+    assert(floatEqual(j["horizontal_fov_deg"].get<float>(), 45.0f));
     assert(floatEqual(j["range"].get<float>(), 15.0f));
     assert(j["name"].get<std::string>() == "TestDevice");
 
@@ -130,8 +130,8 @@ void test_DeviceJsonAdapter_malformed_json()
 
     // Test with missing required fields
     nlohmann::json incompleteJson = {
-        {"position", {{"x", 1.0}, {"y", 2.0}}}, // missing z
-        {"hfov", 30.0}
+        {"origin", {{"x", 1.0}, {"y", 2.0}}}, // missing z
+        {"horizontal_fov_deg", 30.0}
         // missing other required fields
     };
 
