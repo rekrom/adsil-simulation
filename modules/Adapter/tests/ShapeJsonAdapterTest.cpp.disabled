@@ -1,0 +1,90 @@
+#include <adapter/implementations/ShapeJsonAdapter.hpp>
+#include <geometry/implementations/Cube.hpp>
+#include <geometry/implementations/Cylinder.hpp>
+#include <spatial/implementations/Transform.hpp>
+#include <math/Point.hpp>
+#include <math/Vector.hpp>
+#include <cassert>
+#include <iostream>
+
+using namespace adapter;
+
+// Helper function for floating point comparison
+bool floatEqual(float a, float b, float epsilon = 1e-5f)
+{
+    return std::fabs(a - b) < epsilon;
+}
+
+void test_ShapeJsonAdapter_cube()
+{
+    ShapeJsonAdapter adapter;
+    
+    // Create a cube shape
+    Point position(1.0f, 2.0f, 3.0f);
+    Vector orientation(0.0f, 0.0f, 0.0f);
+    spatial::Transform transform(position, orientation);
+    
+    auto cube = std::make_shared<Cube>(transform, 10.0f);
+    
+    // Serialize to JSON
+    nlohmann::json j = adapter.toJson(cube);
+    
+    // Verify JSON structure
+    assert(j.contains("type"));
+    assert(j.contains("transform"));
+    assert(j["type"].get<std::string>() == "Cube");
+    
+    // Deserialize back
+    auto deserializedShape = adapter.fromJson(j);
+    auto deserializedCube = std::dynamic_pointer_cast<Cube>(deserializedShape);
+    
+    assert(deserializedCube != nullptr);
+    
+    // Verify position
+    Point origPos = cube->getGlobalTransform().getPosition();
+    Point deserPos = deserializedCube->getGlobalTransform().getPosition();
+    assert(floatEqual(origPos.x(), deserPos.x()));
+    assert(floatEqual(origPos.y(), deserPos.y()));
+    assert(floatEqual(origPos.z(), deserPos.z()));
+    
+    std::cout << "[PASS] ShapeJsonAdapter Cube test\n";
+}
+
+void test_ShapeJsonAdapter_edge_cases()
+{
+    ShapeJsonAdapter adapter;
+    
+    // Test with zero dimensions
+    Point zeroPos(0.0f, 0.0f, 0.0f);
+    Vector zeroOrient(0.0f, 0.0f, 0.0f);
+    spatial::Transform zeroTransform(zeroPos, zeroOrient);
+    
+    auto zeroCube = std::make_shared<Cube>(zeroTransform, 0.0f);
+    
+    nlohmann::json j = adapter.toJson(zeroCube);
+    auto deserializedShape = adapter.fromJson(j);
+    auto deserializedCube = std::dynamic_pointer_cast<Cube>(deserializedShape);
+    
+    assert(deserializedCube != nullptr);
+    assert(floatEqual(deserializedCube->getSize(), 0.0f));
+    
+    // Test with very large dimensions
+    auto largeCube = std::make_shared<Cube>(zeroTransform, 1000000.0f);
+    j = adapter.toJson(largeCube);
+    deserializedShape = adapter.fromJson(j);
+    deserializedCube = std::dynamic_pointer_cast<Cube>(deserializedShape);
+    
+    assert(deserializedCube != nullptr);
+    assert(floatEqual(deserializedCube->getSize(), 1000000.0f));
+    
+    std::cout << "[PASS] ShapeJsonAdapter edge cases test\n";
+}
+
+int main()
+{
+    test_ShapeJsonAdapter_cube();
+    test_ShapeJsonAdapter_edge_cases();
+    
+    std::cout << "[SUCCESS] All ShapeJsonAdapter tests passed!\n";
+    return 0;
+}

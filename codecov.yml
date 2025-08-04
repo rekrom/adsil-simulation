@@ -1,0 +1,115 @@
+# Codecov configuration file
+# https://docs.codecov.io/docs/codecov-yaml
+
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    after_n_builds: 1
+    wait_for_ci: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 5%
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
+    patch:
+      default:
+        target: 70%
+        threshold: 5%
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
+
+ignore:
+  - "external/**/*"
+  - "build/**/*"
+  - "cmake/**/*"
+  - "docs/**/*"
+  - "tools/**/*"
+  - "resources/**/*"
+  - "**/tests/**"
+  - "**/test/**"
+  - "**/*Test.cpp"
+  - "**/*test.cpp"
+  - "**/CMakeLists.txt"
+  - "*.md"
+  - "*.txt"
+  - "*.yml"
+  - "*.yaml"
+  - "*.json"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: no
+  require_base: no
+  require_head: yes
+  branches:
+    - main
+    - develop
+
+github_checks:
+  annotations: true
+
+flags:
+  unittests:
+    paths:
+      - modules/
+    carryforward: true
+
+component_management:
+  default_rules:
+    flag_management:
+      default_rules:
+        carryforward: true
+        statuses:
+          - type: project
+            target: 70%
+          - type: patch
+            target: 70%
+
+  individual_flags:
+    - name: adapter
+      paths:
+        - modules/Adapter/
+      carryforward: true
+    - name: math
+      paths:
+        - modules/Math/
+      carryforward: true
+    - name: geometry
+      paths:
+        - modules/Geometry/
+      carryforward: true
+    - name: spatial
+      paths:
+        - modules/Spatial/
+      carryforward: true
+    - name: core
+      paths:
+        - modules/Core/
+      carryforward: true
+    - name: vehicle
+      paths:
+        - modules/Vehicle/
+      carryforward: true
+    - name: simulation
+      paths:
+        - modules/Simulation/
+      carryforward: true
+    - name: utils
+      paths:
+        - modules/Utils/
+      carryforward: true
+    - name: viewer
+      paths:
+        - modules/Viewer/
+      carryforward: true
