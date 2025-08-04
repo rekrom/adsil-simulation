@@ -64,52 +64,39 @@ flags:
     paths:
       - modules/
     carryforward: true
-
-component_management:
-  default_rules:
-    flag_management:
-      default_rules:
-        carryforward: true
-        statuses:
-          - type: project
-            target: 70%
-          - type: patch
-            target: 70%
-
-  individual_flags:
-    - name: adapter
-      paths:
-        - modules/Adapter/
-      carryforward: true
-    - name: math
-      paths:
-        - modules/Math/
-      carryforward: true
-    - name: geometry
-      paths:
-        - modules/Geometry/
-      carryforward: true
-    - name: spatial
-      paths:
-        - modules/Spatial/
-      carryforward: true
-    - name: core
-      paths:
-        - modules/Core/
-      carryforward: true
-    - name: vehicle
-      paths:
-        - modules/Vehicle/
-      carryforward: true
-    - name: simulation
-      paths:
-        - modules/Simulation/
-      carryforward: true
-    - name: utils
-      paths:
-        - modules/Utils/
-      carryforward: true
-    - name: viewer
-      paths:
-        - modules/Viewer/
-      carryforward: true
+  adapter:
+    paths:
+      - modules/Adapter/
+    carryforward: true
+  math:
+    paths:
+      - modules/Math/
+    carryforward: true
+  geometry:
+    paths:
+      - modules/Geometry/
+    carryforward: true
+  spatial:
+    paths:
+      - modules/Spatial/
+    carryforward: true
+  core:
+    paths:
+      - modules/Core/
+    carryforward: true
+  vehicle:
+    paths:
+      - modules/Vehicle/
+    carryforward: true
+  simulation:
+    paths:
+      - modules/Simulation/
+    carryforward: true
+  utils:
+    paths:
+      - modules/Utils/
+    carryforward: true
+  viewer:
+    paths:
+      - modules/Viewer/
+    carryforward: true
