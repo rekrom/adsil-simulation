@@ -39,7 +39,14 @@ namespace simulation
         if (playbackTimer_ >= frameInterval_)
         {
             playbackTimer_ = 0.0f;
-            stepForward();
+            if (canAdvance(+1))
+            {
+                stepForward();
+            }
+            else
+            {
+                isPlaying_ = false;
+            }
         }
     }
 
