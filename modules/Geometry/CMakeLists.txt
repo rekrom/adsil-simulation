@@ -12,3 +12,7 @@ target_link_libraries(Geometry
     PUBLIC Core  # Geometry modülü Core'a bağımlıysa
         Spatial
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
