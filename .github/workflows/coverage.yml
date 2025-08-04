@@ -91,11 +91,13 @@ jobs:
         run: |
           echo "Generating coverage report..."
 
-          # Capture coverage data
+          # Capture coverage data with error handling
           lcov --capture \
             --directory build \
             --output-file coverage/coverage.info \
-            --rc lcov_branch_coverage=1
+            --rc branch_coverage=1 \
+            --rc geninfo_unexecuted_blocks=1 \
+            --ignore-errors mismatch,gcov,source,graph
 
           # Remove external libraries and test files from coverage
           lcov --remove coverage/coverage.info \
@@ -105,36 +107,44 @@ jobs:
             '*/test/*' \
             '*Test.cpp' \
             --output-file coverage/coverage.info \
-            --rc lcov_branch_coverage=1
+            --rc branch_coverage=1 \
+            --ignore-errors mismatch,gcov,source
 
           # Generate HTML report for local inspection
           genhtml coverage/coverage.info \
             --output-directory coverage/html \
             --branch-coverage \
-            --function-coverage
+            --function-coverage \
+            --ignore-errors mismatch,gcov,source
 
       - name: Generate coverage report with gcovr
         run: |
           echo "Generating gcovr coverage report..."
 
-          # Generate XML report for Codecov
+          # Generate XML report for Codecov with error handling
           gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --xml-pretty \
             --output coverage/coverage.xml \
             --print-summary
 
-          # Generate JSON report
+          # Generate JSON report with error handling
           gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --json-pretty \
             --output coverage/coverage.json
 
@@ -147,6 +157,9 @@ jobs:
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --print-summary
 
       - name: Upload coverage to Codecov
@@ -163,13 +176,16 @@ jobs:
       - name: Update README with coverage percentage
         if: github.ref == 'refs/heads/main'
         run: |
-          # Extract coverage percentage
+          # Extract coverage percentage with error handling
           COVERAGE=$(gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --print-summary | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
 
           echo "Current coverage: ${COVERAGE}%"
@@ -220,6 +236,9 @@ jobs:
                 --exclude modules/.*/test/ \
                 --exclude '.*Test\.cpp' \
                 --exclude external/ \
+                --exclude '/usr/.*' \
+                --exclude '.*/external/.*' \
+                --gcov-ignore-parse-errors \
                 --print-summary`, { encoding: 'utf8' });
               
               const body = `## 📊 Code Coverage Report
@@ -252,13 +271,16 @@ jobs:
         run: |
           echo "Checking coverage thresholds..."
 
-          # Extract coverage percentage
+          # Extract coverage percentage with error handling
           COVERAGE=$(gcovr --root . \
             --filter modules/ \
             --exclude modules/.*/tests/ \
             --exclude modules/.*/test/ \
             --exclude '.*Test\.cpp' \
             --exclude external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
             --print-summary | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
 
           echo "Current coverage: ${COVERAGE}%"
