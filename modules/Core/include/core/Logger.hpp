@@ -13,18 +13,61 @@
 #include <sstream>
 #include <vector>
 #include <type_traits>
+#include <unordered_map>
+#include <memory>
 
 #include <thread>
 #include <syslog.h>
 
-#define LOGGER_INFO(msg) core::Logger::getInstance().log("INFO", msg, __FILE__, __LINE__, __func__)
-#define LOGGER_WARN(msg) core::Logger::getInstance().log("WARN", msg, __FILE__, __LINE__, __func__)
-#define LOGGER_ERROR(msg) core::Logger::getInstance().log("ERROR", msg, __FILE__, __LINE__, __func__)
-#define LOGGER_DEBUG(msg) core::Logger::getInstance().log("DEBUG", msg, __FILE__, __LINE__, __func__)
-#define LOGGER_TRACE(msg) core::Logger::getInstance().log("TRACE", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_INFO(...) LOGGER_INFO_IMPL(__VA_ARGS__)
+#define LOGGER_WARN(...) LOGGER_WARN_IMPL(__VA_ARGS__)
+#define LOGGER_ERROR(...) LOGGER_ERROR_IMPL(__VA_ARGS__)
+#define LOGGER_DEBUG(...) LOGGER_DEBUG_IMPL(__VA_ARGS__)
+#define LOGGER_TRACE(...) LOGGER_TRACE_IMPL(__VA_ARGS__)
+
+// Implementation macros that handle both cases
+#define LOGGER_INFO_IMPL(...) LOGGER_GET_MACRO(__VA_ARGS__, LOGGER_INFO_NAMED, LOGGER_INFO_DEFAULT)(__VA_ARGS__)
+#define LOGGER_WARN_IMPL(...) LOGGER_GET_MACRO(__VA_ARGS__, LOGGER_WARN_NAMED, LOGGER_WARN_DEFAULT)(__VA_ARGS__)
+#define LOGGER_ERROR_IMPL(...) LOGGER_GET_MACRO(__VA_ARGS__, LOGGER_ERROR_NAMED, LOGGER_ERROR_DEFAULT)(__VA_ARGS__)
+#define LOGGER_DEBUG_IMPL(...) LOGGER_GET_MACRO(__VA_ARGS__, LOGGER_DEBUG_NAMED, LOGGER_DEBUG_DEFAULT)(__VA_ARGS__)
+#define LOGGER_TRACE_IMPL(...) LOGGER_GET_MACRO(__VA_ARGS__, LOGGER_TRACE_NAMED, LOGGER_TRACE_DEFAULT)(__VA_ARGS__)
+
+// Helper macro to select between named and default versions
+#define LOGGER_GET_MACRO(_1, _2, NAME, ...) NAME
+
+// Default logger versions (1 argument)
+#define LOGGER_INFO_DEFAULT(msg) core::Logger::getInstance().log("INFO", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_WARN_DEFAULT(msg) core::Logger::getInstance().log("WARN", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_ERROR_DEFAULT(msg) core::Logger::getInstance().log("ERROR", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_DEBUG_DEFAULT(msg) core::Logger::getInstance().log("DEBUG", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_TRACE_DEFAULT(msg) core::Logger::getInstance().log("TRACE", msg, __FILE__, __LINE__, __func__)
+
+// Named logger versions (2 arguments)
+#define LOGGER_INFO_NAMED(name, msg) core::Logger::getInstance(name).log("INFO", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_WARN_NAMED(name, msg) core::Logger::getInstance(name).log("WARN", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_ERROR_NAMED(name, msg) core::Logger::getInstance(name).log("ERROR", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_DEBUG_NAMED(name, msg) core::Logger::getInstance(name).log("DEBUG", msg, __FILE__, __LINE__, __func__)
+#define LOGGER_TRACE_NAMED(name, msg) core::Logger::getInstance(name).log("TRACE", msg, __FILE__, __LINE__, __func__)
 
 // Enhanced macros with format support and early level check
-#define LOGGER_INFO_F(fmt, ...)                                                                   \
+#define LOGGER_INFO_F(...) LOGGER_INFO_F_IMPL(__VA_ARGS__)
+#define LOGGER_WARN_F(...) LOGGER_WARN_F_IMPL(__VA_ARGS__)
+#define LOGGER_ERROR_F(...) LOGGER_ERROR_F_IMPL(__VA_ARGS__)
+#define LOGGER_DEBUG_F(...) LOGGER_DEBUG_F_IMPL(__VA_ARGS__)
+#define LOGGER_TRACE_F(...) LOGGER_TRACE_F_IMPL(__VA_ARGS__)
+
+// Implementation helpers for format macros
+#define LOGGER_INFO_F_IMPL(...) LOGGER_GET_F_MACRO(__VA_ARGS__, LOGGER_INFO_F_NAMED, LOGGER_INFO_F_DEFAULT, DUMMY)(__VA_ARGS__)
+#define LOGGER_WARN_F_IMPL(...) LOGGER_GET_F_MACRO(__VA_ARGS__, LOGGER_WARN_F_NAMED, LOGGER_WARN_F_DEFAULT, DUMMY)(__VA_ARGS__)
+#define LOGGER_ERROR_F_IMPL(...) LOGGER_GET_F_MACRO(__VA_ARGS__, LOGGER_ERROR_F_NAMED, LOGGER_ERROR_F_DEFAULT, DUMMY)(__VA_ARGS__)
+#define LOGGER_DEBUG_F_IMPL(...) LOGGER_GET_F_MACRO(__VA_ARGS__, LOGGER_DEBUG_F_NAMED, LOGGER_DEBUG_F_DEFAULT, DUMMY)(__VA_ARGS__)
+#define LOGGER_TRACE_F_IMPL(...) LOGGER_GET_F_MACRO(__VA_ARGS__, LOGGER_TRACE_F_NAMED, LOGGER_TRACE_F_DEFAULT, DUMMY)(__VA_ARGS__)
+
+// Helper macro for format versions (needs at least 2 args)
+#define LOGGER_GET_F_MACRO(_1, _2, _3, NAME, ...) NAME
+
+// Default format versions
+#define LOGGER_INFO_F_DEFAULT(fmt, ...)                                                           \
     do                                                                                            \
     {                                                                                             \
         if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::INFO)           \
@@ -34,7 +77,7 @@
         }                                                                                         \
     } while (0)
 
-#define LOGGER_WARN_F(fmt, ...)                                                                   \
+#define LOGGER_WARN_F_DEFAULT(fmt, ...)                                                           \
     do                                                                                            \
     {                                                                                             \
         if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::WARN)           \
@@ -44,7 +87,7 @@
         }                                                                                         \
     } while (0)
 
-#define LOGGER_ERROR_F(fmt, ...)                                                                   \
+#define LOGGER_ERROR_F_DEFAULT(fmt, ...)                                                           \
     do                                                                                             \
     {                                                                                              \
         if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::ERROR)           \
@@ -54,7 +97,7 @@
         }                                                                                          \
     } while (0)
 
-#define LOGGER_DEBUG_F(fmt, ...)                                                                   \
+#define LOGGER_DEBUG_F_DEFAULT(fmt, ...)                                                           \
     do                                                                                             \
     {                                                                                              \
         if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::DEBUG)           \
@@ -64,7 +107,7 @@
         }                                                                                          \
     } while (0)
 
-#define LOGGER_TRACE_F(fmt, ...)                                                                   \
+#define LOGGER_TRACE_F_DEFAULT(fmt, ...)                                                           \
     do                                                                                             \
     {                                                                                              \
         if (core::Logger::getInstance().getCurrentLevel() <= core::Logger::Level::TRACE)           \
@@ -72,6 +115,57 @@
             std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                    \
             core::Logger::getInstance().log("TRACE", formatted_msg, __FILE__, __LINE__, __func__); \
         }                                                                                          \
+    } while (0)
+
+// Named format versions
+#define LOGGER_INFO_F_NAMED(name, fmt, ...)                                                           \
+    do                                                                                                \
+    {                                                                                                 \
+        if (core::Logger::getInstance(name).getCurrentLevel() <= core::Logger::Level::INFO)           \
+        {                                                                                             \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                       \
+            core::Logger::getInstance(name).log("INFO", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                             \
+    } while (0)
+
+#define LOGGER_WARN_F_NAMED(name, fmt, ...)                                                           \
+    do                                                                                                \
+    {                                                                                                 \
+        if (core::Logger::getInstance(name).getCurrentLevel() <= core::Logger::Level::WARN)           \
+        {                                                                                             \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                       \
+            core::Logger::getInstance(name).log("WARN", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                             \
+    } while (0)
+
+#define LOGGER_ERROR_F_NAMED(name, fmt, ...)                                                           \
+    do                                                                                                 \
+    {                                                                                                  \
+        if (core::Logger::getInstance(name).getCurrentLevel() <= core::Logger::Level::ERROR)           \
+        {                                                                                              \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                        \
+            core::Logger::getInstance(name).log("ERROR", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                              \
+    } while (0)
+
+#define LOGGER_DEBUG_F_NAMED(name, fmt, ...)                                                           \
+    do                                                                                                 \
+    {                                                                                                  \
+        if (core::Logger::getInstance(name).getCurrentLevel() <= core::Logger::Level::DEBUG)           \
+        {                                                                                              \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                        \
+            core::Logger::getInstance(name).log("DEBUG", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                              \
+    } while (0)
+
+#define LOGGER_TRACE_F_NAMED(name, fmt, ...)                                                           \
+    do                                                                                                 \
+    {                                                                                                  \
+        if (core::Logger::getInstance(name).getCurrentLevel() <= core::Logger::Level::TRACE)           \
+        {                                                                                              \
+            std::string formatted_msg = core::detail::format(fmt, __VA_ARGS__);                        \
+            core::Logger::getInstance(name).log("TRACE", formatted_msg, __FILE__, __LINE__, __func__); \
+        }                                                                                              \
     } while (0)
 
 // Conditional logging macros
@@ -238,12 +332,27 @@ namespace core
             return instance;
         }
 
+        static Logger &getInstance(const std::string &name)
+        {
+            static std::unordered_map<std::string, std::unique_ptr<Logger>> namedLoggers;
+            static std::mutex namedLoggersMutex;
+
+            std::lock_guard<std::mutex> lock(namedLoggersMutex);
+            auto it = namedLoggers.find(name);
+            if (it == namedLoggers.end())
+            {
+                namedLoggers[name] = std::unique_ptr<Logger>(new Logger(name));
+            }
+            return *namedLoggers[name];
+        }
+
         void setLogFile(const std::string &filename)
         {
             std::lock_guard<std::mutex> lock(mutex_);
             if (logFile_.is_open())
                 logFile_.close();
 
+            logFilePath_ = filename; // Store the file path
             logFile_.open(filename, std::ios::out | std::ios::app);
             if (!logFile_.is_open())
             {
@@ -251,10 +360,48 @@ namespace core
                 std::cerr << "[LOGGER ERROR] Failed to open log file: " << filename
                           << ", falling back to stderr" << std::endl;
                 logFileFailed_ = true;
+                logFilePath_.clear(); // Clear path on failure
             }
             else
             {
                 logFileFailed_ = false;
+                // Disable colors for file output - files should be plain text
+                fileColorOutput_ = false;
+            }
+        }
+
+        void clearLog(const std::string &name = "")
+        {
+            if (name.empty())
+            {
+                // Clear default logger
+                clearLogFile();
+            }
+            else
+            {
+                // Clear named logger
+                auto &logger = getInstance(name);
+                logger.clearLogFile();
+            }
+        }
+
+        void clearLogFile()
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (logFile_.is_open() && !logFilePath_.empty())
+            {
+                logFile_.close();
+                logFile_.open(logFilePath_, std::ios::out | std::ios::trunc);
+                if (logFile_.is_open())
+                {
+                    logFileFailed_ = false;
+                    // Disable colors for file output - files should be plain text
+                    fileColorOutput_ = false;
+                }
+                else
+                {
+                    logFileFailed_ = true;
+                }
             }
         }
 
@@ -275,7 +422,6 @@ namespace core
             std::lock_guard<std::mutex> lock(mutex_);
             std::string timestamp = getTimestamp();
             std::string threadId = getThreadId();
-            std::string formatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func);
 
             if (useSyslog_)
             {
@@ -288,21 +434,29 @@ namespace core
                     syslogLevel = LOG_DEBUG;
                 else if (level == Level::TRACE)
                     syslogLevel = LOG_DEBUG; // Use DEBUG for TRACE in syslog
+
+                std::string formatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func, false);
                 syslog(syslogLevel, "%s", formatted.c_str());
             }
             else if (logFile_.is_open() && !logFileFailed_)
             {
+                // Format for file without colors
+                std::string formatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func, fileColorOutput_);
                 logFile_ << formatted << std::endl;
                 // Check for write errors
                 if (logFile_.fail())
                 {
                     logFileFailed_ = true;
                     std::cerr << "[LOGGER ERROR] Failed to write to log file, falling back to stderr" << std::endl;
-                    std::cerr << formatted << std::endl;
+                    // Format for console with colors
+                    std::string consoleFormatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func, colorOutput_);
+                    std::cerr << consoleFormatted << std::endl;
                 }
             }
             else
             {
+                // Format for console with colors
+                std::string formatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func, colorOutput_);
                 std::cerr << formatted << std::endl;
             }
         }
@@ -340,6 +494,17 @@ namespace core
             return logFile_.is_open() && !logFileFailed_;
         }
 
+        const std::string &getName() const
+        {
+            return name_;
+        }
+
+        ~Logger()
+        {
+            if (logFile_.is_open())
+                logFile_.close();
+        }
+
     private:
         // Buffer size constants
         static constexpr size_t TIMESTAMP_BUFFER_SIZE = 32;
@@ -348,28 +513,33 @@ namespace core
         static constexpr unsigned int THREAD_ID_HASH_MASK = 0xFFFFFFFF;
         static constexpr size_t LOG_LEVEL_WIDTH = 5; // Width for log level alignment
 
-        Logger() : minLevel_(Level::TRACE), useSyslog_(false), showThreadId_(false),
-                   showFileLineFunc_(false), logFileFailed_(false), colorOutput_(true),
+        Logger() : name_("default"), minLevel_(Level::TRACE), useSyslog_(false), showThreadId_(false),
+                   showFileLineFunc_(false), logFileFailed_(false), colorOutput_(true), fileColorOutput_(true),
                    maxMessageLength_(DEFAULT_MAX_MESSAGE_LENGTH)
         {
             initializeFromEnvironment();
         }
-        ~Logger()
+
+        Logger(const std::string &name) : name_(name), minLevel_(Level::TRACE), useSyslog_(false), showThreadId_(false),
+                                          showFileLineFunc_(false), logFileFailed_(false), colorOutput_(true), fileColorOutput_(true),
+                                          maxMessageLength_(DEFAULT_MAX_MESSAGE_LENGTH)
         {
-            if (logFile_.is_open())
-                logFile_.close();
+            initializeFromEnvironment();
         }
         Logger(const Logger &) = delete;
         Logger &operator=(const Logger &) = delete;
 
+        std::string name_;
         Level minLevel_;
         std::ofstream logFile_;
+        std::string logFilePath_; // Store the log file path for clearing
         mutable std::mutex mutex_;
         bool useSyslog_;
         bool showThreadId_;
         bool showFileLineFunc_;
         bool logFileFailed_;
-        bool colorOutput_;
+        bool colorOutput_;     // Color output for console
+        bool fileColorOutput_; // Color output for file (should be false)
         size_t maxMessageLength_;
 
     public:
@@ -447,19 +617,19 @@ namespace core
 
         std::string formatLog(const std::string &level, const std::string &msg,
                               const std::string &timestamp, const std::string &threadId,
-                              const char *file, int line, const char *func) const
+                              const char *file, int line, const char *func, bool useColors) const
         {
             // Pre-calculate approximate size to reduce reallocations
             std::string result;
             result.reserve(DEFAULT_MESSAGE_RESERVE_SIZE); // Most log messages are under 256 chars
 
             // Bold timestamp (only if color is enabled)
-            if (colorOutput_)
+            if (useColors)
                 result += "\033[1m";
             result += "[";
             result += timestamp;
             result += "]";
-            if (colorOutput_)
+            if (useColors)
                 result += "\033[0m";
             result += " ";
 
@@ -472,7 +642,8 @@ namespace core
             }
 
             // Colorized level with fixed width for alignment
-            result += getColor(level);
+            if (useColors)
+                result += getColor(level);
             result += "[";
 
             // Pad level to fixed width for better alignment
@@ -487,7 +658,7 @@ namespace core
             }
 
             result += "]";
-            if (colorOutput_)
+            if (useColors)
                 result += "\033[0m";
             result += " ";
 

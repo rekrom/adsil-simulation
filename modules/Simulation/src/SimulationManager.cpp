@@ -20,6 +20,8 @@ namespace simulation
     SimulationManager::SimulationManager(std::shared_ptr<SimulationConfig> config)
         : config_(config)
     {
+        observerName_ = "SimulationManagerObserver";
+
         if (!config_)
         {
             config_ = SimulationConfig::createDefault();
@@ -30,6 +32,7 @@ namespace simulation
     {
         // Set observer name for debugging
         observerName_ = "SimulationManagerObserver";
+        // Setup simulation logger with file output
 
         try
         {
@@ -38,7 +41,7 @@ namespace simulation
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("SimulationManager initialization failed: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("SimulationManager initialization failed: ") + e.what());
             throw;
         }
     }
@@ -50,6 +53,12 @@ namespace simulation
 
         // Set the base path for resolving resources
         core::ResourceLocator::setBasePath(resourceConfig.basePath);
+        auto &simLogger = core::Logger::getInstance("simulation");
+        simLogger.setLogFile(core::ResourceLocator::getLoggingPath("simulation.log"));
+        // simLogger.enableSyslog();
+
+        // clear the current simulation log
+        simLogger.clearLog();
 
         // Initialize adapter system
         adapters_ = std::make_unique<adapter::AdapterManager>();
@@ -112,7 +121,7 @@ namespace simulation
     {
         if (!scene_)
         {
-            LOGGER_ERROR("Cannot create entities: scene is null");
+            LOGGER_ERROR("simulation", "Cannot create entities: scene is null");
             return;
         }
 
@@ -172,7 +181,7 @@ namespace simulation
     {
         if (!inputManager_ || !scene_ || !scene_->getCar() || !viewer_ || !frameBuffer_)
         {
-            LOGGER_ERROR("Cannot update: essential components are null");
+            LOGGER_ERROR("simulation", "Cannot update: essential components are null");
             return;
         }
 
@@ -182,7 +191,7 @@ namespace simulation
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Error during update: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("Error during update: ") + e.what());
         }
     }
 
@@ -190,7 +199,7 @@ namespace simulation
     {
         if (!viewer_)
         {
-            LOGGER_ERROR("Cannot render: viewer is null");
+            LOGGER_ERROR("simulation", "Cannot render: viewer is null");
             return;
         }
 
@@ -200,7 +209,7 @@ namespace simulation
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Error during rendering: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("Error during rendering: ") + e.what());
         }
     }
 
@@ -208,18 +217,18 @@ namespace simulation
     {
         if (!frameBuffer_)
         {
-            LOGGER_ERROR("Cannot play: frame buffer is null");
+            LOGGER_ERROR("simulation", "Cannot play: frame buffer is null");
             return;
         }
 
         try
         {
             frameBuffer_->play();
-            LOGGER_INFO("Simulation playback started");
+            LOGGER_INFO("simulation", "Simulation playback started");
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Error starting playback: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("Error starting playback: ") + e.what());
         }
     }
 
@@ -227,18 +236,18 @@ namespace simulation
     {
         if (!frameBuffer_)
         {
-            LOGGER_ERROR("Cannot pause: frame buffer is null");
+            LOGGER_ERROR("simulation", "Cannot pause: frame buffer is null");
             return;
         }
 
         try
         {
             frameBuffer_->pause();
-            LOGGER_INFO("Simulation playback paused");
+            LOGGER_INFO("simulation", "Simulation playback paused");
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Error pausing playback: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("Error pausing playback: ") + e.what());
         }
     }
 
@@ -246,18 +255,18 @@ namespace simulation
     {
         if (!frameBuffer_)
         {
-            LOGGER_ERROR("Cannot seek: frame buffer is null");
+            LOGGER_ERROR("simulation", "Cannot seek: frame buffer is null");
             return;
         }
 
         try
         {
             frameBuffer_->seek(frameIndex);
-            LOGGER_INFO(std::string("Seeking to frame ") + std::to_string(frameIndex));
+            LOGGER_INFO("simulation", std::string("Seeking to frame ") + std::to_string(frameIndex));
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Error seeking to frame ") + std::to_string(frameIndex) + ": " + e.what());
+            LOGGER_ERROR("simulation", std::string("Error seeking to frame ") + std::to_string(frameIndex) + ": " + e.what());
         }
     }
 
@@ -266,23 +275,23 @@ namespace simulation
         try
         {
             // Step 1: Initialize core components (resources, scene, frame buffer, etc.)
-            LOGGER_INFO("Initializing SimulationManager components...");
+            LOGGER_INFO("simulation", "Initializing SimulationManager components...");
             init();
 
             // Step 2: Create viewer entities from the scene
-            LOGGER_INFO("Creating simulation entities...");
+            LOGGER_INFO("simulation", "Creating simulation entities...");
             createEntities();
 
             // Step 3: Initialize graphics subsystem
-            LOGGER_INFO("Initializing graphics subsystem...");
+            LOGGER_INFO("simulation", "Initializing graphics subsystem...");
             viewer_->initGraphics();
 
             // Step 4: Initialize renderable entities in the viewer
-            LOGGER_INFO("Initializing renderable entities...");
+            LOGGER_INFO("simulation", "Initializing renderable entities...");
             viewer_->initEntities();
 
             // Step 5: Main simulation loop
-            LOGGER_INFO("Starting main simulation loop...");
+            LOGGER_INFO("simulation", "Starting main simulation loop...");
 
             // Performance monitoring variables
             static constexpr int PERFORMANCE_REPORT_INTERVAL = 300; // Report every 300 frames (~5 seconds at 60 FPS)
@@ -307,19 +316,27 @@ namespace simulation
                     try
                     {
                         TIMER_SCOPE("SignalProcessing_Total");
+                        if (frameBuffer_->isPlaying())
+                        {
+                            LOGGER_INFO("simulation", "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()));
+                            LOGGER_INFO("simulation", "Point Cloud Frame Index: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
+                            // Time the critical signal solver operation
+                            std::shared_ptr<math::PointCloud> pointCloud;
+                            core::Timer::measure("SignalSolver_solve", [&]()
+                                                 { pointCloud = signalSolver_->solve(); });
 
-                        // Time the critical signal solver operation
-                        std::shared_ptr<math::PointCloud> pointCloud;
-                        core::Timer::measure("SignalSolver_solve", [&]()
-                                             { pointCloud = signalSolver_->solve(); });
-
-                        // Time the point cloud update operation
-                        core::Timer::measure("PointCloudEntity_setPointCloud", [&]()
-                                             { detectedPointCloudEntity_->setPointCloud(pointCloud); });
+                            // Time the point cloud update operation
+                            core::Timer::measure("PointCloudEntity_setPointCloud", [&]()
+                                                 { detectedPointCloudEntity_->setPointCloud(pointCloud); });
+                        }
+                        else
+                        {
+                            LOGGER_WARN("Signal solver called while not playing, skipping point cloud update");
+                        }
                     }
                     catch (const std::exception &e)
                     {
-                        LOGGER_ERROR(std::string("Error in signal solver: ") + e.what());
+                        LOGGER_ERROR("simulation", std::string("Error in signal solver: ") + e.what());
                     }
                 }
 
@@ -339,12 +356,12 @@ namespace simulation
                 // }
             }
 
-            LOGGER_INFO("Simulation loop ended, cleaning up...");
+            LOGGER_INFO("simulation", "Simulation loop ended, cleaning up...");
             viewer_->cleanup();
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Fatal error in simulation: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("Fatal error in simulation: ") + e.what());
             if (viewer_)
             {
                 viewer_->cleanup();
@@ -357,7 +374,7 @@ namespace simulation
     {
         if (!frame)
         {
-            LOGGER_ERROR("Received null frame in onFrameChanged");
+            LOGGER_ERROR("simulation", "Received null frame in onFrameChanged");
             return;
         }
 
@@ -366,7 +383,7 @@ namespace simulation
             // Update external point cloud entity
             if (!pcEntity_)
             {
-                LOGGER_WARN("Point cloud entity is null, cannot update external point cloud");
+                LOGGER_WARN("simulation", "Point cloud entity is null, cannot update external point cloud");
                 return;
             }
             pcEntity_->setPointCloud(frame->cloud);
@@ -378,12 +395,12 @@ namespace simulation
             }
             else
             {
-                LOGGER_WARN("Scene is null, cannot update external point cloud in scene");
+                LOGGER_WARN("simulation", "Scene is null, cannot update external point cloud in scene");
             }
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(std::string("Error processing frame change: ") + e.what());
+            LOGGER_ERROR("simulation", std::string("Error processing frame change: ") + e.what());
         }
     }
 
@@ -397,8 +414,8 @@ namespace simulation
             return; // Don't report with too few samples
         }
 
-        LOGGER_INFO("=== PERFORMANCE WINDOW REPORT ===");
-        LOGGER_INFO_F("Sample size: %lu frames", frameStats.count);
+        LOGGER_INFO("simulation", "=== PERFORMANCE WINDOW REPORT ===");
+        LOGGER_INFO("simulation", std::string("Sample size: ") + std::to_string(frameStats.count) + " frames");
 
         // Detailed analysis of critical components
         auto signalSolverStats = core::Timer::getTimerStats("SignalSolver_solve");
@@ -410,46 +427,45 @@ namespace simulation
         if (frameStats.count > 0)
         {
             double avgFPS = 1000.0 / frameStats.averageMs();
-            LOGGER_INFO("=== FRAME PERFORMANCE ===");
-            LOGGER_INFO_F("  - Average frame time: %.3f ms (%.1f FPS)", frameStats.averageMs(), avgFPS);
-            LOGGER_INFO_F("  - Min frame time: %.3f ms", frameStats.minMs());
-            LOGGER_INFO_F("  - Max frame time: %.3f ms", frameStats.maxMs());
+            LOGGER_INFO("simulation", "=== FRAME PERFORMANCE ===");
+            LOGGER_INFO("simulation", "  - Average frame time: " + std::to_string(frameStats.averageMs()) + " ms (" + std::to_string(avgFPS) + " FPS)");
+            LOGGER_INFO("simulation", "  - Min frame time: " + std::to_string(frameStats.minMs()) + " ms");
+            LOGGER_INFO("simulation", "  - Max frame time: " + std::to_string(frameStats.maxMs()) + " ms");
         }
 
         if (signalSolverStats.count > 0)
         {
-            LOGGER_INFO("=== SIGNAL SOLVER PERFORMANCE ===");
-            LOGGER_INFO_F("  - Average solve time: %.3f ms", signalSolverStats.averageMs());
-            LOGGER_INFO_F("  - Min solve time: %.3f ms", signalSolverStats.minMs());
-            LOGGER_INFO_F("  - Max solve time: %.3f ms", signalSolverStats.maxMs());
+            LOGGER_INFO("simulation", "=== SIGNAL SOLVER PERFORMANCE ===");
+            LOGGER_INFO("simulation", "  - Average solve time: " + std::to_string(signalSolverStats.averageMs()) + " ms");
+            LOGGER_INFO("simulation", "  - Min solve time: " + std::to_string(signalSolverStats.minMs()) + " ms");
+            LOGGER_INFO("simulation", "  - Max solve time: " + std::to_string(signalSolverStats.maxMs()) + " ms");
 
             if (frameStats.count > 0)
             {
                 double solverPercentage = (signalSolverStats.averageMs() / frameStats.averageMs()) * 100.0;
-                LOGGER_INFO_F("  - Signal solver: %.1f%% of frame time", solverPercentage);
+                LOGGER_INFO("simulation", "  - Signal solver: " + std::to_string(solverPercentage) + "% of frame time");
             }
         }
 
         if (updateStats.count > 0 && renderStats.count > 0)
         {
-            LOGGER_INFO("=== BREAKDOWN BY COMPONENT ===");
+            LOGGER_INFO("simulation", "=== BREAKDOWN BY COMPONENT ===");
             double updatePercentage = (updateStats.averageMs() / frameStats.averageMs()) * 100.0;
             double renderPercentage = (renderStats.averageMs() / frameStats.averageMs()) * 100.0;
             double signalPercentage = signalProcessingStats.count > 0 ? (signalProcessingStats.averageMs() / frameStats.averageMs()) * 100.0 : 0.0;
 
-            LOGGER_INFO_F("  - Update: %.3f ms (%.1f%%)", updateStats.averageMs(), updatePercentage);
-            LOGGER_INFO_F("  - Signal Processing: %.3f ms (%.1f%%)",
-                          signalProcessingStats.averageMs(), signalPercentage);
-            LOGGER_INFO_F("  - Render: %.3f ms (%.1f%%)", renderStats.averageMs(), renderPercentage);
+            LOGGER_INFO("simulation", "  - Update: " + std::to_string(updateStats.averageMs()) + " ms (" + std::to_string(updatePercentage) + "%)");
+            LOGGER_INFO("simulation", "  - Signal Processing: " + std::to_string(signalProcessingStats.averageMs()) + " ms (" + std::to_string(signalPercentage) + "%)");
+            LOGGER_INFO("simulation", "  - Render: " + std::to_string(renderStats.averageMs()) + " ms (" + std::to_string(renderPercentage) + "%)");
         }
 
-        LOGGER_INFO("=== END PERFORMANCE REPORT ===\n");
+        LOGGER_INFO("simulation", "=== END PERFORMANCE REPORT ===\n");
     }
 
     void SimulationManager::resetPerformanceStats()
     {
         TIMER_RESET();
-        LOGGER_INFO("Performance statistics have been reset");
+        LOGGER_INFO("simulation", "Performance statistics have been reset");
     }
 
 } // namespace simulation
