@@ -88,6 +88,7 @@ jobs:
           ./build/bin/test_SimulationConfigTest || echo "SimulationConfigTest failed"
 
       - name: Generate coverage report with lcov
+        continue-on-error: true
         run: |
           echo "Generating coverage report..."
 
@@ -97,25 +98,24 @@ jobs:
             --output-file coverage/coverage.info \
             --rc branch_coverage=1 \
             --rc geninfo_unexecuted_blocks=1 \
-            --ignore-errors mismatch,gcov,source,graph
+            --ignore-errors mismatch,gcov,source,graph,unused
 
           # Remove external libraries and test files from coverage
           lcov --remove coverage/coverage.info \
             '/usr/*' \
             '*/external/*' \
             '*/tests/*' \
-            '*/test/*' \
             '*Test.cpp' \
             --output-file coverage/coverage.info \
             --rc branch_coverage=1 \
-            --ignore-errors mismatch,gcov,source
+            --ignore-errors mismatch,gcov,source,unused
 
           # Generate HTML report for local inspection
           genhtml coverage/coverage.info \
             --output-directory coverage/html \
             --branch-coverage \
             --function-coverage \
-            --ignore-errors mismatch,gcov,source
+            --ignore-errors mismatch,gcov,source,unused
 
       - name: Generate coverage report with gcovr
         run: |
@@ -204,8 +204,23 @@ jobs:
           # Just ensure the badge URL is correct
           echo "✅ Coverage data uploaded to Codecov. Badge will update automatically."
 
+      - name: Check generated coverage files
+        run: |
+          echo "=== COVERAGE FILES GENERATED ==="
+          ls -la coverage/ || echo "No coverage directory found"
+          echo ""
+          echo "Coverage directory contents:"
+          find coverage/ -type f -exec ls -lh {} \; 2>/dev/null || echo "No coverage files found"
+          echo ""
+          echo "Available coverage formats:"
+          [ -f "coverage/coverage.xml" ] && echo "✅ XML format (for Codecov)" || echo "❌ XML format missing"
+          [ -f "coverage/coverage.info" ] && echo "✅ LCOV format" || echo "❌ LCOV format missing"
+          [ -f "coverage/coverage.json" ] && echo "✅ JSON format" || echo "❌ JSON format missing"
+          [ -d "coverage/html" ] && echo "✅ HTML report directory" || echo "❌ HTML report missing"
+
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
+        if: always() # Upload artifacts even if previous steps failed
         with:
           name: coverage-reports
           path: |
@@ -215,6 +230,7 @@ jobs:
 
       - name: Upload HTML coverage report
         uses: actions/upload-artifact@v4
+        if: always() # Upload HTML report even if previous steps failed
         with:
           name: coverage-html-report
           path: coverage/html/
@@ -299,7 +315,7 @@ jobs:
   coverage-visualization:
     runs-on: ubuntu-latest
     needs: coverage
-    if: always()
+    if: success() # Only run if coverage job succeeded
 
     steps:
       - name: Checkout code
@@ -310,17 +326,31 @@ jobs:
         with:
           name: coverage-reports
           path: coverage/
+        continue-on-error: true
 
-      - name: Generate coverage summary
+      - name: Check if coverage artifacts exist
+        id: check-artifacts
         run: |
           if [ -f "coverage/coverage.json" ]; then
-            echo "Coverage data available in coverage/coverage.json"
-            echo "Coverage visualization complete."
+            echo "artifacts_exist=true" >> $GITHUB_OUTPUT
+            echo "✅ Coverage artifacts found"
           else
-            echo "No coverage data found."
+            echo "artifacts_exist=false" >> $GITHUB_OUTPUT
+            echo "❌ No coverage artifacts found"
+          fi
+
+      - name: Generate coverage summary
+        if: steps.check-artifacts.outputs.artifacts_exist == 'true'
+        run: |
+          echo "Coverage data available in coverage/coverage.json"
+          echo "Coverage visualization complete."
+
+          # Display basic coverage info if available
+          if [ -f "coverage/coverage.json" ]; then
+            echo "📊 Coverage JSON file size: $(du -h coverage/coverage.json | cut -f1)"
           fi
 
       - name: Update README with coverage info
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.check-artifacts.outputs.artifacts_exist == 'true'
         run: |
           echo "Coverage processing complete. Results available in artifacts."
