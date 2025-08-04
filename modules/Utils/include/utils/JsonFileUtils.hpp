@@ -15,7 +15,7 @@ namespace utils
         if (!readJsonFromFile(path, j))
         {
             std::cerr << "[ERROR] Failed to read JSON file: " << path << std::endl;
-            std::exit(1);
+            throw std::runtime_error("Failed to read JSON file: " + path);
         }
         return j;
     }

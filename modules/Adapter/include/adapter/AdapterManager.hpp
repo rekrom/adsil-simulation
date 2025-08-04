@@ -18,7 +18,7 @@ namespace adapter
             if (!adapter)
             {
                 std::cerr << "[ERROR] Adapter not registered for: " << typeid(T).name() << std::endl;
-                std::exit(1);
+                throw std::runtime_error("Adapter not registered for type: " + std::string(typeid(T).name()));
             }
             return adapter->fromJson(j);
         }
@@ -30,7 +30,7 @@ namespace adapter
             if (!adapter)
             {
                 std::cerr << "[ERROR] Adapter not registered for: " << typeid(T).name() << std::endl;
-                std::exit(1);
+                throw std::runtime_error("Adapter not registered for type: " + std::string(typeid(T).name()));
             }
             return adapter->toJson(object);
         }
