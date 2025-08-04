@@ -153,35 +153,85 @@ jobs:
           ./build/bin/test_SimulationConfigTest || echo "SimulationConfigTest failed"
           echo "other_tests_end=$(date +%s)" >> $GITHUB_OUTPUT
 
+      - name: Check coverage data generation
+        run: |
+          echo "=== COVERAGE DATA DEBUG ==="
+          echo "Checking for generated coverage files..."
+
+          # Check for .gcda files (runtime coverage data)
+          echo "📊 .gcda files found:"
+          find build -name "*.gcda" -exec ls -lh {} \; | head -20 || echo "No .gcda files found"
+          echo "Total .gcda files: $(find build -name "*.gcda" | wc -l)"
+
+          # Check for .gcno files (compile-time coverage data)
+          echo "📊 .gcno files found:"
+          find build -name "*.gcno" -exec ls -lh {} \; | head -20 || echo "No .gcno files found"
+          echo "Total .gcno files: $(find build -name "*.gcno" | wc -l)"
+
+          # Check if gcov is working
+          echo "📊 Testing gcov on a sample file..."
+          SAMPLE_GCDA=$(find build -name "*.gcda" | head -1)
+          if [ -n "$SAMPLE_GCDA" ]; then
+            echo "Testing gcov on: $SAMPLE_GCDA"
+            cd "$(dirname "$SAMPLE_GCDA")"
+            gcov "$(basename "$SAMPLE_GCDA")" || echo "gcov test failed"
+            cd - > /dev/null
+          else
+            echo "No .gcda files found for gcov test"
+          fi
+
       - name: Generate coverage report with lcov
         continue-on-error: true
         run: |
           echo "Generating coverage report..."
 
-          # Capture coverage data with error handling
-          lcov --capture \
+          # Check if build directory exists and has .gcda files
+          echo "Checking for coverage data files..."
+          find build -name "*.gcda" | head -10 || echo "No .gcda files found"
+          echo "Total .gcda files: $(find build -name "*.gcda" | wc -l)"
+
+          # Try to capture coverage data with verbose output and better error handling
+          echo "Attempting to capture coverage data..."
+          if ! lcov --capture \
             --directory build \
             --output-file coverage/coverage.info \
             --rc branch_coverage=1 \
             --rc geninfo_unexecuted_blocks=1 \
-            --ignore-errors mismatch,gcov,source,graph,unused
+            --ignore-errors mismatch,gcov,source,graph,unused \
+            --verbose; then
+            echo "❌ lcov capture failed, but continuing with gcovr..."
+            echo "lcov capture failed" > coverage/lcov_failed.txt
+          else
+            echo "✅ lcov capture succeeded"
+            
+            # Only proceed with filtering if capture succeeded
+            if [ -f "coverage/coverage.info" ] && [ -s "coverage/coverage.info" ]; then
+              echo "Processing coverage.info file..."
+              
+              # Remove external libraries and test files from coverage
+              lcov --remove coverage/coverage.info \
+                '/usr/*' \
+                '*/external/*' \
+                '*/tests/*' \
+                '*Test.cpp' \
+                --output-file coverage/coverage.info \
+                --rc branch_coverage=1 \
+                --ignore-errors mismatch,gcov,source,unused || echo "lcov remove step failed"
 
-          # Remove external libraries and test files from coverage
-          lcov --remove coverage/coverage.info \
-            '/usr/*' \
-            '*/external/*' \
-            '*/tests/*' \
-            '*Test.cpp' \
-            --output-file coverage/coverage.info \
-            --rc branch_coverage=1 \
-            --ignore-errors mismatch,gcov,source,unused
-
-          # Generate HTML report for local inspection
-          genhtml coverage/coverage.info \
-            --output-directory coverage/html \
-            --branch-coverage \
-            --function-coverage \
-            --ignore-errors mismatch,gcov,source,unused
+              # Generate HTML report for local inspection
+              if [ -f "coverage/coverage.info" ] && [ -s "coverage/coverage.info" ]; then
+                genhtml coverage/coverage.info \
+                  --output-directory coverage/html \
+                  --branch-coverage \
+                  --function-coverage \
+                  --ignore-errors mismatch,source,unused || echo "genhtml failed"
+              else
+                echo "coverage.info is empty or missing, skipping HTML generation"
+              fi
+            else
+              echo "coverage.info file is empty or missing"
+            fi
+          fi
 
       - name: Generate coverage report with gcovr
         run: |
