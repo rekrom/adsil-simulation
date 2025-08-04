@@ -27,8 +27,10 @@ jobs:
             gcovr \
             libgl1-mesa-dev \
             libglu1-mesa-dev \
+            libx11-dev \
             libglfw3-dev \
             libglew-dev \
+            libglm-dev \
             pkg-config
 
       - name: Set up Python
