@@ -5,7 +5,6 @@ add_library(Adapter STATIC ${ADAPTER_SOURCES} ${ADAPTER_HEADERS})
 
 enable_compiler_warnings(Adapter)
 
-add_subdirectory(tests)
 
 target_include_directories(Adapter PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -20,3 +19,7 @@ target_link_libraries(Adapter
             Simulation
             Utils
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

@@ -22,5 +22,7 @@ target_link_libraries(Simulation
 
 # target_compile_definitions(Simulation PRIVATE BASE_RESOURCE_DIR=\"\$<TARGET_FILE_DIR:adsil_analyzer>/resources\")
 
-# Add tests subdirectory
-add_subdirectory(tests)
+# Add tests if testing is enabled
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
