@@ -156,6 +156,11 @@ std::shared_ptr<math::PointCloud> SignalSolver::solve()
         possible_points->addPoint(result_point2);
 
         auto inFovSolution = tx->pointsInFov(*possible_points); // Ensure the point is within the Tx FOV
+        for (const auto &point : inFovSolution->getPoints())
+        {
+            LOGGER_INFO("simulation", "From Transmitter: " + tx->getName());
+            LOGGER_INFO("simulation", "Detected ADSIL point: " + point.toString());
+        }
 
         adsil_result->addPoints(inFovSolution->getPoints());
     }
