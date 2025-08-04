@@ -13,5 +13,7 @@ target_link_libraries(Math
         Spatial
 )
 
-# Add tests subdirectory
-add_subdirectory(tests)
+# Add tests if testing is enabled
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

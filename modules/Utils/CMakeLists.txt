@@ -14,3 +14,8 @@ target_link_libraries(Utils
     PUBLIC Core  # Utils modülü Core'a bağımlıysa
     Spatial
 )
+
+# Add tests if testing is enabled
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
