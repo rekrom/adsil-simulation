@@ -106,11 +106,11 @@ void test_adapter_system_composition()
     nlohmann::json deviceJson = deviceAdapter.toJson(device);
 
     // Verify the JSON contains nested Point and Vector data
-    assert(deviceJson.contains("position"));
+    assert(deviceJson.contains("origin"));
     assert(deviceJson.contains("orientation"));
-    assert(deviceJson["position"].contains("x"));
-    assert(deviceJson["position"].contains("y"));
-    assert(deviceJson["position"].contains("z"));
+    assert(deviceJson["origin"].contains("x"));
+    assert(deviceJson["origin"].contains("y"));
+    assert(deviceJson["origin"].contains("z"));
     assert(deviceJson["orientation"].contains("x"));
     assert(deviceJson["orientation"].contains("y"));
     assert(deviceJson["orientation"].contains("z"));
@@ -139,10 +139,10 @@ void test_adapter_system_error_propagation()
 
     // Test that errors in nested adapters are properly propagated
     nlohmann::json malformedDeviceJson = {
-        {"position", {{"x", 1.0}, {"y", 2.0}}}, // missing z in position
+        {"origin", {{"x", 1.0}, {"y", 2.0}}}, // missing z in position
         {"orientation", {{"x", 0.0}, {"y", 0.0}, {"z", 0.0}}},
-        {"hfov", 30.0},
-        {"vfov", 20.0},
+        {"horizontal_fov_deg", 30.0},
+        {"vertical_fov_deg", 20.0},
         {"range", 100.0},
         {"name", "ErrorTest"}};
 
