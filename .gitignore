@@ -1,5 +1,6 @@
 build/
 Testing/
+coverage/
 .vscode/
 *.log
 resources/extracted_frames_json
