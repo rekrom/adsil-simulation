@@ -22,6 +22,7 @@ target_include_directories(glad PUBLIC external/glad/include)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CompilerWarnings)
 
+
 # Automatically add all modules
 file(GLOB MODULE_DIRS RELATIVE "${CMAKE_SOURCE_DIR}/modules" "${CMAKE_SOURCE_DIR}/modules/*")
 foreach(module_dir ${MODULE_DIRS})
