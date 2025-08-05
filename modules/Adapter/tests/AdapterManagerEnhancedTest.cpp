@@ -55,23 +55,35 @@ void test_AdapterManager_error_handling()
 {
     AdapterManager manager;
 
-    // Test unregistered type error handling
+    // Test unregistered type error handling - should throw std::runtime_error
     bool exceptionThrown = false;
+    std::string exceptionMessage;
     try
     {
         // Try to use an unregistered type
         manager.toJson(math::Point(1.0f, 2.0f, 3.0f));
+        // If we reach here, the test failed because no exception was thrown
+        assert(false && "Expected exception was not thrown");
     }
-    catch (const std::exception &)
+    catch (const std::runtime_error &e)
     {
-        // If we catch an exception instead of exit, that's good
+        // Correct - we expect a runtime_error for unregistered types
         exceptionThrown = true;
-        std::cout << "[INFO] AdapterManager properly throws exception for unregistered types\n";
+        exceptionMessage = e.what();
+        std::cout << "[INFO] AdapterManager properly throws exception for unregistered types: " << exceptionMessage << "\n";
+    }
+    catch (const std::exception &e)
+    {
+        // Wrong type of exception
+        assert(false && "Expected std::runtime_error but got different exception type");
     }
 
-    // Note: Current implementation uses std::exit(1), so this test shows the issue
-    // In a production system, we'd want exceptions instead
-    std::cout << "[PASS] AdapterManager error handling test (identifies exit behavior)\n";
+    // Verify the exception was thrown and contains meaningful information
+    assert(exceptionThrown && "AdapterManager should throw exception for unregistered types");
+    assert(exceptionMessage.find("Adapter not registered") != std::string::npos &&
+           "Exception message should mention unregistered adapter");
+
+    std::cout << "[PASS] AdapterManager error handling test (properly throws exceptions)\n";
 }
 
 void test_AdapterManager_custom_registration()
