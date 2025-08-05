@@ -57,3 +57,7 @@ target_link_libraries(Viewer
         OpenGL::GL        # External: OpenGL
         glm::glm          # External: GLM
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

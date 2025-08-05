@@ -13,3 +13,7 @@ target_link_libraries(Core
         Spatial
         Math
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

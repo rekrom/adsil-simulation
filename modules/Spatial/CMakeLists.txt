@@ -15,3 +15,7 @@ target_include_directories(Spatial
 target_link_libraries(Spatial PUBLIC
         Math
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

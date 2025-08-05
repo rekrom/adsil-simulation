@@ -14,3 +14,7 @@ target_link_libraries(Vehicle
         Spatial
         Math
 )
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

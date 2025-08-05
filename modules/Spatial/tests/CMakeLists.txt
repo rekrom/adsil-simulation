@@ -1,4 +1,4 @@
-# Test files for Utils module
+# Test files for Spatial module
 file(GLOB TEST_SOURCES "*.cpp")
 
 foreach(TEST_FILE ${TEST_SOURCES})
@@ -9,14 +9,12 @@ foreach(TEST_FILE ${TEST_SOURCES})
     add_executable(${TEST_TARGET} ${TEST_FILE})
 
     target_include_directories(${TEST_TARGET} PRIVATE
-        ${CMAKE_SOURCE_DIR}/modules/Utils/include
-        ${CMAKE_SOURCE_DIR}/modules/Core/include
         ${CMAKE_SOURCE_DIR}/modules/Spatial/include
-        ${CMAKE_SOURCE_DIR}/external/nlohmann_json/single_include
+        ${CMAKE_SOURCE_DIR}/modules/Math/include
     )
 
     target_link_libraries(${TEST_TARGET}
-        PRIVATE Utils Core Spatial
+        PRIVATE Spatial Math
     )
 
     add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
