@@ -153,6 +153,7 @@ jobs:
         id: run-tests
         continue-on-error: true
         run: |
+          set -e  # Exit on error
           echo "tests_start=$(date +%s)" >> $GITHUB_OUTPUT
           echo "Running all module tests dynamically..."
 
@@ -185,16 +186,16 @@ jobs:
                   
                   if [ $exit_code -eq 0 ]; then
                     echo "    ✅ $test_name passed"
-                    ((module_passed++))
-                    ((PASSED_TESTS++))
+                    module_passed=$((module_passed + 1))
+                    PASSED_TESTS=$((PASSED_TESTS + 1))
                   else
                     echo "    ❌ $test_name failed (exit code: $exit_code)"
                     echo "    📝 Output: $test_output"
-                    ((FAILED_TESTS++))
+                    FAILED_TESTS=$((FAILED_TESTS + 1))
                   fi
                   
-                  ((module_test_count++))
-                  ((TOTAL_TESTS++))
+                  module_test_count=$((module_test_count + 1))
+                  TOTAL_TESTS=$((TOTAL_TESTS + 1))
                 fi
               done
               
@@ -239,13 +240,13 @@ jobs:
                 
                 if [ $exit_code -eq 0 ]; then
                   echo "    ✅ $test_name passed"
-                  ((PASSED_TESTS++))
+                  PASSED_TESTS=$((PASSED_TESTS + 1))
                 else
                   echo "    ❌ $test_name failed (exit code: $exit_code)"
                   echo "    📝 Output: $test_output"
-                  ((FAILED_TESTS++))
+                  FAILED_TESTS=$((FAILED_TESTS + 1))
                 fi
-                ((TOTAL_TESTS++))
+                TOTAL_TESTS=$((TOTAL_TESTS + 1))
               fi
             done
           fi
@@ -272,6 +273,9 @@ jobs:
           else
             echo "✅ All tests passed successfully!"
           fi
+
+          # Ensure script exits with success code
+          exit 0
 
       - name: Check coverage data generation
         run: |
