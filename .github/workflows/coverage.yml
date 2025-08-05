@@ -22,6 +22,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
 
       - name: Benchmark - Start Time
@@ -556,6 +557,11 @@ jobs:
           fail_ci_if_error: false
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          commit_parent: ${{ github.event.pull_request.base.sha }}
+          override_branch: ${{ github.head_ref || github.ref_name }}
+          override_commit: ${{ github.sha }}
+          override_pr: ${{ github.event.number }}
+          env_vars: OS,PYTHON
 
       - name: Update README with coverage percentage
         if: github.ref == 'refs/heads/main'
