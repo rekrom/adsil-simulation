@@ -390,12 +390,31 @@ jobs:
 
             # Generate HTML report for local inspection
             if [ -f "coverage/coverage.info" ] && [ -s "coverage/coverage.info" ]; then
-              genhtml coverage/coverage.info \
+              echo "Generating HTML coverage report..."
+              mkdir -p coverage/html
+              if genhtml coverage/coverage.info \
                 --output-directory coverage/html \
                 --branch-coverage \
                 --function-coverage \
                 --ignore-errors all \
-                --quiet || echo "genhtml failed"
+                --quiet; then
+                echo "✅ HTML report generated successfully"
+                echo "HTML report size: $(du -sh coverage/html | cut -f1)"
+              else
+                echo "❌ genhtml failed, trying with minimal options..."
+                # Try with more permissive options
+                if genhtml coverage/coverage.info \
+                  --output-directory coverage/html \
+                  --ignore-errors all \
+                  --quiet; then
+                  echo "✅ HTML report generated with minimal options"
+                else
+                  echo "❌ HTML report generation completely failed"
+                  echo "coverage.info file info:"
+                  ls -la coverage/coverage.info || true
+                  head -5 coverage/coverage.info || true
+                fi
+              fi
             else
               echo "coverage.info is empty or missing, skipping HTML generation"
             fi
