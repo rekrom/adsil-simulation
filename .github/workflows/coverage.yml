@@ -443,7 +443,6 @@ jobs:
             --exclude '/usr/.*' \
             --exclude '.*/external/.*' \
             --gcov-ignore-parse-errors \
-            --gcov-ignore-errors \
             --exclude-unreachable-branches \
             --exclude-throw-branches \
             --xml-pretty \
@@ -457,7 +456,6 @@ jobs:
               --filter ../modules/ \
               --exclude ../external/ \
               --gcov-ignore-parse-errors \
-              --gcov-ignore-errors \
               --exclude-unreachable-branches \
               --xml-pretty \
               --output ../coverage/coverage.xml || echo "XML generation completely failed"
@@ -474,7 +472,6 @@ jobs:
             --exclude '/usr/.*' \
             --exclude '.*/external/.*' \
             --gcov-ignore-parse-errors \
-            --gcov-ignore-errors \
             --exclude-unreachable-branches \
             --exclude-throw-branches \
             --json-pretty \
@@ -487,10 +484,40 @@ jobs:
               --filter ../modules/ \
               --exclude ../external/ \
               --gcov-ignore-parse-errors \
-              --gcov-ignore-errors \
               --exclude-unreachable-branches \
               --json-pretty \
               --output ../coverage/coverage.json || echo "JSON generation completely failed"
+          fi
+
+          # Generate HTML report with gcovr (fallback if lcov HTML failed)
+          echo "Generating HTML coverage report with gcovr..."
+          mkdir -p ../coverage/html
+          if ! gcovr --root .. \
+            --filter ../modules/ \
+            --exclude ../modules/.*/tests/ \
+            --exclude ../modules/.*/test/ \
+            --exclude '.*Test\.cpp' \
+            --exclude ../external/ \
+            --exclude '/usr/.*' \
+            --exclude '.*/external/.*' \
+            --gcov-ignore-parse-errors \
+            --exclude-unreachable-branches \
+            --exclude-throw-branches \
+            --html-details ../coverage/html/index.html \
+            --html-title "ADSIL Simulation Coverage Report" \
+            --verbose; then
+            echo "❌ gcovr HTML generation failed, trying with minimal options..."
+            
+            # Fallback with minimal options
+            gcovr --root .. \
+              --filter ../modules/ \
+              --exclude ../external/ \
+              --gcov-ignore-parse-errors \
+              --exclude-unreachable-branches \
+              --html-details ../coverage/html/index.html \
+              --html-title "ADSIL Simulation Coverage Report" || echo "HTML generation completely failed"
+          else
+            echo "✅ HTML coverage report generated successfully with gcovr"
           fi
 
           # Return to original directory
@@ -509,14 +536,12 @@ jobs:
             --exclude '/usr/.*' \
             --exclude '.*/external/.*' \
             --gcov-ignore-parse-errors \
-            --gcov-ignore-errors \
             --print-summary; then
             echo "❌ gcovr summary failed, trying with minimal options..."
             gcovr --root .. \
               --filter ../modules/ \
               --exclude ../external/ \
               --gcov-ignore-parse-errors \
-              --gcov-ignore-errors \
               --print-summary || echo "Summary generation completely failed"
           fi
           cd ..
@@ -597,6 +622,26 @@ jobs:
           name: coverage-html-report
           path: coverage/html/
           retention-days: 7
+          if-no-files-found: warn
+
+      - name: Verify HTML coverage report exists
+        run: |
+          echo "=== HTML COVERAGE REPORT STATUS ==="
+          if [ -d "coverage/html" ]; then
+            echo "✅ HTML coverage directory exists"
+            echo "Directory contents:"
+            ls -la coverage/html/
+            if [ -f "coverage/html/index.html" ]; then
+              echo "✅ index.html found"
+              echo "File size: $(du -h coverage/html/index.html | cut -f1)"
+            else
+              echo "❌ index.html not found"
+            fi
+          else
+            echo "❌ HTML coverage directory not found"
+            echo "Available coverage files:"
+            ls -la coverage/ || echo "No coverage directory found"
+          fi
 
       - name: Comment coverage summary on PR
         if: github.event_name == 'pull_request'
@@ -677,7 +722,6 @@ jobs:
             --exclude '/usr/.*' \
             --exclude '.*/external/.*' \
             --gcov-ignore-parse-errors \
-            --gcov-ignore-errors \
             --print-summary | grep "TOTAL" | awk '{print $4}' | sed 's/%//' 2>/dev/null || echo "0")
           cd ..
 
