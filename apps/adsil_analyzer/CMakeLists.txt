@@ -5,6 +5,11 @@ file(GLOB_RECURSE APP_HEADERS "*.hpp")
 
 add_executable(${PROJECT_NAME} ${APP_SOURCES} ${APP_HEADERS})
 
+# Set output directory for main application
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
 
 # GLAD
 target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external/glad/src/glad.c)
