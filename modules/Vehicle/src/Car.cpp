@@ -7,7 +7,7 @@ Car::Car()
     : transmitters_(),
       receivers_(),
       trajectory_(),
-      dimension_(CarDimension(1, 1, 1)),
+      dimension_(Car::DefaultCarDimension),
       name_("car")
 {
     transformNode_ = std::make_shared<spatial::TransformNode>();
