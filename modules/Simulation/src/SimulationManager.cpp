@@ -14,7 +14,7 @@ namespace simulation
 {
     namespace // internal linkage for constants
     {
-        constexpr const char *LogChannel = "simulation";
+        constexpr const char *LogChannel = "SimulationManager";
         constexpr int kPerformanceReportIntervalFrames = 300; // ~5s at 60 FPS
         constexpr int kTimestampLogSample = 120;              // log every ~2s when playing
     }
@@ -57,9 +57,6 @@ namespace simulation
     {
         const auto &resourceConfig = config_->getResourceConfig();
         const auto &frameConfig = config_->getFrameConfig();
-
-        // Set the base path for resolving resources
-        core::ResourceLocator::setBasePath(resourceConfig.basePath);
 
         // Initialize adapter system
         adapters_ = std::make_unique<adapter::AdapterManager>();
@@ -279,6 +276,9 @@ namespace simulation
         if (!frameBuffer_ || !frameBuffer_->isPlaying())
             return; // silent fast path (avoid log spam)
 
+        LOGGER_INFO("simulation", "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()));
+        LOGGER_INFO("simulation", "Point Cloud Frame Index: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
+
         try
         {
             TIMER_SCOPE("SignalProcessing_Total");
@@ -307,12 +307,18 @@ namespace simulation
     {
         try
         {
+            // Set the base path for resolving resources
+            core::ResourceLocator::setBasePath(config_->getResourceConfig().basePath);
             auto &simLogger = core::Logger::getInstance(LogChannel);
-            simLogger.setLogFile(core::ResourceLocator::getLoggingPath("simulation.log"));
-            // simLogger.enableSyslog();
-
+            simLogger.setLogFile(core::ResourceLocator::getLoggingPath("simulation_manager.log"));
             // clear the current simulation log
             simLogger.clearLog();
+            // simLogger.enableSyslog();
+
+            const char *simulationOutput = "simulation";
+            auto &simOutputLogger = core::Logger::getInstance(simulationOutput);
+            simOutputLogger.setLogFile(core::ResourceLocator::getLoggingPath("simulation.log"));
+            simOutputLogger.clearLog();
 
             // Step 1: Initialize core components (resources, scene, frame buffer, etc.)
             LOGGER_INFO(LogChannel, "Initializing SimulationManager components...");
@@ -476,7 +482,7 @@ namespace simulation
     void SimulationManager::resetPerformanceStats()
     {
         TIMER_RESET();
-        LOGGER_INFO(LogChannel, "Performance statistics have been reset");
+        // LOGGER_INFO(LogChannel, "Performance statistics have been reset");
     }
 
 } // namespace simulation

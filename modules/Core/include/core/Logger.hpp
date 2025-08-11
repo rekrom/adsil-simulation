@@ -345,7 +345,6 @@ namespace core
             }
             return *namedLoggers[name];
         }
-
         void setLogFile(const std::string &filename)
         {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -356,9 +355,13 @@ namespace core
             logFile_.open(filename, std::ios::out | std::ios::app);
             if (!logFile_.is_open())
             {
-                // Fallback to stderr if file cannot be opened
                 std::cerr << "[LOGGER ERROR] Failed to open log file: " << filename
                           << ", falling back to stderr" << std::endl;
+#if defined(_WIN32)
+                std::cerr << "[LOGGER ERROR] Reason: " << std::strerror(errno) << std::endl;
+#else
+                std::cerr << "[LOGGER ERROR] Reason: " << std::strerror(errno) << std::endl;
+#endif
                 logFileFailed_ = true;
                 logFilePath_.clear(); // Clear path on failure
             }
