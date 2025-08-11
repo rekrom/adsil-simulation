@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(adsil_analyzer)
+project(adsil_analyzer VERSION 0.1.0)
 
 enable_testing()  
 
@@ -35,4 +35,48 @@ foreach(app_dir ${APP_DIRS})
         add_subdirectory("apps/${app_dir}")
     endif()
 endforeach()
+
+# ------------------------
+# Distribution / Packaging
+# ------------------------
+option(ADSIL_DISTRIBUTION "Build optimized, stripped distribution binary" OFF)
+
+if(ADSIL_DISTRIBUTION)
+    # Force Release
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+        message(STATUS "Forcing Release build for distribution")
+        set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+    endif()
+    add_compile_options(-O3 -DNDEBUG -fvisibility=hidden)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+    if(ipo_supported)
+        message(STATUS "IPO/LTO enabled for distribution build")
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+    else()
+        message(WARNING "IPO/LTO not supported: ${ipo_error}")
+    endif()
+endif()
+
+# Install resources (exclude volatile/log folders)
+install(DIRECTORY resources/ DESTINATION resources
+    PATTERN "logs" EXCLUDE
+    PATTERN "logs/*" EXCLUDE
+    PATTERN "extracted_frames_json" EXCLUDE
+    PATTERN "extracted_frames_json/*" EXCLUDE)
+
+# Wrapper run script (no substitution needed) installed at package root
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/cmake/run_adsil.sh.in DESTINATION . RENAME run_adsil.sh)
+
+# CPack configuration (binary-only package)
+set(CPACK_PACKAGE_NAME "adsil_analyzer")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "rekrom")
+set(CPACK_GENERATOR "TGZ")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-linux-x86_64")
+set(CPACK_STRIP_FILES TRUE)
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_PACKAGE_CONTACT "")
+include(CPack)
 

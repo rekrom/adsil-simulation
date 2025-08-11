@@ -32,6 +32,9 @@ target_link_libraries(${PROJECT_NAME}
         Vehicle
 )
 
+# Install the main executable when packaging
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+
 # add_custom_command(
 #     TARGET ${PROJECT_NAME} POST_BUILD
 #     COMMAND ${CMAKE_COMMAND} -E copy_directory
