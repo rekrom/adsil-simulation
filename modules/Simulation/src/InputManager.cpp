@@ -15,22 +15,8 @@ namespace simulation
 
     void InputManager::processInput(float deltaTime,
                                     Car &car,
-                                    Camera &camera,
                                     std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
     {
-
-        if (viewerInputManager_->isKeyJustPressed(GLFW_KEY_L))
-        {
-            LOGGER_INFO("Toggling camera lock state");
-            camera.setIsLocked(!camera.getIsLocked());
-        }
-
-        // Don't process input if camera is locked
-        if (camera.getIsLocked())
-        {
-            return;
-        }
-
         // Car movement controls using the viewer's input system
         if (viewerInputManager_->isKeyPressed(GLFW_KEY_W))
         {
@@ -50,11 +36,11 @@ namespace simulation
         }
 
         // Frame buffer navigation controls
-        if (viewerInputManager_->isKeyJustPressed(GLFW_KEY_RIGHT))
+        if (viewerInputManager_->isKeyJustPressed(GLFW_KEY_KP_ADD))
         {
             frameBuffer->stepForward();
         }
-        if (viewerInputManager_->isKeyJustPressed(GLFW_KEY_LEFT))
+        if (viewerInputManager_->isKeyJustPressed(GLFW_KEY_KP_SUBTRACT))
         {
             frameBuffer->stepBackward();
         }

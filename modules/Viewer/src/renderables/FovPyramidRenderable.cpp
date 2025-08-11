@@ -54,8 +54,6 @@ namespace viewer
         glEnableVertexAttribArray(0);
 
         glBindVertexArray(0);
-
-        updateVertices(); // call at the end now
     }
 
     void FoVPyramidRenderable::updateVertices()
@@ -68,10 +66,10 @@ namespace viewer
         float halfH = range * tanf(fovV / 2.0F);
 
         glm::vec3 apex(0.0F, 0.0F, 0.0F);
-        glm::vec3 v1(-halfW, halfH, range);
-        glm::vec3 v2(halfW, halfH, range);
-        glm::vec3 v3(halfW, -halfH, range);
-        glm::vec3 v4(-halfW, -halfH, range);
+        glm::vec3 v1(range, -halfW, halfH);
+        glm::vec3 v2(range, halfW, halfH);
+        glm::vec3 v3(range, halfW, -halfH);
+        glm::vec3 v4(range, -halfW, -halfH);
 
         std::vector<glm::vec3> triangleVertices = {
             apex, v1, v2, // front face
@@ -97,12 +95,20 @@ namespace viewer
         if (!device_)
             return;
 
-        updateVertices();
+        if (dirty_)
+        {
+            updateVertices();
+            dirty_ = false;
+        }
 
         glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
 
         glBindVertexArray(vao_);
         glUseProgram(shader_);
+
+        glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, glm::value_ptr(projection));
 
         // --- Wireframe pass (black) ---
         glm::vec3 wireColor(0.0F, 0.0F, 0.0F); // black
@@ -115,16 +121,10 @@ namespace viewer
         glLineWidth(1.5f);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawArrays(GL_TRIANGLES, 0, 18); // same triangles, just outlined
-        glLineWidth(1.0F);
 
         glDisable(GL_POLYGON_OFFSET_LINE);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // --- Solid faces pass (red) ---
-        glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, glm::value_ptr(projection));
-
         glUniform3fv(uniforms_.color, 1, glm::value_ptr(color_)); // red
         glUniform1f(uniforms_.alpha, alpha_);
 

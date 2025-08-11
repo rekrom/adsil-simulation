@@ -14,7 +14,6 @@ Device::Device(const DeviceConfig &config)
 
 std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pcd) const
 {
-
     float fovH = this->getHorizontalFovRad();
     float fovV = this->getVerticalFovRad();
     float range = this->getRange();
@@ -33,10 +32,10 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
     this->getTransformNode()->addChild(newPoint4);
 
     // Set local transforms for each FOV corner
-    newPoint1->setLocalTransform(spatial::Transform({-halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
-    newPoint2->setLocalTransform(spatial::Transform({halfW, halfH, range}, {0.0F, 0.0F, 0.0F}));
-    newPoint3->setLocalTransform(spatial::Transform({halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
-    newPoint4->setLocalTransform(spatial::Transform({-halfW, -halfH, range}, {0.0F, 0.0F, 0.0F}));
+    newPoint1->setLocalTransform(spatial::Transform({range, -halfW, halfH}, {0.0F, 0.0F, 0.0F}));
+    newPoint2->setLocalTransform(spatial::Transform({range, halfW, halfH}, {0.0F, 0.0F, 0.0F}));
+    newPoint3->setLocalTransform(spatial::Transform({range, halfW, -halfH}, {0.0F, 0.0F, 0.0F}));
+    newPoint4->setLocalTransform(spatial::Transform({range, -halfW, -halfH}, {0.0F, 0.0F, 0.0F}));
 
     // Now get the global positions (which will include the transmitter's orientation)
     math::Point p1 = newPoint1->getGlobalTransform().getPosition();

@@ -4,7 +4,7 @@
 #include <string>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-    : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0F), isLocked_(false)
+    : position_(position), worldUp_(up), yaw_(yaw), pitch_(pitch), fov_(45.0F), isLocked_(true)
 {
     updateCameraVectors();
 }
@@ -38,26 +38,34 @@ void Camera::processKeyboard(char direction, float deltaTime)
         position_ += right_ * velocity;
     if (direction == 'Q')
     {
-        yaw_ -= 60.F * deltaTime;
+        yaw_ += glm::radians(60.F) * deltaTime;
         updateCameraVectors();
     }
     if (direction == 'E')
     {
-        yaw_ += 60.F * deltaTime;
+        yaw_ -= glm::radians(60.F) * deltaTime;
+        updateCameraVectors();
+    }
+    if (direction == 'Z')
+    {
+        pitch_ -= glm::radians(60.F) * deltaTime;
+        updateCameraVectors();
+    }
+    if (direction == 'C')
+    {
+        pitch_ += glm::radians(60.F) * deltaTime;
         updateCameraVectors();
     }
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset)
 {
-    float sensitivity = 0.1F;
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
+    xOffset *= sensitivity_;
+    yOffset *= sensitivity_;
 
-    yaw_ += xOffset;
-    pitch_ += yOffset;
+    yaw_ -= xOffset;
+    pitch_ -= yOffset;
 
-    pitch_ = std::clamp(pitch_, -89.0F, 89.0F);
     updateCameraVectors();
 }
 
@@ -70,15 +78,34 @@ void Camera::processMouseScroll(float yoffset)
         fov_ = 90.0F;
 }
 
+// void Camera::updateCameraVectors()
+// {
+//     glm::vec3 front;
+//     front.x = cosf(yaw_) * cosf(pitch_);
+//     front.y = sinf(pitch_);
+//     front.z = sinf(yaw_) * cosf(pitch_);
+//     front_ = glm::normalize(front);
+//     right_ = glm::normalize(glm::cross(front_, worldUp_));
+//     up_ = glm::normalize(glm::cross(right_, front_));
+// }
+
 void Camera::updateCameraVectors()
 {
-    glm::vec3 front;
-    front.x = cosf(glm::radians(yaw_)) * cosf(glm::radians(pitch_));
-    front.y = sinf(glm::radians(pitch_));
-    front.z = sinf(glm::radians(yaw_)) * cosf(glm::radians(pitch_));
-    front_ = glm::normalize(front);
-    right_ = glm::normalize(glm::cross(front_, worldUp_));
-    up_ = glm::normalize(glm::cross(right_, front_));
+    math::Vector local_x(1.0F, 0.0F, 0.0F); // Initial front vector
+    math::Vector local_y(0.0F, 1.0F, 0.0F); // Initial left vector
+    math::Vector local_z(0.0F, 0.0F, 1.0F); // Initial up vector
+
+    // Lambda function for rotating a vector around an axis
+
+    local_x = math::RotationUtils::rotateAroundAxis(local_x, local_z, yaw_);
+    local_y = math::RotationUtils::rotateAroundAxis(local_y, local_z, yaw_);
+
+    local_x = math::RotationUtils::rotateAroundAxis(local_x, local_y, pitch_);
+    local_z = math::RotationUtils::rotateAroundAxis(local_z, local_y, pitch_);
+
+    front_ = local_x.normalized().toGlmVec3();
+    right_ = -local_y.normalized().toGlmVec3();
+    up_ = local_z.normalized().toGlmVec3();
 }
 
 glm::vec3 Camera::getPosition() const
@@ -99,6 +126,29 @@ void Camera::setIsLocked(bool isLocked)
 float Camera::getFov() const
 {
     return fov_;
+}
+
+void Camera::setPitch(float pitch)
+{
+    pitch = glm::radians(pitch);
+    updateCameraVectors();
+}
+void Camera::setYaw(float yaw)
+{
+    yaw = glm::radians(yaw);
+    yaw_ = std::fmod(yaw, 360.0F);
+    if (yaw > 180.0F)
+        yaw -= 360.0F;
+    updateCameraVectors();
+}
+
+float Camera::getPitch() const
+{
+    return glm::degrees(pitch_);
+}
+float Camera::getYaw() const
+{
+    return glm::degrees(yaw_);
 }
 
 std::string Camera::toString() const

@@ -48,7 +48,7 @@ namespace viewer::imgui
                 math::RotationUtils::rad2deg(rpy.y()),
                 math::RotationUtils::rad2deg(rpy.z())};
 
-            if (ImGui::DragFloat3("Orientation (Roll, Pitch, Yaw)", rpyDeg, 1.0F, -180.0F, 180.0F))
+            if (ImGui::DragFloat3("Orientation (RotateX, RotateY, RotateZ)", rpyDeg, 1.0F, -180.0F, 180.0F))
             {
                 transform.setOrientation(math::Vector(
                     math::RotationUtils::deg2rad(rpyDeg[0]),
@@ -187,7 +187,7 @@ namespace viewer::imgui
             math::RotationUtils::rad2deg(rpy.y()),
             math::RotationUtils::rad2deg(rpy.z())};
 
-        if (ImGui::DragFloat3("Orientation (RPY)", rpyDeg, 1.0F, -180.0F, 180.0F))
+        if (ImGui::DragFloat3("Orientation (RotateX, RotateY, RotateZ)", rpyDeg, 1.0F, -180.0F, 180.0F))
         {
             transform.setOrientation(math::Vector(
                 math::RotationUtils::deg2rad(rpyDeg[0]),

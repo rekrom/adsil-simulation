@@ -29,7 +29,7 @@ namespace adapter
         for (const auto &pt : j.at("pointcloud"))
         {
             if (pt.size() == 3)
-                cloud->addPoint(Point(pt.at(0).get<float>(), pt.at(2).get<float>(), pt.at(1).get<float>()));
+                cloud->addPoint(Point(pt.at(0).get<float>(), pt.at(1).get<float>(), pt.at(2).get<float>()));
         }
 
         std::shared_ptr<simulation::Frame> frame = std::make_shared<simulation::Frame>();

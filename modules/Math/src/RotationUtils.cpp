@@ -38,4 +38,16 @@ namespace math
         // Roll is assumed zero
         return Vector(0.0F, pitch, yaw); // roll, pitch, yaw
     }
+
+    Vector RotationUtils::rotateAroundAxis(const math::Vector &v, const math::Vector &axis, float angleRad)
+    {
+        math::Vector normAxis = axis.normalized();
+        float cosTheta = cosf(angleRad);
+        float sinTheta = sinf(angleRad);
+
+        return v * cosTheta +
+               normAxis.cross(v) * sinTheta +
+               normAxis * normAxis.dot(v) * (1.0f - cosTheta);
+    };
+
 }

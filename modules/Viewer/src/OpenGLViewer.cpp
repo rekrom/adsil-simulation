@@ -8,10 +8,10 @@ namespace viewer
 {
     OpenGLViewer::OpenGLViewer(int width, int height, const std::string &title)
         : window_(nullptr), width_(width), height_(height), title_(title), camera_(
-                                                                               glm::vec3(0.0F, 20.0F, 5.0F), // position
-                                                                               glm::vec3(0.0F, 1.0F, 0.0F),  // up direction
-                                                                               90.0F,                        // yaw (looking toward -Z)
-                                                                               -89.0F                        // pitch
+                                                                               glm::vec3(-20.0F, 0.0F, 5.0F), // position
+                                                                               glm::vec3(0.0F, 0.0F, 1.0F),   // up direction
+                                                                               glm::radians(0.0F),            // yaw
+                                                                               glm::radians(0.0F)             // pitch
                                                                                ),
           lastX_(static_cast<float>(width) / 2.0F), lastY_(static_cast<float>(height) / 2.0F),
           firstMouse_(true), rightMousePressed_(false),
@@ -95,18 +95,25 @@ namespace viewer
 
         if (inputManager_->isKeyPressed(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window_, true);
-        if (inputManager_->isKeyPressed(GLFW_KEY_W))
+
+        if (inputManager_->isKeyPressed(GLFW_KEY_UP))
             camera_.processKeyboard('W', deltaTime);
-        if (inputManager_->isKeyPressed(GLFW_KEY_S))
+        if (inputManager_->isKeyPressed(GLFW_KEY_DOWN))
             camera_.processKeyboard('S', deltaTime);
-        if (inputManager_->isKeyPressed(GLFW_KEY_A))
+        if (inputManager_->isKeyPressed(GLFW_KEY_LEFT))
             camera_.processKeyboard('A', deltaTime);
-        if (inputManager_->isKeyPressed(GLFW_KEY_D))
+        if (inputManager_->isKeyPressed(GLFW_KEY_RIGHT))
             camera_.processKeyboard('D', deltaTime);
-        if (inputManager_->isKeyPressed(GLFW_KEY_Q))
+        if (inputManager_->isKeyPressed(GLFW_KEY_KP_4))
             camera_.processKeyboard('Q', deltaTime);
-        if (inputManager_->isKeyPressed(GLFW_KEY_E))
+        if (inputManager_->isKeyPressed(GLFW_KEY_KP_6))
             camera_.processKeyboard('E', deltaTime);
+
+        if (inputManager_->isKeyPressed(GLFW_KEY_KP_8))
+            camera_.processKeyboard('Z', deltaTime);
+        if (inputManager_->isKeyPressed(GLFW_KEY_KP_2))
+            camera_.processKeyboard('C', deltaTime);
+
         if (inputManager_->isKeyJustPressed(GLFW_KEY_L))
             camera_.processKeyboard('L', deltaTime);
 

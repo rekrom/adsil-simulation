@@ -32,18 +32,18 @@ namespace viewer::imgui
             glm::vec3 pos = camera.getPosition();
             if (ImGui::DragFloat3("Position", &pos[0], 0.1F))
             {
-                // camera.setPosition(pos);
+                camera.setPosition(pos);
             }
 
-            float pitch = 0.0F; // camera.getPitch();
-            float yaw = 0.0F;   // camera.getYaw();
-            if (ImGui::SliderFloat("Pitch", &pitch, -89.0F, 89.0F))
+            float pitch = camera.getPitch();
+            float yaw = camera.getYaw();
+            if (ImGui::SliderFloat("Pitch", &pitch, -90.0F, 90.0F))
             {
-                // camera.setPitch(pitch);
+                camera.setPitch(pitch);
             }
             if (ImGui::SliderFloat("Yaw", &yaw, -180.0F, 180.0F))
             {
-                // camera.setYaw(yaw);
+                camera.setYaw(yaw);
             }
         }
     }

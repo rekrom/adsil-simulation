@@ -41,12 +41,12 @@ namespace spatial
 
     Vector Transform::get3DDirectionVector() const
     {
-        float roll = orientation_.x();
+        // float roll = orientation_.x();
         float pitch = orientation_.y();
         float yaw = orientation_.z();
 
-        float cRoll = std::cos(roll);
-        float sRoll = std::sin(roll);
+        // float cRoll = std::cos(roll);
+        // float sRoll = std::sin(roll);
 
         float cPitch = std::cos(pitch);
         float sPitch = std::sin(pitch);
@@ -55,23 +55,23 @@ namespace spatial
         float sYaw = std::sin(yaw);
 
         // Dönüş matrisi elemanları (Z-Y-X sırayla Euler açılarından)
-        // float m00 = cYaw * cPitch;
+        float m00 = cYaw * cPitch;
         // float m01 = cYaw * sPitch * sRoll - sYaw * cRoll;
-        float m02 = cYaw * sPitch * cRoll + sYaw * sRoll;
+        // float m02 = cYaw * sPitch * cRoll + sYaw * sRoll;
 
-        // float m10 = sYaw * cPitch;
+        float m10 = sYaw * cPitch;
         // float m11 = sYaw * sPitch * sRoll + cYaw * cRoll;
-        float m12 = sYaw * sPitch * cRoll - cYaw * sRoll;
+        // float m12 = sYaw * sPitch * cRoll - cYaw * sRoll;
 
-        // float m20 = -sPitch;
+        float m20 = -sPitch;
         // float m21 = cPitch * sRoll;
-        float m22 = cPitch * cRoll;
+        // float m22 = cPitch * cRoll;
 
-        // İleri yön vektörü lokal (0, 1, 0)
+        // İleri yön vektörü lokal (1, 0, 0)
         // Dünya koordinatlarına dönüşüm:
-        float x = m02; // 0 * m00 + 1 * m01 + 0 * m02
-        float y = m12; // 0 * m10 + 1 * m11 + 0 * m12
-        float z = m22; // 0 * m20 + 1 * m21 + 0 * m22
+        float x = m00; // 1 * m00 + 0 * m01 + 0 * m02
+        float y = m10; // 1 * m10 + 0 * m11 + 0 * m12
+        float z = m20; // 1 * m20 + 0 * m21 + 0 * m22
 
         Vector dir(x, y, z);
         return dir.normalized();
@@ -99,7 +99,7 @@ namespace spatial
     void Transform::rotateYaw(float angleRad)
     {
         Vector ori = orientation_;
-        ori = ori + Vector(0.F, angleRad, 0.F); // ✅ modifying Y (yaw = Y)
+        ori = ori + Vector(0.F, 0.F, angleRad); // ✅ modifying Z (yaw = Z)
         orientation_ = ori;
     }
 

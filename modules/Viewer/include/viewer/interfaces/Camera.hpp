@@ -4,6 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm> // Required for std::clamp
 #include <iostream>
+#include <math/RotationUtils.hpp>
+#include <core/Logger.hpp>
+
 class Camera
 {
 public:
@@ -17,9 +20,15 @@ public:
     void processMouseScroll(float yOffset);
 
     glm::vec3 getPosition() const;
+    void setPosition(const glm::vec3 &position) { position_ = position; }
     bool getIsLocked() const;
     void setIsLocked(bool isLocked);
     float getFov() const;
+
+    void setPitch(float pitch);
+    void setYaw(float yaw);
+    float getPitch() const;
+    float getYaw() const;
 
     std::string toString() const;
 
@@ -32,8 +41,9 @@ private:
     glm::vec3 right_;
     glm::vec3 worldUp_;
 
-    float yaw_;
-    float pitch_;
+    float yaw_;                  // radians
+    float pitch_;                // radians
+    float sensitivity_ = 0.001F; // Mouse sensitivity
     float fov_;
 
     bool isLocked_;

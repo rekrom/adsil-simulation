@@ -30,6 +30,7 @@ namespace math
         }
 
         Vector eulerFromDirection(const Vector &dir);
+        Vector rotateAroundAxis(const math::Vector &v, const math::Vector &axis, float angleRad);
 
     }
 }
