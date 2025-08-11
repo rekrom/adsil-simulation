@@ -54,6 +54,8 @@ namespace simulation
         void createEntities();
         void initializeComponents();
         void validateEssentialComponents();
+        // Extracted internal helper for signal solving & detected point cloud update
+        void processSignals_();
 
     private:
         // Configuration
