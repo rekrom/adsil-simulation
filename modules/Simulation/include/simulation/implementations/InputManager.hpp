@@ -34,7 +34,6 @@ namespace simulation
          */
         void processInput(float deltaTime,
                           Car &car,
-                          Camera &camera,
                           std::shared_ptr<simulation::FrameBufferManager> &frameBuffer);
 
     private:

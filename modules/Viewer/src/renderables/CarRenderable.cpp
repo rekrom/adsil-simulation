@@ -56,6 +56,7 @@ namespace viewer
         txRenderables_.clear();
         rxRenderables_.clear();
     }
+
     void CarRenderable::initGL()
     {
         createShader();
@@ -189,52 +190,52 @@ namespace viewer
 
         float cubeVertices[] = {
             // Front face
-            -width / 2, -height / 2, -length / 2, r, g, b,
-            -width / 2, -height / 2, +length / 2, r, g, b,
-            +width / 2, -height / 2, +length / 2, r, g, b,
-            +width / 2, -height / 2, +length / 2, r, g, b,
-            +width / 2, -height / 2, -length / 2, r, g, b,
-            -width / 2, -height / 2, -length / 2, r, g, b,
+            -length / 2, -width / 2, -height / 2, r, g, b,
+            -length / 2, -width / 2, +height / 2, r, g, b,
+            +length / 2, -width / 2, +height / 2, r, g, b,
+            +length / 2, -width / 2, +height / 2, r, g, b,
+            +length / 2, -width / 2, -height / 2, r, g, b,
+            -length / 2, -width / 2, -height / 2, r, g, b,
 
             // Back face
-            -width / 2, height / 2, -length / 2, r, g, b,
-            -width / 2, height / 2, +length / 2, r, g, b,
-            +width / 2, height / 2, +length / 2, r, g, b,
-            +width / 2, height / 2, +length / 2, r, g, b,
-            +width / 2, height / 2, -length / 2, r, g, b,
-            -width / 2, height / 2, -length / 2, r, g, b,
+            -length / 2, width / 2, -height / 2, r, g, b,
+            -length / 2, width / 2, +height / 2, r, g, b,
+            +length / 2, width / 2, +height / 2, r, g, b,
+            +length / 2, width / 2, +height / 2, r, g, b,
+            +length / 2, width / 2, -height / 2, r, g, b,
+            -length / 2, width / 2, -height / 2, r, g, b,
 
             // Left face
-            +width / 2, +height / 2, -length / 2, r, g, b,
-            +width / 2, -height / 2, -length / 2, r, g, b,
-            -width / 2, -height / 2, -length / 2, r, g, b,
-            -width / 2, -height / 2, -length / 2, r, g, b,
-            -width / 2, +height / 2, -length / 2, r, g, b,
-            +width / 2, +height / 2, -length / 2, r, g, b,
+            +length / 2, +width / 2, -height / 2, r, g, b,
+            +length / 2, -width / 2, -height / 2, r, g, b,
+            -length / 2, -width / 2, -height / 2, r, g, b,
+            -length / 2, -width / 2, -height / 2, r, g, b,
+            -length / 2, +width / 2, -height / 2, r, g, b,
+            +length / 2, +width / 2, -height / 2, r, g, b,
 
             // Right face
-            +width / 2, +height / 2, length / 2, r, g, b,
-            +width / 2, -height / 2, length / 2, r, g, b,
-            -width / 2, -height / 2, length / 2, r, g, b,
-            -width / 2, -height / 2, length / 2, r, g, b,
-            -width / 2, +height / 2, length / 2, r, g, b,
-            +width / 2, +height / 2, length / 2, r, g, b,
+            +length / 2, +width / 2, height / 2, r, g, b,
+            +length / 2, -width / 2, height / 2, r, g, b,
+            -length / 2, -width / 2, height / 2, r, g, b,
+            -length / 2, -width / 2, height / 2, r, g, b,
+            -length / 2, +width / 2, height / 2, r, g, b,
+            +length / 2, +width / 2, height / 2, r, g, b,
 
             // Top face
-            width / 2, -height / 2, -length / 2, r, g, b,
-            width / 2, -height / 2, +length / 2, r, g, b,
-            width / 2, +height / 2, +length / 2, r, g, b,
-            width / 2, +height / 2, +length / 2, r, g, b,
-            width / 2, +height / 2, -length / 2, r, g, b,
-            width / 2, -height / 2, -length / 2, r, g, b,
+            length / 2, -width / 2, -height / 2, r, g, b,
+            length / 2, -width / 2, +height / 2, r, g, b,
+            length / 2, +width / 2, +height / 2, r, g, b,
+            length / 2, +width / 2, +height / 2, r, g, b,
+            length / 2, +width / 2, -height / 2, r, g, b,
+            length / 2, -width / 2, -height / 2, r, g, b,
 
             // Bottom face
-            -width / 2, -height / 2, -length / 2, r, g, b,
-            -width / 2, -height / 2, +length / 2, r, g, b,
-            -width / 2, +height / 2, +length / 2, r, g, b,
-            -width / 2, +height / 2, +length / 2, r, g, b,
-            -width / 2, +height / 2, -length / 2, r, g, b,
-            -width / 2, -height / 2, -length / 2, r, g, b};
+            -length / 2, -width / 2, -height / 2, r, g, b,
+            -length / 2, -width / 2, +height / 2, r, g, b,
+            -length / 2, +width / 2, +height / 2, r, g, b,
+            -length / 2, +width / 2, +height / 2, r, g, b,
+            -length / 2, +width / 2, -height / 2, r, g, b,
+            -length / 2, -width / 2, -height / 2, r, g, b};
 
         vertexCount_ = static_cast<GLsizei>(sizeof(cubeVertices) / 6);
 
@@ -252,6 +253,8 @@ namespace viewer
         glEnableVertexAttribArray(1);
 
         glBindVertexArray(0);
+
+        LOGGER_INFO("CALLED createBuffers() in CarRenderable");
     }
 
     void CarRenderable::createShader()

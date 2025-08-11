@@ -132,11 +132,11 @@ namespace simulation
 
         // Create basic scene entities
         auto axisEntity = std::make_shared<viewer::AxisEntity>();
-        // auto groundEntity = std::make_shared<viewer::GroundEntity>();
+        auto groundEntity = std::make_shared<viewer::GroundEntity>();
         auto carEntity = std::make_shared<viewer::CarEntity>(scene_->getCar(), carConfig.color);
 
         entities.push_back(axisEntity);
-        // entities.push_back(groundEntity);
+        entities.push_back(groundEntity);
         entities.push_back(carEntity);
 
         // Add vehicle device entities
@@ -187,7 +187,7 @@ namespace simulation
 
         try
         {
-            inputManager_->processInput(deltaTime, *scene_->getCar(), viewer_->getCamera(), frameBuffer_);
+            inputManager_->processInput(deltaTime, *scene_->getCar(), frameBuffer_);
         }
         catch (const std::exception &e)
         {
@@ -331,7 +331,7 @@ namespace simulation
                         }
                         else
                         {
-                            LOGGER_WARN("Signal solver called while not playing, skipping point cloud update");
+                            // LOGGER_WARN("Signal solver called while not playing, skipping point cloud update");
                         }
                     }
                     catch (const std::exception &e)

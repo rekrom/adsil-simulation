@@ -29,23 +29,24 @@ namespace viewer
         // Creates a simple XZ grid from -10 to 10
         std::vector<float> vertices;
         const int N = 20; // from -10 to 10
+        float z_offset = -2.0F;
         for (int i = -N; i <= N; ++i)
         {
             // Lines parallel to Z axis
             vertices.push_back((float)i);
-            vertices.push_back(0.0F);
             vertices.push_back((float)-N);
+            vertices.push_back(z_offset);
             vertices.push_back((float)i);
-            vertices.push_back(0.0F);
             vertices.push_back((float)N);
+            vertices.push_back(z_offset);
 
             // Lines parallel to X axis
             vertices.push_back((float)-N);
-            vertices.push_back(0.0F);
             vertices.push_back((float)i);
+            vertices.push_back(z_offset);
             vertices.push_back((float)N);
-            vertices.push_back(0.0F);
             vertices.push_back((float)i);
+            vertices.push_back(z_offset);
         }
 
         vertexCount_ = vertices.size() / 3;
@@ -75,6 +76,7 @@ namespace viewer
         GLint projLoc = glGetUniformLocation(shader_, "projection");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glLineWidth(1.0F);
 
         glBindVertexArray(vao_);
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertexCount_));

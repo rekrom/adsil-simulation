@@ -26,6 +26,8 @@ namespace viewer
 
         std::shared_ptr<Device> device_;
 
+        bool dirty_ = true; // flag to indicate if vertices need updating
+
     protected:
         void createShader() override;
         void createBuffers() override;

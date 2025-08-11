@@ -1,5 +1,11 @@
 #include <simulation/SignalSolver.hpp>
+#include <core/Logger.hpp>
 #include <iostream>
+#include <stdexcept>
+#include <limits>
+#include <cmath>
+
+using namespace math;
 
 SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
     : scene_(std::move(scene))
@@ -8,161 +14,241 @@ SignalSolver::SignalSolver(std::shared_ptr<SimulationScene> scene)
 
 std::shared_ptr<math::PointCloud> SignalSolver::solve()
 {
-    // std::cout << "solving..." << std::endl;
-    auto result = std::make_shared<math::PointCloud>();
+    // First, calculate ToF points and build the matrix
+    auto result = std::make_shared<PointCloud>();
     auto allPoints = scene_->getMergedPointCloud();
 
-    const auto &txs = scene_->getTransmitters();
-    const auto &rxs = scene_->getReceivers();
-
-    size_t tx_size = txs.size();
-    size_t rx_size = rxs.size();
-
-    std::vector<std::vector<float>> ToFVals(tx_size, std::vector<float>(rx_size, 0.0f));
-
-    int tx_no = -1;
-    for (const auto &tx : txs)
+    if (!allPoints || allPoints->empty())
     {
+        return result;
+    }
 
-        tx_no++;
-        int rx_no = -1;
-        for (const auto &rx : rxs)
+    const auto &transmitters = scene_->getTransmitters();
+    const auto &receivers = scene_->getReceivers();
+
+    if (transmitters.empty() || receivers.empty())
+    {
+        return result;
+    }
+
+    TofMatrix tofMatrix(transmitters.size(), receivers.size());
+
+    // Calculate ToF values and collect points
+    for (size_t txIndex = 0; txIndex < transmitters.size(); ++txIndex)
+    {
+        const auto &transmitter = transmitters[txIndex];
+
+        for (size_t rxIndex = 0; rxIndex < receivers.size(); ++rxIndex)
         {
-            rx_no++;
+            const auto &receiver = receivers[rxIndex];
 
-            // Filter points inside both FOVs
-            auto inTxFov = tx->pointsInFov(*allPoints);
-            if (!inTxFov || inTxFov->size() == 0)
+            auto filteredPoints = filterPointsByFov(allPoints, transmitter, receiver);
+            if (!filteredPoints || filteredPoints->empty())
             {
                 continue;
             }
 
-            auto inRxFov = rx->pointsInFov(*inTxFov);
-            if (!inRxFov || inRxFov->size() == 0)
-            {
-                continue;
-            }
+            auto closestPoint = findClosestPointInFov(filteredPoints, transmitter, receiver);
+            float totalDistance =
+                closestPoint.distanceTo(transmitter->getTransformNode()->getGlobalTransform().getPosition()) +
+                closestPoint.distanceTo(receiver->getTransformNode()->getGlobalTransform().getPosition());
 
-            std::vector<math::Point> points = inRxFov->getPoints();
-
-            // Find the closest point (based on Tx + Rx distance)
-            float minDist = std::numeric_limits<float>::max();
-            Point closest;
-
-            for (const auto &pt : inRxFov->getPoints())
-            {
-                float dTx = pt.distanceTo(tx->getTransformNode()->getGlobalTransform().getPosition());
-                float dRx = pt.distanceTo(rx->getTransformNode()->getGlobalTransform().getPosition());
-                float total = dTx + dRx;
-
-                if (total < minDist)
-                {
-                    minDist = total;
-                    closest = pt;
-                }
-            }
-            ToFVals[tx_no][rx_no] = minDist;
-            // std::cout << "tofvals[" << tx_no << "][" << rx_no << "] = " << minDist << std::endl;
-            // std::cout << solveCount_ << " " << tx->getName() << "-" << rx->getName() << "\t" << closest.toString() << "\t tof:" << minDist << std::endl;
+            tofMatrix(txIndex, rxIndex) = totalDistance;
             solveCount_++;
-            result->addPoint(closest);
+            result->addPoint(closestPoint);
         }
     }
+
     if (result->empty())
     {
         return result;
     }
 
-    auto adsil_result = std::make_shared<math::PointCloud>();
-    if (rx_size != 4)
+    // Now solve ADSIL trilateration
+    return solveAdsilTrilateration(tofMatrix);
+}
+
+std::shared_ptr<math::PointCloud> SignalSolver::filterPointsByFov(
+    const std::shared_ptr<math::PointCloud> &allPoints,
+    const std::shared_ptr<Device> &transmitter,
+    const std::shared_ptr<Device> &receiver) const
+{
+    // Filter points inside transmitter FOV first
+    auto inTxFov = transmitter->pointsInFov(*allPoints);
+    if (!inTxFov || inTxFov->empty())
     {
-        throw std::runtime_error("rx_size must be 4");
+        return std::make_shared<PointCloud>();
     }
 
-    tx_no = -1;
-    for (const auto &tx : txs)
+    // Then filter by receiver FOV
+    auto inRxFov = receiver->pointsInFov(*inTxFov);
+    return inRxFov ? inRxFov : std::make_shared<PointCloud>();
+}
+
+math::Point SignalSolver::findClosestPointInFov(
+    const std::shared_ptr<math::PointCloud> &points,
+    const std::shared_ptr<Device> &transmitter,
+    const std::shared_ptr<Device> &receiver) const
+{
+    if (!points || points->empty())
     {
-        tx_no++;
-        int rx_no = -1;
-
-        // check the tof vals values are bigger than 0
-        if (ToFVals[tx_no][0] <= 0.0f || ToFVals[tx_no][1] <= 0.0f || ToFVals[tx_no][2] <= 0.0f || ToFVals[tx_no][3] <= 0.0f)
-        {
-            continue; // Skip this Tx if any ToF value is not valid
-        }
-
-        float R0 = ToFVals[tx_no][0] / 2;
-        float R1 = ToFVals[tx_no][1] - R0;
-        float R2 = ToFVals[tx_no][2] - R0;
-        float R3 = ToFVals[tx_no][3] - R0;
-
-        auto c1 = rxs[1]->getGlobalTransform().getPosition();
-        auto c2 = rxs[2]->getGlobalTransform().getPosition();
-        auto c3 = rxs[3]->getGlobalTransform().getPosition();
-
-        Vector P1P2 = c2.toVectorFrom(c1);
-        float d = std::sqrt(P1P2.dot(P1P2));
-        if (d == 0.0f)
-        {
-            continue; // Skip this Tx if P1 and P2 are the same
-        }
-        Vector ex = P1P2 * (1.0f / d); // normalize
-        // i = ex • (c3 - c1)
-        Vector c1c3 = c3.toVectorFrom(c1);
-        float i = ex.dot(c1c3);
-
-        // ey = normalized(c3 - c1 - i * ex)
-        Vector temp = c1c3 - (ex * i);
-        float tempLengthSquared = temp.dot(temp);
-        if (tempLengthSquared == 0.0f)
-        {
-            continue; // Skip this Tx if P1 and P3 are the same
-        }
-        Vector ey = temp.normalized();
-
-        // ez = ex × ey
-        Vector ez = ex.cross(ey);
-
-        // j = ey • (c3 - c1)
-        float j = ey.dot(c1c3);
-
-        // x = (r1² - r2² + d²) / (2d)
-        float x = (R1 * R1 - R2 * R2 + d * d) / (2.0f * d);
-
-        // y = (r1² - r3² + i² + j² - 2ix) / (2j)
-        float y_numerator = R1 * R1 - R3 * R3 + i * i + j * j - 2.0f * i * x;
-        float y = y_numerator / (2.0f * j);
-
-        // z² = r1² - x² - y²
-        float zSquared = R1 * R1 - x * x - y * y;
-        if (zSquared < 0.0f)
-        {
-            continue; // Skip this Tx if the point is not valid
-        }
-
-        float z = std::sqrt(zSquared);
-
-        float z1 = std::sqrt(zSquared);
-        float z2 = -z1;
-
-        // Final point = c1 + x * ex + y * ey + z * ez
-        Vector resultVec = (ex * x) + (ey * y) + (ez * z1);
-        Point result_point1 = c1 + resultVec;
-        resultVec = (ex * x) + (ey * y) + (ez * z2);
-        Point result_point2 = c1 + resultVec;
-        auto possible_points = std::make_shared<math::PointCloud>();
-        possible_points->clear();
-        possible_points->addPoint(result_point1);
-        possible_points->addPoint(result_point2);
-
-        auto inFovSolution = tx->pointsInFov(*possible_points); // Ensure the point is within the Tx FOV
-        for (const auto &point : inFovSolution->getPoints())
-        {
-            LOGGER_INFO("simulation", "From Transmitter: " + tx->getName());
-            LOGGER_INFO("simulation", "Detected ADSIL point: " + point.toString());
-        }
-
-        adsil_result->addPoints(inFovSolution->getPoints());
+        throw std::runtime_error("No points provided to find closest point");
     }
-    return adsil_result;
+
+    float minDistance = std::numeric_limits<float>::max();
+    Point closestPoint;
+
+    const auto &txPosition = transmitter->getTransformNode()->getGlobalTransform().getPosition();
+    const auto &rxPosition = receiver->getTransformNode()->getGlobalTransform().getPosition();
+
+    for (const auto &point : points->getPoints())
+    {
+        float txDistance = point.distanceTo(txPosition);
+        float rxDistance = point.distanceTo(rxPosition);
+        float totalDistance = txDistance + rxDistance;
+
+        if (totalDistance < minDistance)
+        {
+            minDistance = totalDistance;
+            closestPoint = point;
+        }
+    }
+
+    return closestPoint;
+}
+
+bool SignalSolver::isValidTofRow(const TofMatrix &tofMatrix, size_t txIndex) const
+{
+    if (tofMatrix.rxCount != REQUIRED_RECEIVER_COUNT)
+    {
+        return false;
+    }
+
+    for (size_t rxIndex = 0; rxIndex < REQUIRED_RECEIVER_COUNT; ++rxIndex)
+    {
+        if (tofMatrix(txIndex, rxIndex) <= EPSILON)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::pair<math::Point, math::Point> SignalSolver::calculateAdsilPositions(
+    const TofMatrix &tofMatrix,
+    size_t txIndex,
+    const SharedVec<Device> &receivers) const
+{
+    // Calculate relative distances
+    float R0 = tofMatrix(txIndex, 0) / 2.0f;
+    float R1 = tofMatrix(txIndex, 1) - R0;
+    float R2 = tofMatrix(txIndex, 2) - R0;
+    float R3 = tofMatrix(txIndex, 3) - R0;
+
+    // Get receiver positions (using receivers 1, 2, 3 for the calculation)
+    auto c1 = receivers[1]->getGlobalTransform().getPosition();
+    auto c2 = receivers[2]->getGlobalTransform().getPosition();
+    auto c3 = receivers[3]->getGlobalTransform().getPosition();
+
+    // Create coordinate system
+    Vector P1P2 = c2.toVectorFrom(c1);
+    float d = std::sqrt(P1P2.dot(P1P2));
+
+    if (d < EPSILON)
+    {
+        throw std::runtime_error("Receivers P1 and P2 are too close together");
+    }
+
+    Vector ex = P1P2 * (1.0f / d); // normalize
+
+    Vector c1c3 = c3.toVectorFrom(c1);
+    float i = ex.dot(c1c3);
+
+    Vector temp = c1c3 - (ex * i);
+    float tempLengthSquared = temp.dot(temp);
+
+    if (tempLengthSquared < EPSILON)
+    {
+        throw std::runtime_error("Receivers are collinear");
+    }
+
+    Vector ey = temp.normalized();
+    Vector ez = ex.cross(ey);
+    float j = ey.dot(c1c3);
+
+    // Trilateration calculations
+    float x = (R1 * R1 - R2 * R2 + d * d) / (2.0f * d);
+    float y_numerator = R1 * R1 - R3 * R3 + i * i + j * j - 2.0f * i * x;
+    float y = y_numerator / (2.0f * j);
+
+    float zSquared = R1 * R1 - x * x - y * y;
+
+    if (zSquared < 0.0f)
+    {
+        throw std::runtime_error("Invalid trilateration solution");
+    }
+
+    float z = std::sqrt(zSquared);
+
+    // Calculate both possible solutions
+    Vector resultVec1 = (ex * x) + (ey * y) + (ez * z);
+    Vector resultVec2 = (ex * x) + (ey * y) + (ez * (-z));
+
+    Point result1 = c1 + resultVec1;
+    Point result2 = c1 + resultVec2;
+
+    return std::make_pair(result1, result2);
+}
+
+std::shared_ptr<math::PointCloud> SignalSolver::solveAdsilTrilateration(const TofMatrix &tofMatrix)
+{
+    auto result = std::make_shared<PointCloud>();
+
+    if (tofMatrix.rxCount != REQUIRED_RECEIVER_COUNT)
+    {
+        throw std::runtime_error("ADSIL requires exactly 4 receivers");
+    }
+
+    const auto &transmitters = scene_->getTransmitters();
+    const auto &receivers = scene_->getReceivers();
+
+    for (size_t txIndex = 0; txIndex < tofMatrix.txCount; ++txIndex)
+    {
+        if (!isValidTofRow(tofMatrix, txIndex))
+        {
+            continue; // Skip invalid ToF measurements
+        }
+
+        try
+        {
+            auto [point1, point2] = calculateAdsilPositions(tofMatrix, txIndex, receivers);
+
+            // Create possible solutions
+            auto possiblePoints = std::make_shared<PointCloud>();
+            possiblePoints->addPoint(point1);
+            possiblePoints->addPoint(point2);
+
+            // Filter by transmitter FOV to get valid solutions
+            auto validSolutions = transmitters[txIndex]->pointsInFov(*possiblePoints);
+
+            if (validSolutions && !validSolutions->empty())
+            {
+                for (const auto &point : validSolutions->getPoints())
+                {
+                    LOGGER_INFO("simulation", "From Transmitter: " + transmitters[txIndex]->getName());
+                    LOGGER_INFO("simulation", "Detected ADSIL point: " + point.toString());
+                }
+                result->addPoints(validSolutions->getPoints());
+            }
+        }
+        catch (const std::runtime_error &e)
+        {
+            // Log error and continue with next transmitter
+            LOGGER_INFO("simulation", "Skipping transmitter " + transmitters[txIndex]->getName() +
+                                          ": " + std::string(e.what()));
+        }
+    }
+
+    return result;
 }
