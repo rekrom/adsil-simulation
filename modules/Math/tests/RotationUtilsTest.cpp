@@ -203,6 +203,77 @@ void test_eulerToRotationMatrix_identity()
     std::cout << "[PASS] EulerToRotationMatrix identity test\n";
 }
 
+void test_rotateAroundAxis_identity()
+{
+    Vector v(1.0F, 2.0F, 3.0F);
+    Vector axis(0.0F, 1.0F, 0.0F);
+    float angle = 0.0F;
+    Vector rotated = rotateAroundAxis(v, axis, angle);
+    assert(std::abs(rotated.x() - v.x()) < EPSILON_F);
+    assert(std::abs(rotated.y() - v.y()) < EPSILON_F);
+    assert(std::abs(rotated.z() - v.z()) < EPSILON_F);
+    std::cout << "[PASS] rotateAroundAxis identity test\n";
+}
+
+void test_rotateAroundAxis_axis_invariant()
+{
+    // Rotating the axis vector about itself should yield the same vector
+    Vector axis(0.0F, 0.0F, 1.0F);
+    Vector rotated = rotateAroundAxis(axis, axis, HALF_PI_F);
+    assert(std::abs(rotated.x() - axis.x()) < EPSILON_F);
+    assert(std::abs(rotated.y() - axis.y()) < EPSILON_F);
+    assert(std::abs(rotated.z() - axis.z()) < EPSILON_F);
+    std::cout << "[PASS] rotateAroundAxis axis invariant test\n";
+}
+
+void test_rotateAroundAxis_quarter_turn_z()
+{
+    // (1,0,0) rotated 90° about +Z becomes (0,1,0)
+    Vector v(1.0F, 0.0F, 0.0F);
+    Vector axis(0.0F, 0.0F, 1.0F);
+    Vector rotated = rotateAroundAxis(v, axis, HALF_PI_F);
+    assert(std::abs(rotated.x() - 0.0F) < EPSILON_F);
+    assert(std::abs(rotated.y() - 1.0F) < EPSILON_F);
+    assert(std::abs(rotated.z() - 0.0F) < EPSILON_F);
+    std::cout << "[PASS] rotateAroundAxis quarter turn Z test\n";
+}
+
+void test_rotateAroundAxis_quarter_turn_x()
+{
+    // (0,1,0) rotated 90° about +X becomes (0,0,1)
+    Vector v(0.0F, 1.0F, 0.0F);
+    Vector axis(1.0F, 0.0F, 0.0F);
+    Vector rotated = rotateAroundAxis(v, axis, HALF_PI_F);
+    assert(std::abs(rotated.x() - 0.0F) < EPSILON_F);
+    assert(std::abs(rotated.y() - 0.0F) < EPSILON_F);
+    assert(std::abs(rotated.z() - 1.0F) < EPSILON_F);
+    std::cout << "[PASS] rotateAroundAxis quarter turn X test\n";
+}
+
+void test_rotateAroundAxis_full_rotation()
+{
+    // 360° rotation should return original vector
+    Vector v(0.3F, -1.2F, 4.5F);
+    Vector axis(2.0F, 3.0F, 4.0F); // intentionally not unit length
+    Vector rotated = rotateAroundAxis(v, axis, TWO_PI_F);
+    assert(std::abs(rotated.x() - v.x()) < 1e-5F);
+    assert(std::abs(rotated.y() - v.y()) < 1e-5F);
+    assert(std::abs(rotated.z() - v.z()) < 1e-5F);
+    std::cout << "[PASS] rotateAroundAxis full rotation test\n";
+}
+
+void test_rotateAroundAxis_magnitude_preserved()
+{
+    Vector v(2.0F, -3.5F, 1.25F);
+    Vector axis(0.0F, 1.0F, 1.0F);
+    float angle = 1.2345F;
+    float mag_before = v.magnitude();
+    Vector rotated = rotateAroundAxis(v, axis, angle);
+    float mag_after = rotated.magnitude();
+    assert(std::abs(mag_before - mag_after) < 1e-5F);
+    std::cout << "[PASS] rotateAroundAxis magnitude preservation test\n";
+}
+
 int main()
 {
     test_deg2rad_conversion();
@@ -214,6 +285,12 @@ int main()
     test_eulerFromDirection_basic();
     test_eulerFromDirection_consistency();
     test_eulerToRotationMatrix_identity();
+    test_rotateAroundAxis_identity();
+    test_rotateAroundAxis_axis_invariant();
+    test_rotateAroundAxis_quarter_turn_z();
+    test_rotateAroundAxis_quarter_turn_x();
+    test_rotateAroundAxis_full_rotation();
+    test_rotateAroundAxis_magnitude_preserved();
 
     std::cout << "\n=== All RotationUtils tests passed! ===\n";
     return 0;
