@@ -276,20 +276,16 @@ namespace simulation
         if (!frameBuffer_ || !frameBuffer_->isPlaying())
             return; // silent fast path (avoid log spam)
 
-        LOGGER_INFO("simulation", "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()));
-        LOGGER_INFO("simulation", "Point Cloud Frame Index: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
+        // Single concise INFO log before solve for traceability (timestamp + frame)
+        const auto ts = frameBuffer_->getCurrentTimestamp();
+        const auto frameIdx = frameBuffer_->getCurrentFrameIndex();
+        const auto totalFrames = frameBuffer_->getTotalFrameCount();
+        LOGGER_INFO("simulation", std::string("solve_start ts=") + std::to_string(ts) +
+                                      " frame=" + std::to_string(frameIdx) + "/" + std::to_string(totalFrames));
 
         try
         {
             TIMER_SCOPE("SignalProcessing_Total");
-            // Sample timestamp logging
-            static int frameSinceLog = 0;
-            if (++frameSinceLog >= kTimestampLogSample)
-            {
-                frameSinceLog = 0;
-                LOGGER_DEBUG(LogChannel, "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()) +
-                                             ", Frame: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
-            }
 
             std::shared_ptr<math::PointCloud> pointCloud;
             core::Timer::measure("SignalSolver_solve", [&]()
