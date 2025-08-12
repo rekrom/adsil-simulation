@@ -13,7 +13,11 @@ namespace math
 
     void PointCloud::addPoints(const std::vector<math::Point> &newPoints)
     {
-        points_.insert(points_.end(), newPoints.begin(), newPoints.end());
+        if (!newPoints.empty())
+        {
+            points_.reserve(points_.size() + newPoints.size());
+            points_.insert(points_.end(), newPoints.begin(), newPoints.end());
+        }
     }
 
     const std::vector<math::Point> &PointCloud::getPoints() const
