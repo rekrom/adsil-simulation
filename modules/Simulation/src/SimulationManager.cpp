@@ -81,7 +81,7 @@ namespace simulation
         inputManager_ = std::make_shared<simulation::InputManager>(viewer_->getInputManager());
 
         // Initialize the signal solver (sensor signal processing, etc.)
-        signalSolver_ = std::make_shared<SignalSolver>(scene_);
+        signalSolver_ = std::make_shared<simulation::SignalSolver>(scene_);
 
         // Register this manager as a frame observer
         frameBuffer_->addFrameObserver(shared_from_this());

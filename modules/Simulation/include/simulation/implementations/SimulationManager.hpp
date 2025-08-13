@@ -12,6 +12,7 @@
 #include <simulation/implementations/FrameBufferManager.hpp>
 #include <adapter/AdapterManager.hpp>
 #include <simulation/SignalSolver.hpp>
+#include <simulation/interfaces/ISolver.hpp>
 #include <core/Logger.hpp>
 #include <viewer/entities/PointCloudEntityObserver.hpp>
 #include <simulation/interfaces/IFrameObserver.hpp>
@@ -67,7 +68,7 @@ namespace simulation
         std::shared_ptr<simulation::InputManager> inputManager_;
         std::unique_ptr<adapter::AdapterManager> adapters_;
         std::shared_ptr<SimulationScene> scene_;
-        std::shared_ptr<SignalSolver> signalSolver_;
+        std::shared_ptr<simulation::ISolver> signalSolver_;
 
         // Entities
         std::shared_ptr<viewer::PointCloudEntity> pcEntity_;
