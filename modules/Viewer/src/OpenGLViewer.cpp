@@ -26,7 +26,6 @@ namespace viewer
 
     OpenGLViewer::~OpenGLViewer()
     {
-        LOGGER_INFO("OpenGLViewer destructor called");
     }
 
     void OpenGLViewer::initGraphics()
