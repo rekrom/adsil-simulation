@@ -6,8 +6,8 @@
 #include <stdexcept>
 
 // Fallback base resource directory if environment variable is not set
-#ifndef FALLBACK_RESOURCE_DIR
-#define FALLBACK_RESOURCE_DIR "/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources"
+#ifndef ADSIL_RESOURCE_PATH_DEFAULT
+#define ADSIL_RESOURCE_PATH_DEFAULT ROOT_PATH_DEFAULT
 #endif
 
 namespace simulation
@@ -22,6 +22,8 @@ namespace simulation
     SimulationManager::SimulationManager()
         : config_(SimulationConfig::createDefault())
     {
+        // print out the base path
+        LOGGER_INFO(LogChannel, "Base path: " + config_->getResourceConfig().basePath);
     }
 
     SimulationManager::SimulationManager(std::shared_ptr<SimulationConfig> config)
@@ -32,6 +34,7 @@ namespace simulation
         if (!config_)
         {
             config_ = SimulationConfig::createDefault();
+            LOGGER_INFO(LogChannel, "No configuration provided, using default.");
         }
     }
 
@@ -55,7 +58,6 @@ namespace simulation
 
     void SimulationManager::initializeComponents()
     {
-        const auto &resourceConfig = config_->getResourceConfig();
         const auto &frameConfig = config_->getFrameConfig();
 
         // Initialize adapter system
@@ -63,7 +65,7 @@ namespace simulation
 
         // Load the simulation scene (includes car, devices, etc.)
         scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(
-            core::ResourceLocator::getJsonPath(resourceConfig.sceneFile));
+            core::ResourceLocator::getJsonPath("scene.json"));
 
         // Initialize frame buffer with configured window size
         frameBuffer_ = std::make_shared<FrameBufferManager>(frameConfig.bufferWindowSize);
@@ -375,12 +377,11 @@ namespace simulation
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(LogChannel, std::string("Fatal error in simulation: ") + e.what());
             if (viewer_)
             {
                 viewer_->cleanup();
             }
-            throw;
+            throw std::runtime_error("SimulationManager error: " + std::string(e.what()));
         }
     }
 
