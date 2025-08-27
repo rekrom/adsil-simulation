@@ -273,9 +273,10 @@ namespace simulation
         if (!signalSolver_ || !detectedPointCloudEntity_)
             return;
 
-        if (!frameBuffer_ || !frameBuffer_->isPlaying())
+        if (!frameBuffer_ || !hasFrameChanged_)
             return; // silent fast path (avoid log spam)
 
+        hasFrameChanged_ = false;
         // Single concise INFO log before solve for traceability (timestamp + frame)
         const auto ts = frameBuffer_->getCurrentTimestamp();
         const auto frameIdx = frameBuffer_->getCurrentFrameIndex();
@@ -399,6 +400,7 @@ namespace simulation
                 LOGGER_WARN(LogChannel, "Point cloud entity is null, cannot update external point cloud");
                 return;
             }
+            hasFrameChanged_ = true;
             pcEntity_->setPointCloud(frame->cloud);
 
             // Notify the scene about the new external point cloud

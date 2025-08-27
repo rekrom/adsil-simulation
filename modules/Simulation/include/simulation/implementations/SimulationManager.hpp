@@ -65,6 +65,7 @@ namespace simulation
         // Core components
         std::unique_ptr<viewer::OpenGLViewer> viewer_;
         std::shared_ptr<FrameBufferManager> frameBuffer_;
+        bool hasFrameChanged_ = false;
         std::shared_ptr<simulation::InputManager> inputManager_;
         std::unique_ptr<adapter::AdapterManager> adapters_;
         std::shared_ptr<SimulationScene> scene_;
