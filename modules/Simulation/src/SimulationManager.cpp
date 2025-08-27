@@ -377,12 +377,11 @@ namespace simulation
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(LogChannel, std::string("Fatal error in simulation: ") + e.what());
             if (viewer_)
             {
                 viewer_->cleanup();
             }
-            throw;
+            throw std::runtime_error("SimulationManager error: " + std::string(e.what()));
         }
     }
 
