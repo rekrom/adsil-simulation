@@ -48,8 +48,7 @@ namespace simulation
         // Resource configuration
         struct ResourceConfig
         {
-            std::string basePath = "/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources";
-            std::string sceneFile = "scene.json";
+            std::string basePath = "/";
         };
 
         // Static factory methods

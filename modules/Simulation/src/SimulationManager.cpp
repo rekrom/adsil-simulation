@@ -58,7 +58,6 @@ namespace simulation
 
     void SimulationManager::initializeComponents()
     {
-        const auto &resourceConfig = config_->getResourceConfig();
         const auto &frameConfig = config_->getFrameConfig();
 
         // Initialize adapter system
@@ -66,7 +65,7 @@ namespace simulation
 
         // Load the simulation scene (includes car, devices, etc.)
         scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(
-            core::ResourceLocator::getJsonPath(resourceConfig.sceneFile));
+            core::ResourceLocator::getJsonPath("scene.json"));
 
         // Initialize frame buffer with configured window size
         frameBuffer_ = std::make_shared<FrameBufferManager>(frameConfig.bufferWindowSize);
