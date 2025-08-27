@@ -6,8 +6,8 @@
 #include <stdexcept>
 
 // Fallback base resource directory if environment variable is not set
-#ifndef FALLBACK_RESOURCE_DIR
-#define FALLBACK_RESOURCE_DIR "/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources"
+#ifndef ADSIL_RESOURCE_PATH_DEFAULT
+#define ADSIL_RESOURCE_PATH_DEFAULT ROOT_PATH_DEFAULT
 #endif
 
 namespace simulation
