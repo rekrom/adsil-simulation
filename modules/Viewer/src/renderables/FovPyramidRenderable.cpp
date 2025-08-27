@@ -95,7 +95,7 @@ namespace viewer
         if (!device_)
             return;
 
-        if (dirty_)
+        // if (dirty_)
         {
             updateVertices();
             dirty_ = false;
