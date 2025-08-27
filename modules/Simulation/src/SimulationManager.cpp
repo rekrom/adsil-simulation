@@ -22,6 +22,8 @@ namespace simulation
     SimulationManager::SimulationManager()
         : config_(SimulationConfig::createDefault())
     {
+        // print out the base path
+        LOGGER_INFO(LogChannel, "Base path: " + config_->getResourceConfig().basePath);
     }
 
     SimulationManager::SimulationManager(std::shared_ptr<SimulationConfig> config)
@@ -32,6 +34,7 @@ namespace simulation
         if (!config_)
         {
             config_ = SimulationConfig::createDefault();
+            LOGGER_INFO(LogChannel, "No configuration provided, using default.");
         }
     }
 
