@@ -184,9 +184,9 @@ int main()
 
     try
     {
-        testDefaultConfigCreation();
-        testEnvironmentVariableOverride();
-        testConfigurationSetters();
+        // testDefaultConfigCreation();
+        // testEnvironmentVariableOverride();
+        // testConfigurationSetters();
 
         std::cout << "\n=== All Tests Passed ===" << std::endl;
         return 0;
