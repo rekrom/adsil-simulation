@@ -6,6 +6,14 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Default resource path (relative to repo root)
+set(ADSIL_RESOURCE_PATH_DEFAULT "${CMAKE_SOURCE_DIR}/resources" CACHE PATH "Default path to resources")
+set(ROOT_PATH_DEFAULT "${CMAKE_SOURCE_DIR}" CACHE PATH "Default path to root folder")
+
+# Pass it into C++ as a definition
+add_compile_definitions(ADSIL_RESOURCE_PATH_DEFAULT="${ADSIL_RESOURCE_PATH_DEFAULT}")
+add_compile_definitions(ROOT_PATH_DEFAULT="${ROOT_PATH_DEFAULT}")
+
 # External dependencies
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
