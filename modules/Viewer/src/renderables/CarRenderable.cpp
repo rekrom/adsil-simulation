@@ -253,8 +253,6 @@ namespace viewer
         glEnableVertexAttribArray(1);
 
         glBindVertexArray(0);
-
-        LOGGER_INFO("CALLED createBuffers() in CarRenderable");
     }
 
     void CarRenderable::createShader()
