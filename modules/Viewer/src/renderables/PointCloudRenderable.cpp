@@ -80,7 +80,7 @@ namespace viewer
                 vertices_.push_back(pt.y());
                 vertices_.push_back(pt.z());
             }
-            glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_DYNAMIC_DRAW);
         }
         else
         {
@@ -98,6 +98,7 @@ namespace viewer
             return;
         }
 
+        // Rebuild vertex array in CPU memory
         vertices_.clear();
         vertices_.reserve(pointCloud_->size() * 3);
         for (const auto &pt : pointCloud_->getPoints())
@@ -108,7 +109,18 @@ namespace viewer
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_DYNAMIC_DRAW);
+        // If capacity changed, reallocate; else use sub-data for speed
+        GLsizei newSize = static_cast<GLsizei>(vertices_.size() * sizeof(float));
+        GLint currentSize = 0;
+        glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &currentSize);
+        if (currentSize != newSize)
+        {
+            glBufferData(GL_ARRAY_BUFFER, newSize, vertices_.data(), GL_DYNAMIC_DRAW);
+        }
+        else if (newSize > 0)
+        {
+            glBufferSubData(GL_ARRAY_BUFFER, 0, newSize, vertices_.data());
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         dirty_ = false;

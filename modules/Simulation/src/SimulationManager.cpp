@@ -81,7 +81,7 @@ namespace simulation
         inputManager_ = std::make_shared<simulation::InputManager>(viewer_->getInputManager());
 
         // Initialize the signal solver (sensor signal processing, etc.)
-        signalSolver_ = std::make_shared<SignalSolver>(scene_);
+        signalSolver_ = std::make_shared<simulation::SignalSolver>(scene_);
 
         // Register this manager as a frame observer
         frameBuffer_->addFrameObserver(shared_from_this());
@@ -273,23 +273,20 @@ namespace simulation
         if (!signalSolver_ || !detectedPointCloudEntity_)
             return;
 
-        if (!frameBuffer_ || !frameBuffer_->isPlaying())
+        if (!frameBuffer_ || !hasFrameChanged_)
             return; // silent fast path (avoid log spam)
 
-        LOGGER_INFO("simulation", "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()));
-        LOGGER_INFO("simulation", "Point Cloud Frame Index: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
+        hasFrameChanged_ = false;
+        // Single concise INFO log before solve for traceability (timestamp + frame)
+        const auto ts = frameBuffer_->getCurrentTimestamp();
+        const auto frameIdx = frameBuffer_->getCurrentFrameIndex();
+        const auto totalFrames = frameBuffer_->getTotalFrameCount();
+        LOGGER_INFO("simulation", std::string("solve_start ts=") + std::to_string(ts) +
+                                      " frame=" + std::to_string(frameIdx) + "/" + std::to_string(totalFrames));
 
         try
         {
             TIMER_SCOPE("SignalProcessing_Total");
-            // Sample timestamp logging
-            static int frameSinceLog = 0;
-            if (++frameSinceLog >= kTimestampLogSample)
-            {
-                frameSinceLog = 0;
-                LOGGER_DEBUG(LogChannel, "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()) +
-                                             ", Frame: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
-            }
 
             std::shared_ptr<math::PointCloud> pointCloud;
             core::Timer::measure("SignalSolver_solve", [&]()
@@ -403,6 +400,7 @@ namespace simulation
                 LOGGER_WARN(LogChannel, "Point cloud entity is null, cannot update external point cloud");
                 return;
             }
+            hasFrameChanged_ = true;
             pcEntity_->setPointCloud(frame->cloud);
 
             // Notify the scene about the new external point cloud

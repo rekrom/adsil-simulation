@@ -57,4 +57,9 @@ private:
 
     // Internal helper
     std::shared_ptr<math::PointCloud> mergedShapePointCloud(int quality) const;
+
+    // Cached merged cloud to avoid recomputation when scene is static
+    mutable std::shared_ptr<math::PointCloud> mergedCache_;
+    mutable bool mergedCacheDirty_ = true;
+    mutable int lastQuality_ = -1;
 };
