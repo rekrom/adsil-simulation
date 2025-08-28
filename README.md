@@ -6,7 +6,7 @@
 [![CMake](https://img.shields.io/badge/CMake-3.16+-green.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-ADSIL Analyzer is a comprehensive C++17 simulation platform for analyzing sensor-based geometries and signal interactions. It provides a modular architecture with enhanced logging, real-time visualization, and extensive JSON-based configuration support for automotive and sensor simulation scenarios.
+ADSIL Analyzer is a comprehensive C++20 simulation platform for analyzing sensor-based geometries and signal interactions. It provides a modular architecture with enhanced logging, real-time visualization, and extensive JSON-based configuration support for automotive and sensor simulation scenarios.
 
 ## 🚀 Features
 
@@ -56,7 +56,7 @@ adsil_analyzer_cpp/
 
 ### Prerequisites
 
-- **C++17** compatible compiler (GCC 8+, Clang 7+, MSVC 2019+)
+- **C++20** compatible compiler (GCC 8+, Clang 7+, MSVC 2019+)
 - **CMake** ≥ 3.15
 - **OpenGL** support (driver-dependent)
 - **System Dependencies**:
@@ -74,15 +74,36 @@ cd adsil-simulation
 # Create build directory
 mkdir build && cd build
 
-# Configure with CMake
-cmake .. -DCMAKE_BUILD_TYPE=Release
+# Configure with CMake (Release is default if not specified)
+cmake ..
 
 # Build (parallel compilation)
 make -j$(nproc)  # Linux/macOS
 # cmake --build . --parallel  # Cross-platform alternative
 
-# Run the application
-./bin/adsil_analyzer
+# Install into a local directory (recommended)
+cmake --install . --prefix ../install_dir
+
+# Run the application using the wrapper script
+../install_dir/run_adsil.sh
+```
+
+### Environment Variables
+
+The application requires the `ADSIL_RESOURCE_PATH` environment variable, which points to the `resources/` directory.
+The provided `run_adsil.sh` script automatically sets this to the correct location.
+
+- **Recommended (wrapper script)**
+
+```bash
+../install_dir/run_adsil.sh
+```
+
+- **Manual run (if you don’t want the wrapper script):**
+
+```bash
+export ADSIL_RESOURCE_PATH=/absolute/path/to/resources
+../install_dir/bin/adsil_analyzer
 ```
 
 ### Build Options
