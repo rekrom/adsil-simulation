@@ -81,8 +81,7 @@ endif()
 install(DIRECTORY resources/ DESTINATION resources
     PATTERN "logs" EXCLUDE
     PATTERN "logs/*" EXCLUDE
-    PATTERN "extracted_frames_json" EXCLUDE
-    PATTERN "extracted_frames_json/*" EXCLUDE)
+)
 
 # Wrapper run script (no substitution needed) installed at package root
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/cmake/run_adsil.sh.in DESTINATION . RENAME run_adsil.sh)
@@ -94,7 +93,7 @@ set(CPACK_PACKAGE_VENDOR "rekrom")
 set(CPACK_GENERATOR "TGZ")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-linux-x86_64")
 set(CPACK_STRIP_FILES TRUE)
-set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON)
 set(CPACK_PACKAGE_CONTACT "")
 include(CPack)
 
