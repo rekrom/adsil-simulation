@@ -114,9 +114,10 @@ Environment variable `ADSIL_RESOURCE_DIR` is exported by the wrapper for runtime
 ```bash
 # Clone the repository
 git clone https://github.com/rekrom/adsil-simulation.git
-git submodule init
-git submodule refresh
 cd adsil-simulation
+
+# Initialize submodules (required for external dependencies)
+git submodule update --init --recursive
 
 # Create build directory
 mkdir build && cd build
