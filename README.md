@@ -237,9 +237,11 @@ make
 ctest
 
 # Run specific module tests
-./bin/test_CoreTest
-./bin/test_GeometryTest
-./bin/test_AdapterTest
+./bin/tests/${ModuleName}/${ModuleTestName}
+
+./bin/tests/Adapter/test_AdapterManagerTest
+./bin/tests/Math/test_PointCloudTest
+
 ```
 
 ## 📊 Code Coverage
@@ -261,7 +263,7 @@ Test coverage is automatically tracked and reported via [Codecov](https://codeco
 sudo apt-get install lcov gcovr
 
 # Generate coverage report locally
-./test_coverage_locally.sh
+./tools/test_coverage_locally.sh
 
 # View HTML coverage report
 open coverage/html/index.html
