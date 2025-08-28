@@ -106,6 +106,59 @@ export ADSIL_RESOURCE_PATH=/absolute/path/to/resources
 ../install_dir/bin/adsil_analyzer
 ```
 
+## 🐳 Running with Docker
+
+ADSIL Analyzer can also be built and run inside a clean Docker environment. This is useful for testing portability across Linux distributions or running the application without installing all dependencies on your host system.
+
+### Build the Docker image
+
+From the project root:
+
+```bash
+docker build -t adsil_analyzer .
+```
+
+### Run the application (with GUI support)
+
+On Linux with X11:
+
+```bash
+# Allow local docker containers to connect to your X server
+xhost +local:docker
+
+# Run the container, forwarding display for OpenGL/ImGui
+docker run --rm -it \
+    --env DISPLAY=$DISPLAY \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    adsil_analyzer
+```
+
+The provided `run_adsil.sh` wrapper script is executed by default, and the environment variable `ADSIL_RESOURCE_PATH` is set automatically.
+
+> ⚠️ If you’re using Wayland (default on Ubuntu 22.04+), ensure XWayland is enabled or configure Docker with Wayland socket forwarding.
+
+### Logs
+
+Log files are written into `/install/resources/logs` inside the container. If you want to persist logs on the host, you can mount a local folder:
+
+```bash
+docker run --rm -it \
+    --env DISPLAY=$DISPLAY \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    --volume $(pwd)/logs:/install/resources/logs \
+    adsil_analyzer
+```
+
+### Headless / Testing mode
+
+To run unit tests inside Docker without requiring a display:
+
+```bash
+docker build -t adsil_analyzer_test --target test .
+```
+
+This will configure the project with `-DBUILD_TESTING=ON` and run `ctest` inside the container.
+
 ### Build Options
 
 ```bash
