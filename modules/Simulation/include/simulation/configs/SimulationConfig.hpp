@@ -32,7 +32,7 @@ namespace simulation
         // Point cloud configuration
         struct PointCloudConfig
         {
-            float pointSize = 2.0f;
+            float pointSize = 10.0f;
             float alpha = 1.0f;
             glm::vec3 detectedColor = glm::vec3(110.0f / 255.0f, 1.0f, 160.0f / 255.0f);
             std::string outsideName = "PointCloudEntity - Outside Point Cloud";
