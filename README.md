@@ -64,6 +64,51 @@ adsil_analyzer_cpp/
   - macOS: `brew install glfw glm`
   - Windows: Dependencies included via vcpkg or manual installation
 
+### Build Options
+
+```bash
+# Debug build with full logging
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+
+# Release build with optimizations
+cmake .. -DCMAKE_BUILD_TYPE=Release
+
+# Build with tests
+cmake .. -DBUILD_TESTING=ON
+
+# Run tests
+ctest --output-on-failure
+```
+
+### Binary Distribution (No Source Code)
+
+To produce a tar.gz package containing only the stripped executable and resources (no source code):
+
+```bash
+mkdir -p build && cd build
+cmake .. -DADSIL_DISTRIBUTION=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build . --parallel
+cpack  # generates adsil_analyzer-<version>-linux-x86_64.tar.gz
+```
+
+The archive layout:
+
+```
+bin/adsil_analyzer
+resources/...
+run_adsil.sh
+```
+
+Users run:
+
+```bash
+tar xf adsil_analyzer-<version>-linux-x86_64.tar.gz
+cd adsil_analyzer
+./run_adsil.sh
+```
+
+Environment variable `ADSIL_RESOURCE_DIR` is exported by the wrapper for runtime resource loading.
+
 ### Quick Start
 
 ```bash
@@ -158,51 +203,6 @@ docker build -t adsil_analyzer_test --target test .
 ```
 
 This will configure the project with `-DBUILD_TESTING=ON` and run `ctest` inside the container.
-
-### Build Options
-
-```bash
-# Debug build with full logging
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-
-# Release build with optimizations
-cmake .. -DCMAKE_BUILD_TYPE=Release
-
-# Build with tests
-cmake .. -DBUILD_TESTING=ON
-
-# Run tests
-ctest --output-on-failure
-```
-
-### Binary Distribution (No Source Code)
-
-To produce a tar.gz package containing only the stripped executable and resources (no source code):
-
-```bash
-mkdir -p build && cd build
-cmake .. -DADSIL_DISTRIBUTION=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build . --parallel
-cpack  # generates adsil_analyzer-<version>-linux-x86_64.tar.gz
-```
-
-The archive layout:
-
-```
-bin/adsil_analyzer
-resources/...
-run_adsil.sh
-```
-
-Users run:
-
-```bash
-tar xf adsil_analyzer-<version>-linux-x86_64.tar.gz
-cd adsil_analyzer
-./run_adsil.sh
-```
-
-Environment variable `ADSIL_RESOURCE_DIR` is exported by the wrapper for runtime resource loading.
 
 ---
 
