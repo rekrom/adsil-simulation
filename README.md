@@ -348,3 +348,15 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 - **Memory Usage**: Zero allocations per log call
 - **Build Time**: Parallel compilation support
 - **Test Coverage**: Comprehensive unit testing across all modules
+
+## 🎮 How to Use
+
+After launching the application (via `run_adsil.sh` or directly from the binary), you can interact with the simulation using the following controls:
+
+| Key(s)                   | Action                                  |
+| ------------------------ | --------------------------------------- |
+| **W / A / S / D**        | Move the car forward, left, back, right |
+| **Arrow Keys**           | Rotate / move the camera view           |
+| **Numpad 8 / 2 / 4 / 6** | Adjust camera position/orientation      |
+| **+ / -**                | Change the simulation frame             |
+| **Spacebar**             | Play / Pause the current frame          |
