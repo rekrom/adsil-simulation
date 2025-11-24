@@ -11,8 +11,8 @@ namespace adapter
     {
         nlohmann::json j;
         j["timestamp"] = frame->timestamp;
-        j["imu"]["linear_acceleration"] = frame->linearAcceleration;
-        j["imu"]["angular_velocity"] = frame->angularVelocity;
+        // j["imu"]["linear_acceleration"] = frame->linearAcceleration;
+        // j["imu"]["angular_velocity"] = frame->angularVelocity;
 
         j["pointcloud"] = nlohmann::json::array();
         for (const auto &pt : frame->cloud->getPoints())
@@ -35,8 +35,8 @@ namespace adapter
         std::shared_ptr<simulation::Frame> frame = std::make_shared<simulation::Frame>();
         frame->cloud = cloud;
         frame->timestamp = j.at("timestamp").get<double>();
-        frame->linearAcceleration = j.at("imu").at("linear_acceleration").get<std::vector<float>>();
-        frame->angularVelocity = j.at("imu").at("angular_velocity").get<std::vector<float>>();
+        // frame->linearAcceleration = j.at("imu").at("linear_acceleration").get<std::vector<float>>();
+        // frame->angularVelocity = j.at("imu").at("angular_velocity").get<std::vector<float>>();
         return frame;
     }
 };
