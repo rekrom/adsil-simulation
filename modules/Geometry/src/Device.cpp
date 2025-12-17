@@ -43,9 +43,8 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
     math::Point p3 = newPoint3->getGlobalTransform().getPosition();
     math::Point p4 = newPoint4->getGlobalTransform().getPosition();
 
-    Point device_origin = this->getTransformNode()->getGlobalTransform().getPosition();
-
-    Vector device_front = this->getTransformNode()->getGlobalTransform().get3DDirectionVector();
+    math::Point device_origin = this->getTransformNode()->getGlobalTransform().getPosition();
+    math::Vector device_front = this->getTransformNode()->getGlobalTransform().get3DDirectionVector();
 
     math::Vector v1 = p1.toVectorFrom(device_origin);
     math::Vector v2 = p2.toVectorFrom(device_origin);
