@@ -38,6 +38,9 @@ namespace math
         Point operator+(const Point &other) const;
         Point operator-(const Point &other) const;
 
+        Point operator*(float scalar) const;
+        Point operator/(float scalar) const;
+
         [[nodiscard]] std::string toString() const;
 
     private:

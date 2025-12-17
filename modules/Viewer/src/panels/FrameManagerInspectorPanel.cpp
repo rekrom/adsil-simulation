@@ -33,12 +33,12 @@ namespace viewer::imgui
 
     void FrameManagerInspectorPanel::drawNavigationControls(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
     {
-        if (ImGui::Button("⏪ Step Backward"))
+        if (ImGui::Button("<< Step Backward"))
         {
             frameBuffer->stepBackward();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Step Forward ⏩"))
+        if (ImGui::Button("Step Forward >>"))
         {
             frameBuffer->stepForward();
         }
@@ -47,12 +47,12 @@ namespace viewer::imgui
     void FrameManagerInspectorPanel::drawPlaybackControls(const std::shared_ptr<simulation::FrameBufferManager> &frameBuffer)
     {
         ImGui::Spacing();
-        if (ImGui::Button("▶ Play"))
+        if (ImGui::Button("Play"))
         {
             frameBuffer->play();
         }
         ImGui::SameLine();
-        if (ImGui::Button("⏸ Pause"))
+        if (ImGui::Button("Pause"))
         {
             frameBuffer->pause();
         }

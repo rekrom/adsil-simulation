@@ -43,9 +43,8 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
     math::Point p3 = newPoint3->getGlobalTransform().getPosition();
     math::Point p4 = newPoint4->getGlobalTransform().getPosition();
 
-    Point device_origin = this->getTransformNode()->getGlobalTransform().getPosition();
-
-    Vector device_front = this->getTransformNode()->getGlobalTransform().get3DDirectionVector();
+    math::Point device_origin = this->getTransformNode()->getGlobalTransform().getPosition();
+    math::Vector device_front = this->getTransformNode()->getGlobalTransform().get3DDirectionVector();
 
     math::Vector v1 = p1.toVectorFrom(device_origin);
     math::Vector v2 = p2.toVectorFrom(device_origin);
@@ -64,6 +63,19 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
         if (!cornerPoint1 || !cornerPoint2 || !cornerPoint3 || !cornerPoint4)
         {
             continue; // Skip points that do not intersect with the plane defined by the FOV corners
+        }
+
+        // Calculate centroid by averaging coordinates directly
+        math::Point centerP(
+            (cornerPoint1->x() + cornerPoint2->x() + cornerPoint3->x() + cornerPoint4->x()) / 4.0f,
+            (cornerPoint1->y() + cornerPoint2->y() + cornerPoint3->y() + cornerPoint4->y()) / 4.0f,
+            (cornerPoint1->z() + cornerPoint2->z() + cornerPoint3->z() + cornerPoint4->z()) / 4.0f);
+
+        auto vector2Plane = centerP.toVectorFrom(device_origin);
+        // Check if point is behind device: no need to normalize for sign check
+        if (vector2Plane.dot(device_front) < 0.0f)
+        {
+            continue; // Point is behind the device
         }
 
         auto isInConvex = math::helper::isPointInConvexQuad(point, cornerPoint1.value(), cornerPoint2.value(), cornerPoint3.value(), cornerPoint4.value());
@@ -129,7 +141,8 @@ void Device::setRange(float newRange)
 std::string Device::toString() const
 {
     std::ostringstream oss;
-    oss << "Device(origin=" << transformNode_->getGlobalTransform().getPosition().toString()
+    oss << "Name: " << name_ << ", "
+        << "Device(origin=" << transformNode_->getGlobalTransform().getPosition().toString()
         << ", direction=" << transformNode_->getGlobalTransform().get3DDirectionVector().toString()
         << ", vFOV=" << math::RotationUtils::rad2deg(vertical_fov_rad_)
         << ", hFOV=" << math::RotationUtils::rad2deg(horizontal_fov_rad_) << ")";
