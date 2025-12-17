@@ -129,7 +129,8 @@ void Device::setRange(float newRange)
 std::string Device::toString() const
 {
     std::ostringstream oss;
-    oss << "Device(origin=" << transformNode_->getGlobalTransform().getPosition().toString()
+    oss << "Name: " << name_ << ", "
+        << "Device(origin=" << transformNode_->getGlobalTransform().getPosition().toString()
         << ", direction=" << transformNode_->getGlobalTransform().get3DDirectionVector().toString()
         << ", vFOV=" << math::RotationUtils::rad2deg(vertical_fov_rad_)
         << ", hFOV=" << math::RotationUtils::rad2deg(horizontal_fov_rad_) << ")";
