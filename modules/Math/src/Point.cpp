@@ -52,4 +52,14 @@ namespace math
     {
         return {x_ - other.x_, y_ - other.y_, z_ - other.z_};
     }
+
+    Point Point::operator*(float scalar) const
+    {
+        return {x_ * scalar, y_ * scalar, z_ * scalar};
+    }
+
+    Point Point::operator/(float scalar) const
+    {
+        return {x_ / scalar, y_ / scalar, z_ / scalar};
+    }
 }

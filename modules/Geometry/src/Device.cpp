@@ -65,6 +65,19 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
             continue; // Skip points that do not intersect with the plane defined by the FOV corners
         }
 
+        // Calculate centroid by averaging coordinates directly
+        math::Point centerP(
+            (cornerPoint1->x() + cornerPoint2->x() + cornerPoint3->x() + cornerPoint4->x()) / 4.0f,
+            (cornerPoint1->y() + cornerPoint2->y() + cornerPoint3->y() + cornerPoint4->y()) / 4.0f,
+            (cornerPoint1->z() + cornerPoint2->z() + cornerPoint3->z() + cornerPoint4->z()) / 4.0f);
+
+        auto vector2Plane = centerP.toVectorFrom(device_origin);
+        // Check if point is behind device: no need to normalize for sign check
+        if (vector2Plane.dot(device_front) < 0.0f)
+        {
+            continue; // Point is behind the device
+        }
+
         auto isInConvex = math::helper::isPointInConvexQuad(point, cornerPoint1.value(), cornerPoint2.value(), cornerPoint3.value(), cornerPoint4.value());
         if (isInConvex)
         {
