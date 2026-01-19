@@ -121,37 +121,47 @@ target_link_libraries(Core PUBLIC Geometry Spatial Math)
 - Core module depends on Geometry and Spatial, but those depend on Math/Core
 - Can lead to circular dependency issues
 
-### 7. Missing RAII for OpenGL Resources
+### 7. ~~Missing RAII for OpenGL Resources~~ ✅ FIXED
 
 ```cpp
-// Renderable.hpp
+// Before: Raw handles
 protected:
     GLuint vao_ = 0;
     GLuint vbo_ = 0;
-    GLuint ebo_ = 0;
-    GLuint shader_ = 0;
+
+// After: RAII wrappers
+protected:
+    std::optional<gl::VertexArray> vao_;
+    std::optional<gl::Buffer> vbo_;
 ```
 
-- Raw OpenGL handles without RAII wrappers
-- Manual `cleanup()` calls are error-prone
+- **Fixed:** Added `GLResources.hpp` with RAII wrappers (PR #61 - feature/opengl-raii)
+- All 8 renderables now use automatic resource cleanup
 
-### 8. Thread Safety Concerns
+### 8. ~~Thread Safety Concerns~~ ✅ DOCUMENTED
 
 - `FrameBufferManager` and observer patterns may have race conditions
-- `mutable` fields in `SimulationScene` for caching without synchronization:
+- `mutable` fields in `SimulationScene` and `TransformNode` for caching without synchronization
+- **Resolution:** Added documentation noting these classes are NOT thread-safe (single-threaded design)
+- Application is single-threaded (only Logger uses mutexes), so mutexes would add unnecessary overhead
+
+### 9. ~~Platform Portability~~ ✅ FIXED
 
 ```cpp
-mutable std::shared_ptr<math::PointCloud> mergedCache_;
-mutable bool mergedCacheDirty_ = true;
+// Before: Linux-only
+#include <syslog.h>
+
+// After: Cross-platform with guards
+#if defined(__linux__) || defined(__APPLE__)
+    #include <syslog.h>
+    #define LOGGER_HAS_SYSLOG 1
+#else
+    #define LOGGER_HAS_SYSLOG 0
+#endif
 ```
 
-### 9. Platform Portability
-
-```cpp
-#include <syslog.h>  // Logger.hpp - Not available on Windows
-```
-
-- Linux-specific headers without proper guards
+- **Fixed:** Added preprocessor guards for syslog (Linux/macOS only feature)
+- Code now compiles on Windows (syslog silently disabled)
 
 ### 10. Missing Features
 
@@ -168,10 +178,10 @@ mutable bool mergedCacheDirty_ = true;
 | **High**   | Add `IViewer` interface for testability                       | ✅ Done          |
 | **High**   | Replace custom test framework with Catch2 or Google Test      | ⏳ Pending       |
 | **Medium** | Keep Logger as single-header for portability                  | 📌 Design Choice |
-| **Medium** | Add RAII wrappers for OpenGL resources                        | ⏳ Pending       |
+| **Medium** | Add RAII wrappers for OpenGL resources                        | ✅ Done          |
 | **Medium** | Implement proper error handling (Result types)                | ⏳ Pending       |
-| **Low**    | Add thread safety documentation or mutexes for mutable caches | ⏳ Pending       |
-| **Low**    | Add Windows compatibility for syslog                          | ⏳ Pending       |
+| **Low**    | Add thread safety documentation or mutexes for mutable caches | ✅ Documented    |
+| **Low**    | Add Windows compatibility for syslog                          | ✅ Done          |
 
 ---
 
@@ -179,6 +189,8 @@ mutable bool mergedCacheDirty_ = true;
 
 - [x] `IViewer` interface added (Jan 19, 2026)
 - [x] Logger kept as single-header (design choice for portability)
+- [x] OpenGL RAII wrappers added (Jan 19, 2026)
+- [x] Thread safety documented for mutable caches (Jan 19, 2026)
+- [x] Windows compatibility for syslog (Jan 19, 2026)
 - [ ] Test framework migration
-- [ ] OpenGL RAII wrappers
 - [ ] Error handling improvements
