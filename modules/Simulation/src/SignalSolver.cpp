@@ -1,5 +1,6 @@
 #include <simulation/SignalSolver.hpp>
 #include <core/Logger.hpp>
+#include <utils/DataExporter.hpp>
 #include <iostream>
 #include <stdexcept>
 #include <limits>
@@ -240,6 +241,11 @@ namespace simulation
                     {
                         LOGGER_INFO("simulation", "From Transmitter: " + transmitters[txIndex]->getName());
                         LOGGER_INFO("simulation", "Detected ADSIL point: " + point.toString());
+
+                        // Export point to CSV
+                        utils::DataExporter::getInstance().exportPoint(
+                            transmitters[txIndex]->getName(),
+                            point.x(), point.y(), point.z());
                     }
                     result->addPoints(validSolutions->getPoints());
                 }
