@@ -19,7 +19,7 @@ namespace viewer
         setAlpha(alpha);
     }
 
-    FoVPyramidRenderable::~FoVPyramidRenderable() = default;  // RAII handles cleanup!
+    FoVPyramidRenderable::~FoVPyramidRenderable() = default; // RAII handles cleanup!
 
     void FoVPyramidRenderable::initGL()
     {

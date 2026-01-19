@@ -3,7 +3,7 @@
 
 namespace viewer
 {
-    AxisRenderable::~AxisRenderable() = default;  // RAII handles cleanup!
+    AxisRenderable::~AxisRenderable() = default; // RAII handles cleanup!
 
     void AxisRenderable::cleanup()
     {
@@ -32,10 +32,10 @@ namespace viewer
             0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, //  Y
             0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1  //  Z
         };
-        
+
         vao_.emplace();
         vbo_.emplace();
-        
+
         vao_->bind();
         vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
@@ -53,7 +53,7 @@ namespace viewer
         {
             return;
         }
-        
+
         shader_->use();
 
         // Upload view and projection matrices

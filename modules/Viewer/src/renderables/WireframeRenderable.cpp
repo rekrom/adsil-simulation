@@ -8,7 +8,7 @@ namespace viewer
     WireframeRenderable::WireframeRenderable(const std::vector<math::Point> &lines, glm::vec3 color)
         : lines_(lines), color_(color) {}
 
-    WireframeRenderable::~WireframeRenderable() = default;  // RAII handles cleanup!
+    WireframeRenderable::~WireframeRenderable() = default; // RAII handles cleanup!
 
     void WireframeRenderable::cleanup()
     {

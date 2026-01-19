@@ -12,7 +12,7 @@ namespace viewer
         setColor(carColor);
     }
 
-    CarRenderable::~CarRenderable() = default;  // RAII handles cleanup!
+    CarRenderable::~CarRenderable() = default; // RAII handles cleanup!
 
     std::shared_ptr<Car> CarRenderable::getCar() const
     {

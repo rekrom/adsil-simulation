@@ -12,7 +12,7 @@ namespace viewer
         setColor(color);
     }
 
-    ShapeRenderable::~ShapeRenderable() = default;  // RAII handles cleanup!
+    ShapeRenderable::~ShapeRenderable() = default; // RAII handles cleanup!
 
     void ShapeRenderable::initGL()
     {

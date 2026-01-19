@@ -17,7 +17,7 @@ namespace viewer
         fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, color);
     }
 
-    DeviceRenderable::~DeviceRenderable() = default;  // RAII handles cleanup!
+    DeviceRenderable::~DeviceRenderable() = default; // RAII handles cleanup!
 
     void DeviceRenderable::initGL()
     {
@@ -141,7 +141,7 @@ namespace viewer
         arrowVBO_.reset();
         arrowVAO_.reset();
         shader_.reset();
-        
+
         if (fovRenderable_)
         {
             fovRenderable_->cleanup();

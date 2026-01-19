@@ -7,7 +7,7 @@
 namespace viewer
 {
 
-    GroundRenderable::~GroundRenderable() = default;  // RAII handles cleanup!
+    GroundRenderable::~GroundRenderable() = default; // RAII handles cleanup!
 
     void GroundRenderable::initGL()
     {

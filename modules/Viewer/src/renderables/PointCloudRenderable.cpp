@@ -12,7 +12,7 @@ namespace viewer
         this->setAlpha(0.5F);
     }
 
-    PointCloudRenderable::~PointCloudRenderable() = default;  // RAII handles cleanup!
+    PointCloudRenderable::~PointCloudRenderable() = default; // RAII handles cleanup!
 
     void PointCloudRenderable::cleanup()
     {
