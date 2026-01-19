@@ -1,23 +1,28 @@
 #pragma once
 
 #include <filesystem>
-
+#include <stdexcept>
 #include <vehicle/Car.hpp>
-#include <core/ResourceLocator.hpp>
+#include <viewer/interfaces/IViewer.hpp>
+#include <viewer/entities/entities.hpp>
+#include <viewer/entities/PointCloudEntityObserver.hpp>
+#include <viewer/implementations/OpenGLViewer.hpp>
+#include <viewer/entities/GroundEntity.hpp>
+#include <viewer/entities/AxisEntity.hpp>
+#include <viewer/entities/PointCloudEntity.hpp>
 #include <simulation/SimulationScene.hpp>
 #include <simulation/interfaces/ISimulationScene.hpp>
-#include <viewer/implementations/OpenGLViewer.hpp>
-#include <viewer/entities/entities.hpp>
 #include <simulation/implementations/InputManager.hpp>
 #include <simulation/implementations/FrameBufferManager.hpp>
-#include <adapter/AdapterManager.hpp>
 #include <simulation/SignalSolver.hpp>
 #include <simulation/interfaces/ISolver.hpp>
-#include <core/Logger.hpp>
-#include <viewer/entities/PointCloudEntityObserver.hpp>
 #include <simulation/interfaces/IFrameObserver.hpp>
 #include <simulation/configs/SimulationConfig.hpp>
+#include <core/Logger.hpp>
+#include <core/ResourceLocator.hpp>
 #include <core/Timer.hpp>
+#include <adapter/AdapterManager.hpp>
+#include <utils/DataExporter.hpp>
 
 namespace simulation
 {
@@ -47,6 +52,9 @@ namespace simulation
         void setConfig(std::shared_ptr<SimulationConfig> config) { config_ = config; }
         std::shared_ptr<SimulationConfig> getConfig() const { return config_; }
 
+        // Viewer injection (for testing or alternative implementations)
+        void setViewer(std::unique_ptr<viewer::IViewer> viewer) { viewer_ = std::move(viewer); }
+
         // Performance monitoring
         void reportPerformanceStats() const;
         void resetPerformanceStats();
@@ -63,7 +71,7 @@ namespace simulation
         std::shared_ptr<SimulationConfig> config_;
 
         // Core components
-        std::unique_ptr<viewer::OpenGLViewer> viewer_;
+        std::unique_ptr<viewer::IViewer> viewer_;
         std::shared_ptr<FrameBufferManager> frameBuffer_;
         bool hasFrameChanged_ = false;
         std::shared_ptr<simulation::InputManager> inputManager_;
