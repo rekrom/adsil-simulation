@@ -150,6 +150,7 @@ namespace simulation
         }
         for (const auto &rx : rxDevices)
         {
+            rx->setVisible(false); // Hide receivers by default
             entities.push_back(rx);
         }
 
