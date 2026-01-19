@@ -152,6 +152,12 @@ namespace
     {
         std::cout << "\n=== test_setViewer_acceptsMockViewer ===" << std::endl;
         
+        // Set environment variable if not already set (for CI)
+        if (std::getenv("ADSIL_RESOURCE_PATH") == nullptr)
+        {
+            setenv("ADSIL_RESOURCE_PATH", "/tmp", 1);
+        }
+        
         auto manager = std::make_shared<simulation::SimulationManager>();
         auto mock = std::make_unique<MockViewer>();
         
