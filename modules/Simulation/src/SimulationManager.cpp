@@ -1,10 +1,4 @@
 #include <simulation/implementations/SimulationManager.hpp>
-#include <viewer/entities/GroundEntity.hpp>
-#include <viewer/entities/AxisEntity.hpp>
-#include <viewer/entities/PointCloudEntity.hpp>
-#include <core/Timer.hpp>
-#include <utils/DataExporter.hpp>
-#include <stdexcept>
 
 // Fallback base resource directory if environment variable is not set
 #ifndef ADSIL_RESOURCE_PATH_DEFAULT

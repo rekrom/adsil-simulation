@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 
 // 3. Diğer includes
+#include <viewer/interfaces/IViewer.hpp>
 #include <viewer/interfaces/Camera.hpp>
 #include <viewer/renderables/Renderable.hpp>
 #include <viewer/entities/Entity.hpp>
@@ -28,37 +29,37 @@ namespace viewer
 {
     class Renderable;
 
-    class OpenGLViewer
+    class OpenGLViewer : public IViewer
     {
     public:
         OpenGLViewer(int width = 1280, int height = 720, const std::string &title = "OpenGL Viewer");
-        ~OpenGLViewer();
+        ~OpenGLViewer() override;
 
         void run(); // Main rendering loop
 
-        void addEntity(const std::shared_ptr<Entity> &e);
+        void addEntity(const std::shared_ptr<Entity> &e) override;
 
-        void setEntities(SharedVec<Entity> e);
+        void setEntities(SharedVec<Entity> e) override;
 
-        void setRenderingMode(RenderingMode mode);
+        void setRenderingMode(RenderingMode mode) override;
 
-        void setFrameManager(std::shared_ptr<simulation::FrameBufferManager> frameBuffer);
+        void setFrameManager(std::shared_ptr<simulation::FrameBufferManager> frameBuffer) override;
 
-        void setSelectedPointCloudEntity(const std::shared_ptr<viewer::PointCloudEntity> &entity);
+        void setSelectedPointCloudEntity(const std::shared_ptr<viewer::PointCloudEntity> &entity) override;
 
-        RenderingMode getRenderingMode() const;
+        RenderingMode getRenderingMode() const override;
 
         Camera &getCamera() { return camera_; }
 
-        float getDeltaTime() const;
+        float getDeltaTime() const override;
 
-        void render(); // Placeholder: actual rendering logic goes here
-        void cleanup();
-        bool shouldClose() const;
-        void initGraphics();
-        void initEntities();
+        void render() override;
+        void cleanup() override;
+        bool shouldClose() const override;
+        void initGraphics() override;
+        void initEntities() override;
 
-        std::shared_ptr<input::IInputManager> getInputManager() const { return inputManager_; }
+        std::shared_ptr<input::IInputManager> getInputManager() const override { return inputManager_; }
 
     private:
         void init(int width = 1280, int height = 720, const std::string &title = "OpenGL Viewer");
