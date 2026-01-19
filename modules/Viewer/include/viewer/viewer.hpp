@@ -1,6 +1,7 @@
 #pragma once
 
 #include "interfaces/IRenderable.hpp"
+#include "interfaces/IViewer.hpp"
 #include "interfaces/Camera.hpp"
 
 #include "implementations/implementations.hpp"
