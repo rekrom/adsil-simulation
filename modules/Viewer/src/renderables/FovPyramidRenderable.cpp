@@ -19,10 +19,7 @@ namespace viewer
         setAlpha(alpha);
     }
 
-    FoVPyramidRenderable::~FoVPyramidRenderable()
-    {
-        // cleanup();
-    }
+    FoVPyramidRenderable::~FoVPyramidRenderable() = default; // RAII handles cleanup!
 
     void FoVPyramidRenderable::initGL()
     {
@@ -32,32 +29,35 @@ namespace viewer
 
     void FoVPyramidRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("fov_pyramid");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("fov_pyramid"));
 
-        uniforms_.model = glGetUniformLocation(shader_, "model");
-        uniforms_.view = glGetUniformLocation(shader_, "view");
-        uniforms_.projection = glGetUniformLocation(shader_, "projection");
-        uniforms_.color = glGetUniformLocation(shader_, "color");
-        uniforms_.alpha = glGetUniformLocation(shader_, "alpha");
+        uniforms_.model = shader_->getUniformLocation("model");
+        uniforms_.view = shader_->getUniformLocation("view");
+        uniforms_.projection = shader_->getUniformLocation("projection");
+        uniforms_.color = shader_->getUniformLocation("color");
+        uniforms_.alpha = shader_->getUniformLocation("alpha");
     }
 
     void FoVPyramidRenderable::createBuffers()
     {
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
+        vao_.emplace();
+        vbo_.emplace();
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
 
         glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 18, nullptr, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)0);
         glEnableVertexAttribArray(0);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void FoVPyramidRenderable::updateVertices()
     {
+        if (!vbo_)
+            return;
+
         float fovH = device_->getHorizontalFovRad();
         float fovV = device_->getVerticalFovRad();
         float range = device_->getRange();
@@ -81,18 +81,18 @@ namespace viewer
             v1, v2, v3,
             v3, v4, v1};
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferSubData(
             GL_ARRAY_BUFFER,
             0,
             static_cast<GLsizeiptr>(sizeof(glm::vec3) * triangleVertices.size()),
             triangleVertices.data());
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        gl::Buffer::unbind(GL_ARRAY_BUFFER);
     }
 
     void FoVPyramidRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (!device_)
+        if (!device_ || !shader_ || !vao_)
             return;
 
         // if (dirty_)
@@ -103,8 +103,8 @@ namespace viewer
 
         glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
 
-        glBindVertexArray(vao_);
-        glUseProgram(shader_);
+        vao_->bind();
+        shader_->use();
 
         glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
@@ -131,19 +131,16 @@ namespace viewer
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 18);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
         glUseProgram(0);
     }
 
     void FoVPyramidRenderable::cleanup()
     {
-        if (vbo_)
-            glDeleteBuffers(1, &vbo_);
-        if (vao_)
-            glDeleteVertexArrays(1, &vao_);
-        if (shader_)
-            glDeleteProgram(shader_);
-        vbo_ = vao_ = shader_ = 0;
+        // RAII: Simply reset the optionals
+        vbo_.reset();
+        vao_.reset();
+        shader_.reset();
     }
     glm::vec3 FoVPyramidRenderable::getCenter() const
     {

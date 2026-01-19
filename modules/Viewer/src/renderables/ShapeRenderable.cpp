@@ -12,29 +12,25 @@ namespace viewer
         setColor(color);
     }
 
-    ShapeRenderable::~ShapeRenderable()
-    {
-        // cleanup();
-    }
+    ShapeRenderable::~ShapeRenderable() = default; // RAII handles cleanup!
 
     void ShapeRenderable::initGL()
     {
         createShader();
         createBuffers();
-        // std::cout << "[ShapeRenderable] initGL done!" << std::endl;
     }
 
     void ShapeRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("shape");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("shape"));
 
-        uniforms_.model = glGetUniformLocation(shader_, "model");
-        uniforms_.view = glGetUniformLocation(shader_, "view");
-        uniforms_.projection = glGetUniformLocation(shader_, "projection");
-        uniforms_.alpha = glGetUniformLocation(shader_, "alpha");
-        uniforms_.color = glGetUniformLocation(shader_, "color");
-        uniforms_.useUniformColor = glGetUniformLocation(shader_, "useUniformColor");
-        uniforms_.uniformColor = glGetUniformLocation(shader_, "uniformColor");
+        uniforms_.model = shader_->getUniformLocation("model");
+        uniforms_.view = shader_->getUniformLocation("view");
+        uniforms_.projection = shader_->getUniformLocation("projection");
+        uniforms_.alpha = shader_->getUniformLocation("alpha");
+        uniforms_.color = shader_->getUniformLocation("color");
+        uniforms_.useUniformColor = shader_->getUniformLocation("useUniformColor");
+        uniforms_.uniformColor = shader_->getUniformLocation("uniformColor");
     }
 
     void ShapeRenderable::createBuffers()
@@ -55,25 +51,25 @@ namespace viewer
             vertices.push_back(p.z());
         }
 
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
+        vao_.emplace();
+        vbo_.emplace();
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void ShapeRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (vao_ == 0 || shader_ == 0)
+        if (!vao_ || !shader_)
             return;
 
-        glUseProgram(shader_);
+        shader_->use();
 
         // Set uniforms
         glm::mat4 model = glm::translate(glm::mat4(1.0F), getCenter()); // center as position
@@ -85,19 +81,17 @@ namespace viewer
         glUniform1i(uniforms_.useUniformColor, true);
         glUniform3fv(uniforms_.uniformColor, 1, &getColor()[0]);
 
-        glBindVertexArray(vao_);
+        vao_->bind();
         glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertexCount_));
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void ShapeRenderable::cleanup()
     {
-        if (vao_)
-            glDeleteVertexArrays(1, &vao_);
-        if (vbo_)
-            glDeleteBuffers(1, &vbo_);
-        vao_ = 0;
-        vbo_ = 0;
+        // RAII: Simply reset the optionals
+        vao_.reset();
+        vbo_.reset();
+        shader_.reset();
         vertexCount_ = 0;
     }
 

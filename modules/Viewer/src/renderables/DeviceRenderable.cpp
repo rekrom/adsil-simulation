@@ -17,10 +17,7 @@ namespace viewer
         fovRenderable_ = std::make_unique<FoVPyramidRenderable>(device_, color);
     }
 
-    DeviceRenderable::~DeviceRenderable()
-    {
-        // cleanup();
-    }
+    DeviceRenderable::~DeviceRenderable() = default; // RAII handles cleanup!
 
     void DeviceRenderable::initGL()
     {
@@ -28,8 +25,6 @@ namespace viewer
         createBuffers();
 
         fovRenderable_->initGL();
-
-        // std::cout << "[DeviceRenderable] initGL done!" << std::endl;
     }
 
     void DeviceRenderable::createBuffers()
@@ -41,54 +36,14 @@ namespace viewer
 
         float cubeVertices[] = {
             // positions          // colors
-            -0.5F,
-            -0.5F,
-            -0.5F,
-            r,
-            g,
-            b,
-            0.5F,
-            -0.5F,
-            -0.5F,
-            r,
-            g,
-            b,
-            0.5F,
-            0.5F,
-            -0.5F,
-            r,
-            g,
-            b,
-            -0.5F,
-            0.5F,
-            -0.5F,
-            r,
-            g,
-            b,
-            -0.5F,
-            -0.5F,
-            0.5F,
-            r,
-            g,
-            b,
-            0.5F,
-            -0.5F,
-            0.5F,
-            r,
-            g,
-            b,
-            0.5F,
-            0.5F,
-            0.5F,
-            r,
-            g,
-            b,
-            -0.5F,
-            0.5F,
-            0.5F,
-            r,
-            g,
-            b,
+            -0.5F, -0.5F, -0.5F, r, g, b,
+            0.5F, -0.5F, -0.5F, r, g, b,
+            0.5F, 0.5F, -0.5F, r, g, b,
+            -0.5F, 0.5F, -0.5F, r, g, b,
+            -0.5F, -0.5F, 0.5F, r, g, b,
+            0.5F, -0.5F, 0.5F, r, g, b,
+            0.5F, 0.5F, 0.5F, r, g, b,
+            -0.5F, 0.5F, 0.5F, r, g, b,
         };
 
         unsigned int indices[] = {
@@ -100,16 +55,16 @@ namespace viewer
             0, 1, 5, 5, 4, 0  // bottom face
         };
 
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
-        glGenBuffers(1, &ebo_);
+        vao_.emplace();
+        vbo_.emplace();
+        ebo_.emplace();
 
-        glBindVertexArray(vao_);
+        vao_->bind();
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
+        ebo_->bind(GL_ELEMENT_ARRAY_BUFFER);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
         // Position attribute
@@ -120,40 +75,43 @@ namespace viewer
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void DeviceRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("device");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("device"));
 
-        uniforms_.model = glGetUniformLocation(shader_, "model");
-        uniforms_.view = glGetUniformLocation(shader_, "view");
-        uniforms_.projection = glGetUniformLocation(shader_, "projection");
+        uniforms_.model = shader_->getUniformLocation("model");
+        uniforms_.view = shader_->getUniformLocation("view");
+        uniforms_.projection = shader_->getUniformLocation("projection");
     }
 
     void DeviceRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (!device_)
+        if (!device_ || !shader_ || !vao_)
             return;
 
         glm::mat4 model = device_->getGlobalTransform().getModelMatrix();
 
-        glUseProgram(shader_);
+        shader_->use();
 
         glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(uniforms_.projection, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Draw cube with indices
-        glBindVertexArray(vao_);
+        vao_->bind();
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
 
-        // Draw arrow
-        glBindVertexArray(arrowVAO_);
-        glDrawArrays(GL_LINES, 0, 2);
-        glBindVertexArray(0);
+        // Draw arrow if initialized
+        if (arrowVAO_)
+        {
+            arrowVAO_->bind();
+            glDrawArrays(GL_LINES, 0, 2);
+            gl::VertexArray::unbind();
+        }
         glUseProgram(0);
     }
 
@@ -176,36 +134,14 @@ namespace viewer
 
     void DeviceRenderable::cleanup()
     {
-        if (vbo_)
-        {
-            glDeleteBuffers(1, &vbo_);
-            vbo_ = 0;
-        }
-        if (vao_)
-        {
-            glDeleteVertexArrays(1, &vao_);
-            vao_ = 0;
-        }
-        if (ebo_)
-        {
-            glDeleteBuffers(1, &ebo_);
-            ebo_ = 0;
-        }
-        if (arrowVBO_)
-        {
-            glDeleteBuffers(1, &arrowVBO_);
-            arrowVBO_ = 0;
-        }
-        if (arrowVAO_)
-        {
-            glDeleteVertexArrays(1, &arrowVAO_);
-            arrowVAO_ = 0;
-        }
-        if (shader_)
-        {
-            glDeleteProgram(shader_);
-            shader_ = 0;
-        }
+        // RAII: Simply reset the optionals - destructors handle OpenGL cleanup
+        vbo_.reset();
+        vao_.reset();
+        ebo_.reset();
+        arrowVBO_.reset();
+        arrowVAO_.reset();
+        shader_.reset();
+
         if (fovRenderable_)
         {
             fovRenderable_->cleanup();
