@@ -3,8 +3,10 @@
 #include <viewer/interfaces/IRenderable.hpp>
 #include <glad/glad.h>
 #include <viewer/shaders/ShaderUtils.hpp>
+#include <viewer/gl/GLResources.hpp>
 #include <core/ResourceLocator.hpp>
 #include <vector>
+#include <optional>
 
 namespace viewer
 {
@@ -46,10 +48,12 @@ namespace viewer
 
     protected:
         float alpha_{1.0F};
-        GLuint vao_ = 0;
-        GLuint vbo_ = 0;
-        GLuint ebo_ = 0;
-        GLuint shader_ = 0;
+
+        // RAII-managed OpenGL resources (optional for deferred initialization)
+        std::optional<gl::VertexArray> vao_;
+        std::optional<gl::Buffer> vbo_;
+        std::optional<gl::Buffer> ebo_;
+        std::optional<gl::ShaderProgram> shader_;
 
         StandardUniformLocations uniforms_;
         glm::vec3 color_{0.5F, 0.5F, 0.5F};

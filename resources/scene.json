@@ -29,7 +29,7 @@
                 },
                 "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
-                "range": 1.0,
+                "range": 20.0,
                 "name": "rx0"
             },
             {
@@ -45,7 +45,7 @@
                 },
                 "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
-                "range": 1.0,
+                "range": 20.0,
                 "name": "rx1"
             },
             {
@@ -61,7 +61,7 @@
                 },
                 "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
-                "range": 1.0,
+                "range": 20.0,
                 "name": "rx2"
             },
             {
@@ -77,7 +77,7 @@
                 },
                 "vertical_fov_deg": 120,
                 "horizontal_fov_deg": 120,
-                "range": 1.0,
+                "range": 20.0,
                 "name": "rx3"
             }
         ],
@@ -91,11 +91,11 @@
                 "orientation": {
                     "x": 0.0,
                     "y": -12.5,
-                    "z": -45.0
+                    "z": -48.5
                 },
-                "vertical_fov_deg": 25,
-                "horizontal_fov_deg": 30,
-                "range": 5.0,
+                "vertical_fov_deg": 11,
+                "horizontal_fov_deg": 20,
+                "range": 20.0,
                 "name": "tx1"
             },
             {
@@ -107,11 +107,11 @@
                 "orientation": {
                     "x": 0.0,
                     "y": -12.5,
-                    "z": -15.0
+                    "z": -33
                 },
-                "vertical_fov_deg": 25,
-                "horizontal_fov_deg": 30,
-                "range": 5.0,
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
                 "name": "tx2"
             },
             {
@@ -123,11 +123,11 @@
                 "orientation": {
                     "x": 0.0,
                     "y": -12.5,
-                    "z": 15.0
+                    "z": -22.0
                 },
-                "vertical_fov_deg": 25,
-                "horizontal_fov_deg": 30,
-                "range": 5.0,
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
                 "name": "tx3"
             },
             {
@@ -139,15 +139,93 @@
                 "orientation": {
                     "x": 0.0,
                     "y": -12.5,
-                    "z": 45.0
+                    "z": -11.0
                 },
-                "vertical_fov_deg": 25,
-                "horizontal_fov_deg": 30,
-                "range": 5.0,
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
                 "name": "tx4"
+            },
+            {
+                "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": -12.5,
+                    "z": -0.0
+                },
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
+                "name": "tx5_center"
+            },
+            {
+                "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": -12.5,
+                    "z": 11.0
+                },
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
+                "name": "tx6"
+            },
+            {
+                "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": -12.5,
+                    "z": 22.0
+                },
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
+                "name": "tx7"
+            },
+            {
+                "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": -12.5,
+                    "z": 33.0
+                },
+                "vertical_fov_deg": 20,
+                "horizontal_fov_deg": 11,
+                "range": 20.0,
+                "name": "tx8"
+            },
+            {
+                "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "x": 0.0,
+                    "y": -12.5,
+                    "z": 48.5
+                },
+                "vertical_fov_deg": 11,
+                "horizontal_fov_deg": 20,
+                "range": 20.0,
+                "name": "tx9"
             }
         ]
-    },
-    "cubes": [],
-    "cylinders": []
+    }
 }

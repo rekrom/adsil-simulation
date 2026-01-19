@@ -3,31 +3,25 @@
 
 namespace viewer
 {
-    AxisRenderable::~AxisRenderable()
-    {
-        // cleanup();
-    }
+    AxisRenderable::~AxisRenderable() = default;  // RAII handles cleanup!
 
     void AxisRenderable::cleanup()
     {
-        if (shader_)
-            glDeleteProgram(shader_);
-        if (vbo_)
-            glDeleteBuffers(1, &vbo_);
-        if (vao_)
-            glDeleteVertexArrays(1, &vao_);
+        // RAII: Simply reset the optionals - destructors handle OpenGL cleanup
+        shader_.reset();
+        vbo_.reset();
+        vao_.reset();
     }
 
     void AxisRenderable::initGL()
     {
         createShader();
         createBuffers();
-        // std::cout << "[AxisRenderable] initGL done!" << std::endl;
     }
 
     void AxisRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("axis");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("axis"));
     }
 
     void AxisRenderable::createBuffers()
@@ -38,33 +32,40 @@ namespace viewer
             0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, //  Y
             0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1  //  Z
         };
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        
+        vao_.emplace();
+        vbo_.emplace();
+        
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void AxisRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        glUseProgram(shader_);
+        if (!shader_ || !vao_)
+        {
+            return;
+        }
+        
+        shader_->use();
 
         // Upload view and projection matrices
-        GLint viewLoc = glGetUniformLocation(shader_, "view");
-        GLint projLoc = glGetUniformLocation(shader_, "projection");
+        GLint viewLoc = shader_->getUniformLocation("view");
+        GLint projLoc = shader_->getUniformLocation("projection");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
         glLineWidth(2.5F);
 
-        glBindVertexArray(vao_);
+        vao_->bind();
         glDrawArrays(GL_LINES, 0, 6);
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     glm::vec3 AxisRenderable::getCenter() const

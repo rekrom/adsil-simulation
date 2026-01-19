@@ -32,7 +32,9 @@ namespace viewer
     private:
         std::shared_ptr<Device> device_;
 
-        GLuint arrowVAO_{0}, arrowVBO_{0};
+        // RAII-managed additional OpenGL resources for arrow
+        std::optional<gl::VertexArray> arrowVAO_;
+        std::optional<gl::Buffer> arrowVBO_;
 
         bool showFoV_ = true;
         std::shared_ptr<FoVPyramidRenderable> fovRenderable_;

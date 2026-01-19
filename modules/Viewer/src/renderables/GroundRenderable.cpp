@@ -7,21 +7,17 @@
 namespace viewer
 {
 
-    GroundRenderable::~GroundRenderable()
-    {
-        // cleanup();
-    }
+    GroundRenderable::~GroundRenderable() = default;  // RAII handles cleanup!
 
     void GroundRenderable::initGL()
     {
         createShader();
         createBuffers();
-        // std::cout << "[GroundRenderable] initGL done!" << std::endl;
     }
 
     void GroundRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("ground");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("ground"));
     }
 
     void GroundRenderable::createBuffers()
@@ -51,11 +47,11 @@ namespace viewer
 
         vertexCount_ = vertices.size() / 3;
 
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
-        glBindVertexArray(vao_);
+        vao_.emplace();
+        vbo_.emplace();
+        vao_->bind();
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(
             GL_ARRAY_BUFFER,
             static_cast<GLsizeiptr>(vertices.size() * sizeof(float)),
@@ -65,36 +61,33 @@ namespace viewer
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void GroundRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        glUseProgram(shader_);
+        if (!shader_ || !vao_)
+            return;
 
-        GLint viewLoc = glGetUniformLocation(shader_, "view");
-        GLint projLoc = glGetUniformLocation(shader_, "projection");
+        shader_->use();
+
+        GLint viewLoc = shader_->getUniformLocation("view");
+        GLint projLoc = shader_->getUniformLocation("projection");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
         glLineWidth(1.0F);
 
-        glBindVertexArray(vao_);
+        vao_->bind();
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertexCount_));
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void GroundRenderable::cleanup()
     {
-        if (vbo_)
-            glDeleteBuffers(1, &vbo_);
-        if (vao_)
-            glDeleteVertexArrays(1, &vao_);
-        if (shader_)
-            glDeleteProgram(shader_);
-
-        vbo_ = 0;
-        vao_ = 0;
-        shader_ = 0;
+        // RAII: Simply reset the optionals
+        vbo_.reset();
+        vao_.reset();
+        shader_.reset();
     }
 
     glm::vec3 GroundRenderable::getCenter() const
