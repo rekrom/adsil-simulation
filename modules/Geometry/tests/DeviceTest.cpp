@@ -148,9 +148,9 @@ void test_devicePointsInFov()
     spatial::Transform transform({0, 0, 0}, {0, 0, 0});
     DeviceConfig config = {
         transform,
-        60.0f, // 60-degree vertical FOV
-        60.0f, // 60-degree horizontal FOV
-        10.0f, // 10 unit range
+        60.0f,  // 60-degree vertical FOV
+        60.0f,  // 60-degree horizontal FOV
+        100.0f, // 100 unit range
         "FOVDevice"};
 
     Device device(config);

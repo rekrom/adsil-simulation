@@ -26,6 +26,8 @@ namespace viewer::imgui
 
         bool showTransmitters_ = true;
         bool showReceivers_ = true;
+        float txRange_ = 5.0F;
+        float rxRange_ = 5.0F;
     };
 
 } // namespace viewer
