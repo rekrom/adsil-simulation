@@ -55,6 +55,12 @@ std::shared_ptr<math::PointCloud> Device::pointsInFov(const math::PointCloud &pc
 
     for (const auto &point : pcd.getPoints())
     {
+        // calculate the distance between device and point
+        float distance = device_origin.distanceTo(point);
+        if (distance > range)
+        {
+            continue; // Point is out of range
+        }
         auto cornerPoint1 = math::helper::intersectLinePlane(point, device_front, device_origin, v1);
         auto cornerPoint2 = math::helper::intersectLinePlane(point, device_front, device_origin, v2);
         auto cornerPoint3 = math::helper::intersectLinePlane(point, device_front, device_origin, v3);
