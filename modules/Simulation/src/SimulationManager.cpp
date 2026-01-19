@@ -3,6 +3,7 @@
 #include <viewer/entities/AxisEntity.hpp>
 #include <viewer/entities/PointCloudEntity.hpp>
 #include <core/Timer.hpp>
+#include <utils/DataExporter.hpp>
 #include <stdexcept>
 
 // Fallback base resource directory if environment variable is not set
@@ -286,6 +287,9 @@ namespace simulation
         LOGGER_INFO("simulation", std::string("solve_start ts=") + std::to_string(ts) +
                                       " frame=" + std::to_string(frameIdx) + "/" + std::to_string(totalFrames));
 
+        // Set frame context for data export
+        utils::DataExporter::getInstance().setFrameContext(frameIdx, ts);
+
         try
         {
             TIMER_SCOPE("SignalProcessing_Total");
@@ -318,6 +322,12 @@ namespace simulation
             auto &simOutputLogger = core::Logger::getInstance(simulationOutput);
             simOutputLogger.setLogFile(core::ResourceLocator::getLoggingPath("simulation.log"));
             simOutputLogger.clearLog();
+
+            // Initialize data exporter for CSV output
+            auto &exporter = utils::DataExporter::getInstance();
+            exporter.init(core::ResourceLocator::getExportPath());
+            exporter.startSession();
+            LOGGER_INFO(LogChannel, "Data exporter initialized: " + exporter.getCurrentFilePath());
 
             // Step 1: Initialize core components (resources, scene, frame buffer, etc.)
             LOGGER_INFO(LogChannel, "Initializing SimulationManager components...");
@@ -373,6 +383,7 @@ namespace simulation
             }
 
             LOGGER_INFO(LogChannel, "Simulation loop ended, cleaning up...");
+            utils::DataExporter::getInstance().endSession();
             viewer_->cleanup();
         }
         catch (const std::exception &e)
