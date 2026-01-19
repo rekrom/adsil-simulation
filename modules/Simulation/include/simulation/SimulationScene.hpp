@@ -15,6 +15,14 @@
 #include <vector>
 #include <memory>
 
+/**
+ * @class SimulationScene
+ * @brief Manages the simulation scene containing car, devices, and shapes.
+ *
+ * @note Thread Safety: This class is NOT thread-safe. All access should be from
+ *       a single thread (typically the main/simulation thread). The mutable cache
+ *       members are for lazy evaluation optimization in const methods.
+ */
 class SimulationScene : public ISimulationScene, public simulation::IFrameObserver
 {
 public:
@@ -58,7 +66,8 @@ private:
     // Internal helper
     std::shared_ptr<math::PointCloud> mergedShapePointCloud(int quality) const;
 
-    // Cached merged cloud to avoid recomputation when scene is static
+    // Cached merged cloud to avoid recomputation when scene is static.
+    // Note: mutable for lazy evaluation in const methods - not thread-safe
     mutable std::shared_ptr<math::PointCloud> mergedCache_;
     mutable bool mergedCacheDirty_ = true;
     mutable int lastQuality_ = -1;

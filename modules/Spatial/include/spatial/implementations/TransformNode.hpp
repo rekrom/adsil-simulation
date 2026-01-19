@@ -10,6 +10,14 @@
 namespace spatial
 {
 
+    /**
+     * @class TransformNode
+     * @brief Hierarchical transform node for scene graph.
+     *
+     * @note Thread Safety: This class is NOT thread-safe. All access should be from
+     *       a single thread. The mutable cache members are for lazy evaluation
+     *       optimization in const methods (getGlobalTransform).
+     */
     class TransformNode : public std::enable_shared_from_this<TransformNode>
     {
     public:
@@ -35,7 +43,8 @@ namespace spatial
         const SharedVec<TransformNode> &getChildren() const;
 
     private:
-        // Cached global transform and dirty flag for lazy updates
+        // Cached global transform and dirty flag for lazy updates.
+        // Note: mutable for lazy evaluation in const methods - not thread-safe
         mutable Transform cachedGlobalTransform_;
         mutable bool dirty_ = true;
 
