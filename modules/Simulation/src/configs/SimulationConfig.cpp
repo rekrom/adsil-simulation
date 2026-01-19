@@ -16,6 +16,14 @@ namespace simulation
             resourceConfig.basePath = std::string(basePathEnv);
             config->setResourceConfig(resourceConfig);
         }
+        else
+        {
+            std::string err_msg =
+                "ADSIL_RESOURCE_PATH environment variable is not set or empty. ";
+            std::string info_msg = "To set the environment variable, use the following command:\n"
+                                   "export ADSIL_RESOURCE_PATH=\"/absolute/path/to/resources\"";
+            throw std::runtime_error(err_msg + "\n" + info_msg);
+        }
 
         return config;
     }

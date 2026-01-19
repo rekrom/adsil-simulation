@@ -42,6 +42,12 @@ namespace core
             return basePath_ + "/logs/" + fileName;
         }
 
+        // Get the export directory path for CSV data files
+        static std::string getExportPath()
+        {
+            return basePath_ + "/exports";
+        }
+
         // General-purpose path resolver (e.g. "shaders/ground.vert.glsl")
         static std::string getPath(const std::string &relativePath)
         {

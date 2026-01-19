@@ -6,10 +6,20 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="${SCRIPT_DIR}"
 BIN="${ROOT_DIR}/bin/adsil_analyzer"
 RESOURCES_DIR="${ROOT_DIR}/resources"
+
+# Check if binary exists
 if [ ! -x "$BIN" ]; then
   echo "Error: adsil_analyzer binary not found at $BIN" >&2
   exit 1
 fi
+
+# Check if resources folder exists
+if [ ! -d "$RESOURCES_DIR" ]; then
+  echo "Error: resources directory not found at $RESOURCES_DIR" >&2
+  echo "Please make sure the distribution is complete and includes a 'resources/' folder."
+  exit 1
+fi
+
 # Export base resource directory (app can read)
-export ADSIL_RESOURCE_DIR="${RESOURCES_DIR}"
+export ADSIL_RESOURCE_PATH="${RESOURCES_DIR}"
 exec "$BIN" "$@"

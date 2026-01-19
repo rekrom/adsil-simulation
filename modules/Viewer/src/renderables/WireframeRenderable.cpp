@@ -8,16 +8,14 @@ namespace viewer
     WireframeRenderable::WireframeRenderable(const std::vector<math::Point> &lines, glm::vec3 color)
         : lines_(lines), color_(color) {}
 
-    WireframeRenderable::~WireframeRenderable()
-    {
-        // cleanup();
-    }
+    WireframeRenderable::~WireframeRenderable() = default; // RAII handles cleanup!
 
     void WireframeRenderable::cleanup()
     {
-        glDeleteVertexArrays(1, &vao_);
-        glDeleteBuffers(1, &vbo_);
-        glDeleteProgram(shader_);
+        // RAII: Simply reset the optionals
+        vao_.reset();
+        vbo_.reset();
+        shader_.reset();
     }
 
     void WireframeRenderable::initGL()
@@ -28,7 +26,7 @@ namespace viewer
 
     void WireframeRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("wireframe");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("wireframe"));
     }
 
     void WireframeRenderable::createBuffers()
@@ -41,32 +39,35 @@ namespace viewer
             vertices.push_back(pt.z());
         }
 
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
+        vao_.emplace();
+        vbo_.emplace();
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void WireframeRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        glUseProgram(shader_);
+        if (!shader_ || !vao_)
+            return;
+
+        shader_->use();
 
         glm::mat4 model = glm::mat4(1.0F);
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shader_, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniform3fv(glGetUniformLocation(shader_, "uColor"), 1, glm::value_ptr(color_));
+        glUniformMatrix4fv(shader_->getUniformLocation("model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(shader_->getUniformLocation("view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(shader_->getUniformLocation("projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniform3fv(shader_->getUniformLocation("uColor"), 1, glm::value_ptr(color_));
 
-        glBindVertexArray(vao_);
+        vao_->bind();
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lines_.size()));
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     glm::vec3 WireframeRenderable::getCenter() const

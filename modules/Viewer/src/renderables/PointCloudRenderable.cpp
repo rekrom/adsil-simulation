@@ -12,30 +12,14 @@ namespace viewer
         this->setAlpha(0.5F);
     }
 
-    PointCloudRenderable::~PointCloudRenderable()
-    {
-        // cleanup();
-    }
+    PointCloudRenderable::~PointCloudRenderable() = default; // RAII handles cleanup!
 
     void PointCloudRenderable::cleanup()
     {
-        if (vao_ != 0)
-        {
-            glDeleteVertexArrays(1, &vao_);
-            vao_ = 0;
-        }
-
-        if (vbo_ != 0)
-        {
-            glDeleteBuffers(1, &vbo_);
-            vbo_ = 0;
-        }
-
-        if (shader_ != 0)
-        {
-            glDeleteProgram(shader_);
-            shader_ = 0;
-        }
+        // RAII: Simply reset the optionals - destructors handle OpenGL cleanup
+        vao_.reset();
+        vbo_.reset();
+        shader_.reset();
     }
 
     void PointCloudRenderable::initGL()
@@ -46,24 +30,25 @@ namespace viewer
 
     void PointCloudRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("point_cloud");
+        // RAII: Wrap the shader program
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("point_cloud"));
 
-        uniforms_.model = glGetUniformLocation(shader_, "model");
-        uniforms_.view = glGetUniformLocation(shader_, "view");
-        uniforms_.projection = glGetUniformLocation(shader_, "projection");
-        uniforms_.color = glGetUniformLocation(shader_, "uniformColor");
-        uniforms_.alpha = glGetUniformLocation(shader_, "alpha");
-        uniforms_.pointSize = glGetUniformLocation(shader_, "pointSize");
+        uniforms_.model = shader_->getUniformLocation("model");
+        uniforms_.view = shader_->getUniformLocation("view");
+        uniforms_.projection = shader_->getUniformLocation("projection");
+        uniforms_.color = shader_->getUniformLocation("uniformColor");
+        uniforms_.alpha = shader_->getUniformLocation("alpha");
+        uniforms_.pointSize = shader_->getUniformLocation("pointSize");
     }
 
     void PointCloudRenderable::createBuffers()
     {
-        // Always create the OpenGL objects
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
+        // RAII: Create VAO and VBO - constructor handles glGen* calls
+        vao_.emplace();
+        vbo_.emplace();
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
 
         // Set up vertex attributes
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
@@ -80,7 +65,7 @@ namespace viewer
                 vertices_.push_back(pt.y());
                 vertices_.push_back(pt.z());
             }
-            glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_DYNAMIC_DRAW);
         }
         else
         {
@@ -88,16 +73,17 @@ namespace viewer
             glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
         }
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void PointCloudRenderable::updateBuffers()
     {
-        if (!pointCloud_ || pointCloud_->empty() || vbo_ == 0)
+        if (!pointCloud_ || pointCloud_->empty() || !vbo_)
         {
             return;
         }
 
+        // Rebuild vertex array in CPU memory
         vertices_.clear();
         vertices_.reserve(pointCloud_->size() * 3);
         for (const auto &pt : pointCloud_->getPoints())
@@ -107,17 +93,27 @@ namespace viewer
             vertices_.push_back(pt.z());
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float), vertices_.data(), GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        vbo_->bind(GL_ARRAY_BUFFER);
+        // If capacity changed, reallocate; else use sub-data for speed
+        GLsizei newSize = static_cast<GLsizei>(vertices_.size() * sizeof(float));
+        GLint currentSize = 0;
+        glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &currentSize);
+        if (currentSize != newSize)
+        {
+            glBufferData(GL_ARRAY_BUFFER, newSize, vertices_.data(), GL_DYNAMIC_DRAW);
+        }
+        else if (newSize > 0)
+        {
+            glBufferSubData(GL_ARRAY_BUFFER, 0, newSize, vertices_.data());
+        }
+        gl::Buffer::unbind(GL_ARRAY_BUFFER);
 
         dirty_ = false;
     }
 
     void PointCloudRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-
-        if (pointCloud_->empty())
+        if (!shader_ || !vao_ || pointCloud_->empty())
         {
             return;
         }
@@ -129,7 +125,7 @@ namespace viewer
         // Enable just before rendering
         glEnable(GL_PROGRAM_POINT_SIZE);
 
-        glUseProgram(shader_);
+        shader_->use();
 
         glm::mat4 model = glm::mat4(1.0F);
         glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
@@ -139,9 +135,9 @@ namespace viewer
         glUniform1f(uniforms_.alpha, alpha_);
         glUniform1f(uniforms_.pointSize, pointSize_);
 
-        glBindVertexArray(vao_);
+        vao_->bind();
         glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(pointCloud_->size()));
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
 
         // Enable just before rendering
         glDisable(GL_PROGRAM_POINT_SIZE);

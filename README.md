@@ -2,11 +2,11 @@
 
 [![codecov](https://codecov.io/gh/rekrom/adsil-simulation/graph/badge.svg?token=UNQJ11QVP1)](https://codecov.io/gh/rekrom/adsil-simulation)
 [![Build Status](https://github.com/rekrom/adsil-simulation/workflows/Code%20Coverage/badge.svg)](https://github.com/rekrom/adsil-simulation/actions)
-[![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
+[![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 [![CMake](https://img.shields.io/badge/CMake-3.16+-green.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-ADSIL Analyzer is a comprehensive C++17 simulation platform for analyzing sensor-based geometries and signal interactions. It provides a modular architecture with enhanced logging, real-time visualization, and extensive JSON-based configuration support for automotive and sensor simulation scenarios.
+ADSIL Analyzer is a comprehensive C++20 simulation platform for analyzing sensor-based geometries and signal interactions. It provides a modular architecture with enhanced logging, real-time visualization, and extensive JSON-based configuration support for automotive and sensor simulation scenarios.
 
 ## 🚀 Features
 
@@ -56,34 +56,13 @@ adsil_analyzer_cpp/
 
 ### Prerequisites
 
-- **C++17** compatible compiler (GCC 8+, Clang 7+, MSVC 2019+)
+- **C++20** compatible compiler (GCC 8+, Clang 7+, MSVC 2019+)
 - **CMake** ≥ 3.15
 - **OpenGL** support (driver-dependent)
 - **System Dependencies**:
   - Linux: `sudo apt install libglfw3-dev libglm-dev`
   - macOS: `brew install glfw glm`
   - Windows: Dependencies included via vcpkg or manual installation
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/rekrom/adsil-simulation.git
-cd adsil-simulation
-
-# Create build directory
-mkdir build && cd build
-
-# Configure with CMake
-cmake .. -DCMAKE_BUILD_TYPE=Release
-
-# Build (parallel compilation)
-make -j$(nproc)  # Linux/macOS
-# cmake --build . --parallel  # Cross-platform alternative
-
-# Run the application
-./bin/adsil_analyzer
-```
 
 ### Build Options
 
@@ -130,6 +109,104 @@ cd adsil_analyzer
 
 Environment variable `ADSIL_RESOURCE_DIR` is exported by the wrapper for runtime resource loading.
 
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/rekrom/adsil-simulation.git
+cd adsil-simulation
+
+# Initialize submodules (required for external dependencies)
+git submodule update --init --recursive
+
+# Create build directory
+mkdir build && cd build
+
+# Configure with CMake (Release is default if not specified)
+cmake ..
+
+# Build (parallel compilation)
+make -j$(nproc)  # Linux/macOS
+# cmake --build . --parallel  # Cross-platform alternative
+
+# Install into a local directory (recommended)
+cmake --install . --prefix ../install_dir
+
+# Run the application using the wrapper script
+../install_dir/run_adsil.sh
+```
+
+### Environment Variables
+
+The application requires the `ADSIL_RESOURCE_PATH` environment variable, which points to the `resources/` directory.
+The provided `run_adsil.sh` script automatically sets this to the correct location.
+
+- **Recommended (wrapper script)**
+
+```bash
+../install_dir/run_adsil.sh
+```
+
+- **Manual run (if you don’t want the wrapper script):**
+
+```bash
+export ADSIL_RESOURCE_PATH=/absolute/path/to/resources
+../install_dir/bin/adsil_analyzer
+```
+
+## 🐳 Running with Docker
+
+ADSIL Analyzer can also be built and run inside a clean Docker environment. This is useful for testing portability across Linux distributions or running the application without installing all dependencies on your host system.
+
+### Build the Docker image
+
+From the project root:
+
+```bash
+docker build -t adsil_analyzer .
+```
+
+### Run the application (with GUI support)
+
+On Linux with X11:
+
+```bash
+# Allow local docker containers to connect to your X server
+xhost +local:docker
+
+# Run the container, forwarding display for OpenGL/ImGui
+docker run --rm -it \
+    --env DISPLAY=$DISPLAY \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    adsil_analyzer
+```
+
+The provided `run_adsil.sh` wrapper script is executed by default, and the environment variable `ADSIL_RESOURCE_PATH` is set automatically.
+
+> ⚠️ If you’re using Wayland (default on Ubuntu 22.04+), ensure XWayland is enabled or configure Docker with Wayland socket forwarding.
+
+### Logs
+
+Log files are written into `/install/resources/logs` inside the container. If you want to persist logs on the host, you can mount a local folder:
+
+```bash
+docker run --rm -it \
+    --env DISPLAY=$DISPLAY \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    --volume $(pwd)/logs:/install/resources/logs \
+    adsil_analyzer
+```
+
+### Headless / Testing mode
+
+To run unit tests inside Docker without requiring a display:
+
+```bash
+docker build -t adsil_analyzer_test --target test .
+```
+
+This will configure the project with `-DBUILD_TESTING=ON` and run `ctest` inside the container.
+
 ---
 
 ## 🧩 Module Overview
@@ -163,9 +240,11 @@ make
 ctest
 
 # Run specific module tests
-./bin/test_CoreTest
-./bin/test_GeometryTest
-./bin/test_AdapterTest
+./bin/tests/${ModuleName}/${ModuleTestName}
+
+./bin/tests/Adapter/test_AdapterManagerTest
+./bin/tests/Math/test_PointCloudTest
+
 ```
 
 ## 📊 Code Coverage
@@ -187,7 +266,7 @@ Test coverage is automatically tracked and reported via [Codecov](https://codeco
 sudo apt-get install lcov gcovr
 
 # Generate coverage report locally
-./test_coverage_locally.sh
+./tools/test_coverage_locally.sh
 
 # View HTML coverage report
 open coverage/html/index.html
@@ -269,3 +348,15 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 - **Memory Usage**: Zero allocations per log call
 - **Build Time**: Parallel compilation support
 - **Test Coverage**: Comprehensive unit testing across all modules
+
+## 🎮 How to Use
+
+After launching the application (via `run_adsil.sh` or directly from the binary), you can interact with the simulation using the following controls:
+
+| Key(s)                   | Action                                  |
+| ------------------------ | --------------------------------------- |
+| **W / A / S / D**        | Move the car forward, left, back, right |
+| **Arrow Keys**           | Rotate / move the camera view           |
+| **Numpad 8 / 2 / 4 / 6** | Adjust camera position/orientation      |
+| **+ / -**                | Change the simulation frame             |
+| **Spacebar**             | Play / Pause the current frame          |

@@ -96,22 +96,33 @@ namespace viewer::imgui
     {
         if (ImGui::CollapsingHeader("Devices", ImGuiTreeNodeFlags_DefaultOpen))
         {
+            // Visibility toggles on same line
             if (ImGui::Checkbox("Show TX", &showTransmitters_))
             {
                 for (auto &tx : carEntity->getTxEntities())
                     tx->setVisible(showTransmitters_);
             }
-
+            ImGui::SameLine();
             if (ImGui::Checkbox("Show RX", &showReceivers_))
             {
                 for (auto &rx : carEntity->getRxEntities())
                     rx->setVisible(showReceivers_);
             }
 
-            if (showTransmitters_)
+            ImGui::Separator();
+
+            // Transmitters section
+            const auto &txs = carEntity->getTxEntities();
+            if (ImGui::TreeNode("Transmitters"))
             {
-                const auto &txs = carEntity->getTxEntities();
-                if (ImGui::TreeNode("Transmitters"))
+                // Range control for all transmitters
+                if (ImGui::DragFloat("Range (All)##tx", &txRange_, 1.0F, 1.0F, 100.0F))
+                {
+                    for (auto &tx : txs)
+                        tx->getDevice()->setRange(txRange_);
+                }
+
+                if (showTransmitters_)
                 {
                     for (size_t i = 0; i < txs.size(); ++i)
                     {
@@ -124,14 +135,22 @@ namespace viewer::imgui
                             ImGui::TreePop();
                         }
                     }
-                    ImGui::TreePop();
                 }
+                ImGui::TreePop();
             }
 
-            if (showReceivers_)
+            // Receivers section
+            const auto &rxs = carEntity->getRxEntities();
+            if (ImGui::TreeNode("Receivers"))
             {
-                const auto &rxs = carEntity->getRxEntities();
-                if (ImGui::TreeNode("Receivers"))
+                // Range control for all receivers
+                if (ImGui::DragFloat("Range (All)##rx", &rxRange_, 1.0F, 1.0F, 100.0F))
+                {
+                    for (auto &rx : rxs)
+                        rx->getDevice()->setRange(rxRange_);
+                }
+
+                if (showReceivers_)
                 {
                     for (size_t i = 0; i < rxs.size(); ++i)
                     {
@@ -144,8 +163,8 @@ namespace viewer::imgui
                             ImGui::TreePop();
                         }
                     }
-                    ImGui::TreePop();
                 }
+                ImGui::TreePop();
             }
         }
     }

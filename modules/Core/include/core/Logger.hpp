@@ -17,7 +17,14 @@
 #include <memory>
 
 #include <thread>
-#include <syslog.h>
+
+// Platform-specific syslog support
+#if defined(__linux__) || defined(__APPLE__)
+    #include <syslog.h>
+    #define LOGGER_HAS_SYSLOG 1
+#else
+    #define LOGGER_HAS_SYSLOG 0
+#endif
 
 #define LOGGER_INFO(...) LOGGER_INFO_IMPL(__VA_ARGS__)
 #define LOGGER_WARN(...) LOGGER_WARN_IMPL(__VA_ARGS__)
@@ -426,6 +433,7 @@ namespace core
             std::string timestamp = getTimestamp();
             std::string threadId = getThreadId();
 
+#if LOGGER_HAS_SYSLOG
             if (useSyslog_)
             {
                 int syslogLevel = LOG_INFO;
@@ -441,7 +449,9 @@ namespace core
                 std::string formatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func, false);
                 syslog(syslogLevel, "%s", formatted.c_str());
             }
-            else if (logFile_.is_open() && !logFileFailed_)
+            else
+#endif
+            if (logFile_.is_open() && !logFileFailed_)
             {
                 // Format for file without colors
                 std::string formatted = formatLog(levelStr, msg, timestamp, threadId, file, line, func, fileColorOutput_);
@@ -465,10 +475,18 @@ namespace core
         }
 
     public:
+        /**
+         * @brief Enable syslog output (Linux/macOS only).
+         * @note On Windows, this function has no effect.
+         */
         void enableSyslog(bool enable = true)
         {
+#if LOGGER_HAS_SYSLOG
             std::lock_guard<std::mutex> lock(mutex_);
             useSyslog_ = enable;
+#else
+            (void)enable; // Suppress unused parameter warning
+#endif
         }
 
         // Enhanced configuration methods

@@ -11,8 +11,8 @@ namespace simulation
     {
         std::shared_ptr<math::PointCloud> cloud;
         double timestamp = 0.0;
-        std::vector<float> linearAcceleration; // imu
-        std::vector<float> angularVelocity;
+        // std::vector<float> linearAcceleration; // imu
+        // std::vector<float> angularVelocity;
         std::string filePath;
 
         void clear()
@@ -21,8 +21,8 @@ namespace simulation
             {
                 cloud.reset();
             }
-            linearAcceleration.clear();
-            angularVelocity.clear();
+            // linearAcceleration.clear();
+            // angularVelocity.clear();
             filePath.clear();
         }
     };

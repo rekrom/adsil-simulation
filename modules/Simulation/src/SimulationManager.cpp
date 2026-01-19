@@ -1,13 +1,8 @@
 #include <simulation/implementations/SimulationManager.hpp>
-#include <viewer/entities/GroundEntity.hpp>
-#include <viewer/entities/AxisEntity.hpp>
-#include <viewer/entities/PointCloudEntity.hpp>
-#include <core/Timer.hpp>
-#include <stdexcept>
 
 // Fallback base resource directory if environment variable is not set
-#ifndef FALLBACK_RESOURCE_DIR
-#define FALLBACK_RESOURCE_DIR "/home/rkrm-dev/Desktop/adsil_analyzer_cpp/resources"
+#ifndef ADSIL_RESOURCE_PATH_DEFAULT
+#define ADSIL_RESOURCE_PATH_DEFAULT ROOT_PATH_DEFAULT
 #endif
 
 namespace simulation
@@ -22,6 +17,8 @@ namespace simulation
     SimulationManager::SimulationManager()
         : config_(SimulationConfig::createDefault())
     {
+        // print out the base path
+        LOGGER_INFO(LogChannel, "Base path: " + config_->getResourceConfig().basePath);
     }
 
     SimulationManager::SimulationManager(std::shared_ptr<SimulationConfig> config)
@@ -32,6 +29,7 @@ namespace simulation
         if (!config_)
         {
             config_ = SimulationConfig::createDefault();
+            LOGGER_INFO(LogChannel, "No configuration provided, using default.");
         }
     }
 
@@ -55,7 +53,6 @@ namespace simulation
 
     void SimulationManager::initializeComponents()
     {
-        const auto &resourceConfig = config_->getResourceConfig();
         const auto &frameConfig = config_->getFrameConfig();
 
         // Initialize adapter system
@@ -63,7 +60,7 @@ namespace simulation
 
         // Load the simulation scene (includes car, devices, etc.)
         scene_ = adapters_->fromJson<std::shared_ptr<SimulationScene>>(
-            core::ResourceLocator::getJsonPath(resourceConfig.sceneFile));
+            core::ResourceLocator::getJsonPath("scene.json"));
 
         // Initialize frame buffer with configured window size
         frameBuffer_ = std::make_shared<FrameBufferManager>(frameConfig.bufferWindowSize);
@@ -81,7 +78,7 @@ namespace simulation
         inputManager_ = std::make_shared<simulation::InputManager>(viewer_->getInputManager());
 
         // Initialize the signal solver (sensor signal processing, etc.)
-        signalSolver_ = std::make_shared<SignalSolver>(scene_);
+        signalSolver_ = std::make_shared<simulation::SignalSolver>(scene_);
 
         // Register this manager as a frame observer
         frameBuffer_->addFrameObserver(shared_from_this());
@@ -147,6 +144,7 @@ namespace simulation
         }
         for (const auto &rx : rxDevices)
         {
+            rx->setVisible(false); // Hide receivers by default
             entities.push_back(rx);
         }
 
@@ -273,23 +271,23 @@ namespace simulation
         if (!signalSolver_ || !detectedPointCloudEntity_)
             return;
 
-        if (!frameBuffer_ || !frameBuffer_->isPlaying())
+        if (!frameBuffer_ || !hasFrameChanged_)
             return; // silent fast path (avoid log spam)
 
-        LOGGER_INFO("simulation", "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()));
-        LOGGER_INFO("simulation", "Point Cloud Frame Index: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
+        hasFrameChanged_ = false;
+        // Single concise INFO log before solve for traceability (timestamp + frame)
+        const auto ts = frameBuffer_->getCurrentTimestamp();
+        const auto frameIdx = frameBuffer_->getCurrentFrameIndex();
+        const auto totalFrames = frameBuffer_->getTotalFrameCount();
+        LOGGER_INFO("simulation", std::string("solve_start ts=") + std::to_string(ts) +
+                                      " frame=" + std::to_string(frameIdx) + "/" + std::to_string(totalFrames));
+
+        // Set frame context for data export
+        utils::DataExporter::getInstance().setFrameContext(frameIdx, ts);
 
         try
         {
             TIMER_SCOPE("SignalProcessing_Total");
-            // Sample timestamp logging
-            static int frameSinceLog = 0;
-            if (++frameSinceLog >= kTimestampLogSample)
-            {
-                frameSinceLog = 0;
-                LOGGER_DEBUG(LogChannel, "Timestamp: " + std::to_string(frameBuffer_->getCurrentTimestamp()) +
-                                             ", Frame: " + std::to_string(frameBuffer_->getCurrentFrameIndex()) + "/" + std::to_string(frameBuffer_->getTotalFrameCount()));
-            }
 
             std::shared_ptr<math::PointCloud> pointCloud;
             core::Timer::measure("SignalSolver_solve", [&]()
@@ -319,6 +317,12 @@ namespace simulation
             auto &simOutputLogger = core::Logger::getInstance(simulationOutput);
             simOutputLogger.setLogFile(core::ResourceLocator::getLoggingPath("simulation.log"));
             simOutputLogger.clearLog();
+
+            // Initialize data exporter for CSV output
+            auto &exporter = utils::DataExporter::getInstance();
+            exporter.init(core::ResourceLocator::getExportPath());
+            exporter.startSession();
+            LOGGER_INFO(LogChannel, "Data exporter initialized: " + exporter.getCurrentFilePath());
 
             // Step 1: Initialize core components (resources, scene, frame buffer, etc.)
             LOGGER_INFO(LogChannel, "Initializing SimulationManager components...");
@@ -374,16 +378,16 @@ namespace simulation
             }
 
             LOGGER_INFO(LogChannel, "Simulation loop ended, cleaning up...");
+            utils::DataExporter::getInstance().endSession();
             viewer_->cleanup();
         }
         catch (const std::exception &e)
         {
-            LOGGER_ERROR(LogChannel, std::string("Fatal error in simulation: ") + e.what());
             if (viewer_)
             {
                 viewer_->cleanup();
             }
-            throw;
+            throw std::runtime_error("SimulationManager error: " + std::string(e.what()));
         }
     }
 
@@ -403,6 +407,7 @@ namespace simulation
                 LOGGER_WARN(LogChannel, "Point cloud entity is null, cannot update external point cloud");
                 return;
             }
+            hasFrameChanged_ = true;
             pcEntity_->setPointCloud(frame->cloud);
 
             // Notify the scene about the new external point cloud

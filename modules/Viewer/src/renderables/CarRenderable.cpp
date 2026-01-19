@@ -12,10 +12,7 @@ namespace viewer
         setColor(carColor);
     }
 
-    CarRenderable::~CarRenderable()
-    {
-        // cleanup();
-    }
+    CarRenderable::~CarRenderable() = default; // RAII handles cleanup!
 
     std::shared_ptr<Car> CarRenderable::getCar() const
     {
@@ -29,21 +26,10 @@ namespace viewer
 
     void CarRenderable::cleanup()
     {
-        if (vbo_)
-        {
-            glDeleteBuffers(1, &vbo_);
-            vbo_ = 0;
-        }
-        if (vao_)
-        {
-            glDeleteVertexArrays(1, &vao_);
-            vao_ = 0;
-        }
-        if (shader_)
-        {
-            glDeleteProgram(shader_);
-            shader_ = 0;
-        }
+        // RAII: Simply reset the optionals - destructors handle OpenGL cleanup
+        vbo_.reset();
+        vao_.reset();
+        shader_.reset();
 
         for (auto &deviceRenderable : txRenderables_)
         {
@@ -68,11 +54,9 @@ namespace viewer
 
     void CarRenderable::createBuffers2()
     {
-        // 🧹 Cleanup previous buffers
-        if (vbo_)
-            glDeleteBuffers(1, &vbo_);
-        if (vao_)
-            glDeleteVertexArrays(1, &vao_);
+        // 🧹 Cleanup previous buffers (RAII resets)
+        vbo_.reset();
+        vao_.reset();
 
         // 📂 Load model from file
 
@@ -157,12 +141,12 @@ namespace viewer
         if (vertexCount_ == 0)
             throw std::runtime_error("Model contains no valid vertex data: " + inputfile);
 
-        // 🧠 Upload to GPU
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
+        // 🧠 Upload to GPU using RAII
+        vao_.emplace();
+        vbo_.emplace();
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0); // Position
@@ -171,15 +155,14 @@ namespace viewer
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float))); // Color
         glEnableVertexAttribArray(1);
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
     }
 
     void CarRenderable::createBuffers()
     {
-        if (vbo_)
-            glDeleteBuffers(1, &vbo_);
-        if (vao_)
-            glDeleteVertexArrays(1, &vao_);
+        // RAII: reset previous buffers
+        vbo_.reset();
+        vao_.reset();
 
         glm::vec3 carColor_ = this->getColor();
         float r = carColor_.r;
@@ -239,11 +222,11 @@ namespace viewer
 
         vertexCount_ = static_cast<GLsizei>(sizeof(cubeVertices) / 6);
 
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
+        vao_.emplace();
+        vbo_.emplace();
 
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        vao_->bind();
+        vbo_->bind(GL_ARRAY_BUFFER);
         glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
@@ -252,33 +235,31 @@ namespace viewer
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        glBindVertexArray(0);
-
-        LOGGER_INFO("CALLED createBuffers() in CarRenderable");
+        gl::VertexArray::unbind();
     }
 
     void CarRenderable::createShader()
     {
-        shader_ = shader::ShaderUtils::createProgramFromFiles("car");
+        shader_.emplace(shader::ShaderUtils::createProgramFromFiles("car"));
 
         // Cache uniform locations
-        uniforms_.model = glGetUniformLocation(shader_, "model");
-        uniforms_.view = glGetUniformLocation(shader_, "view");
-        uniforms_.projection = glGetUniformLocation(shader_, "projection");
-        uniforms_.useUniformColor = glGetUniformLocation(shader_, "useUniformColor");
-        uniforms_.uniformColor = glGetUniformLocation(shader_, "uniformColor");
-        uniforms_.alpha = glGetUniformLocation(shader_, "alpha");
+        uniforms_.model = shader_->getUniformLocation("model");
+        uniforms_.view = shader_->getUniformLocation("view");
+        uniforms_.projection = shader_->getUniformLocation("projection");
+        uniforms_.useUniformColor = shader_->getUniformLocation("useUniformColor");
+        uniforms_.uniformColor = shader_->getUniformLocation("uniformColor");
+        uniforms_.alpha = shader_->getUniformLocation("alpha");
     }
 
     void CarRenderable::render(const glm::mat4 &view, const glm::mat4 &projection)
     {
-        if (!car_)
+        if (!car_ || !shader_ || !vao_)
             return;
 
         // Calculate model matrix from car's transform
         glm::mat4 model = car_->getGlobalTransform().getModelMatrix();
 
-        glUseProgram(shader_);
+        shader_->use();
 
         glUniformMatrix4fv(uniforms_.model, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(uniforms_.view, 1, GL_FALSE, glm::value_ptr(view));
@@ -290,11 +271,11 @@ namespace viewer
         glUniform1i(uniforms_.useUniformColor, static_cast<GLint>(useUniform));
         glUniform3fv(uniforms_.uniformColor, 1, glm::value_ptr(highlightColor));
 
-        glBindVertexArray(vao_);
+        vao_->bind();
 
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertexCount_));
 
-        glBindVertexArray(0);
+        gl::VertexArray::unbind();
 
         // Render all devices on the car
         renderDevices(view, projection);

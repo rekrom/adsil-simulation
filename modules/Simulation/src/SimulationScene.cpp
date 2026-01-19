@@ -12,11 +12,14 @@ SimulationScene::SimulationScene()
 void SimulationScene::addShape(std::shared_ptr<ShapeBase> shape)
 {
     shapes_.push_back(std::move(shape));
+    // Invalidate cache when scene content changes
+    mergedCacheDirty_ = true;
 }
 
 void SimulationScene::setShapes(SharedVec<ShapeBase> shapes)
 {
     shapes_ = shapes;
+    mergedCacheDirty_ = true;
 }
 
 void SimulationScene::setCar(std::shared_ptr<Car> car)
@@ -52,7 +55,8 @@ bool SimulationScene::hasCar() const
 }
 std::shared_ptr<math::PointCloud> SimulationScene::getMergedPointCloud(int quality) const
 {
-    if (externalCloud_)
+    // Prefer external cloud only if it has data; otherwise synthesize from shapes
+    if (externalCloud_ && !externalCloud_->empty())
     {
         return externalCloud_;
     }
@@ -61,16 +65,29 @@ std::shared_ptr<math::PointCloud> SimulationScene::getMergedPointCloud(int quali
 
 std::shared_ptr<math::PointCloud> SimulationScene::mergedShapePointCloud(int quality) const
 {
-    auto merged = std::make_shared<math::PointCloud>();
+    // Simple cache to avoid re-generating merged cloud every call if shapes/quality unchanged
+    if (!mergedCacheDirty_ && mergedCache_ && lastQuality_ == quality)
+    {
+        LOGGER_INFO("Using cached merged point cloud");
+        return mergedCache_;
+    }
 
+    auto merged = std::make_shared<math::PointCloud>();
     for (const auto &shape : shapes_)
     {
         if (!shape)
             continue;
-        merged = shape->getSurfaceMeshPCD();
+        auto s = shape->getSurfaceMeshPCD();
+        if (s && !s->empty())
+        {
+            merged->addPoints(s->getPoints());
+        }
     }
 
-    return merged;
+    mergedCache_ = merged;
+    lastQuality_ = quality;
+    mergedCacheDirty_ = false;
+    return mergedCache_;
 }
 
 double SimulationScene::getTimestamp() const
@@ -86,6 +103,7 @@ void SimulationScene::overrideTimestamp(double ts)
 void SimulationScene::setExternalPointCloud(std::shared_ptr<math::PointCloud> cloud)
 {
     *externalCloud_ = *cloud; // ✅ overwrite contents, not pointer
+    // External stream takes precedence; cache isn't useful while external data exists
 }
 
 std::shared_ptr<math::PointCloud> SimulationScene::getExternalPointCloud() const

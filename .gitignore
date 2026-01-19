@@ -7,3 +7,7 @@ coverage/
 .vscode/
 *.log
 resources/extracted_frames_json
+resources/adsil_app
+resources/tof_data
+resources/exports
+resources/scene.json

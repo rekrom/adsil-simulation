@@ -6,6 +6,14 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Default resource path (relative to repo root)
+set(ADSIL_RESOURCE_PATH_DEFAULT "${CMAKE_SOURCE_DIR}/resources" CACHE PATH "Default path to resources")
+set(ROOT_PATH_DEFAULT "${CMAKE_SOURCE_DIR}" CACHE PATH "Default path to root folder")
+
+# Pass it into C++ as a definition
+add_compile_definitions(ADSIL_RESOURCE_PATH_DEFAULT="${ADSIL_RESOURCE_PATH_DEFAULT}")
+add_compile_definitions(ROOT_PATH_DEFAULT="${ROOT_PATH_DEFAULT}")
+
 # External dependencies
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -36,6 +44,16 @@ foreach(app_dir ${APP_DIRS})
     endif()
 endforeach()
 
+
+# Set default build type to Release if not specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "No build type specified, defaulting to Release")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+    # Optional: restrict options
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
+endif()
+
+
 # ------------------------
 # Distribution / Packaging
 # ------------------------
@@ -63,8 +81,7 @@ endif()
 install(DIRECTORY resources/ DESTINATION resources
     PATTERN "logs" EXCLUDE
     PATTERN "logs/*" EXCLUDE
-    PATTERN "extracted_frames_json" EXCLUDE
-    PATTERN "extracted_frames_json/*" EXCLUDE)
+)
 
 # Wrapper run script (no substitution needed) installed at package root
 install(PROGRAMS ${CMAKE_SOURCE_DIR}/cmake/run_adsil.sh.in DESTINATION . RENAME run_adsil.sh)
@@ -76,7 +93,7 @@ set(CPACK_PACKAGE_VENDOR "rekrom")
 set(CPACK_GENERATOR "TGZ")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-linux-x86_64")
 set(CPACK_STRIP_FILES TRUE)
-set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON)
 set(CPACK_PACKAGE_CONTACT "")
 include(CPack)
 
