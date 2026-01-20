@@ -1,4 +1,7 @@
 #include <simulation/implementations/SimulationManager.hpp>
+#include <thread>
+#include <chrono>
+#include <iostream>
 
 // Fallback base resource directory if environment variable is not set
 #ifndef ADSIL_RESOURCE_PATH_DEFAULT
@@ -274,30 +277,68 @@ namespace simulation
         if (!frameBuffer_ || !hasFrameChanged_)
             return; // silent fast path (avoid log spam)
 
+        // Skip if background thread is still processing
+        if (signalProcessingBusy_.load())
+            return;
+
         hasFrameChanged_ = false;
-        // Single concise INFO log before solve for traceability (timestamp + frame)
+        signalProcessingBusy_.store(true);
+
+        // Capture values for the async task
         const auto ts = frameBuffer_->getCurrentTimestamp();
         const auto frameIdx = frameBuffer_->getCurrentFrameIndex();
         const auto totalFrames = frameBuffer_->getTotalFrameCount();
-        LOGGER_INFO("simulation", std::string("solve_start ts=") + std::to_string(ts) +
-                                      " frame=" + std::to_string(frameIdx) + "/" + std::to_string(totalFrames));
 
         // Set frame context for data export
         utils::DataExporter::getInstance().setFrameContext(frameIdx, ts);
 
-        try
-        {
-            TIMER_SCOPE("SignalProcessing_Total");
+        // Run signal processing in background thread
+        std::thread([this, ts, frameIdx, totalFrames]()
+                    {
+            LOGGER_INFO("simulation", std::string("solve_start ts=") + std::to_string(ts) +
+                                          " frame=" + std::to_string(frameIdx) + "/" + std::to_string(totalFrames));
 
-            std::shared_ptr<math::PointCloud> pointCloud;
-            core::Timer::measure("SignalSolver_solve", [&]()
-                                 { pointCloud = signalSolver_->solve(); });
+            try
+            {
+                TIMER_SCOPE("SignalProcessing_Total");
+
+                std::shared_ptr<math::PointCloud> pointCloud;
+                core::Timer::measure("SignalSolver_solve", [&]()
+                                     { pointCloud = signalSolver_->solve(); });
+
+                // Store result for main thread
+                {
+                    std::lock_guard<std::mutex> lock(pendingResultMutex_);
+                    pendingPointCloud_ = pointCloud;
+                    hasPendingResult_.store(true);
+                }
+            }
+            catch (const std::exception &e)
+            {
+                LOGGER_ERROR("SimulationManager", std::string("Error in signal solver: ") + e.what());
+            }
+
+            signalProcessingBusy_.store(false); })
+            .detach();
+    }
+
+    void SimulationManager::applyPendingPointCloud_()
+    {
+        if (!hasPendingResult_.load())
+            return;
+
+        std::shared_ptr<math::PointCloud> pointCloud;
+        {
+            std::lock_guard<std::mutex> lock(pendingResultMutex_);
+            pointCloud = pendingPointCloud_;
+            pendingPointCloud_.reset();
+            hasPendingResult_.store(false);
+        }
+
+        if (pointCloud && detectedPointCloudEntity_)
+        {
             core::Timer::measure("PointCloudEntity_setPointCloud", [&]()
                                  { detectedPointCloudEntity_->setPointCloud(pointCloud); });
-        }
-        catch (const std::exception &e)
-        {
-            LOGGER_ERROR(LogChannel, std::string("Error in signal solver: ") + e.what());
         }
     }
 
@@ -359,8 +400,11 @@ namespace simulation
                     frameBuffer_->update(deltaTime);
                 }
 
-                // Signal processing (sampled logging inside)
+                // Start async signal processing (non-blocking)
                 processSignals_();
+
+                // Apply any completed results from background thread
+                applyPendingPointCloud_();
 
                 // Render frame
                 {

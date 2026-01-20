@@ -2,6 +2,9 @@
 
 #include <filesystem>
 #include <stdexcept>
+#include <thread>
+#include <mutex>
+#include <atomic>
 #include <vehicle/Car.hpp>
 #include <viewer/interfaces/IViewer.hpp>
 #include <viewer/entities/entities.hpp>
@@ -65,6 +68,8 @@ namespace simulation
         void validateEssentialComponents();
         // Extracted internal helper for signal solving & detected point cloud update
         void processSignals_();
+        // Apply pending point cloud from async processing
+        void applyPendingPointCloud_();
 
     private:
         // Configuration
@@ -82,6 +87,12 @@ namespace simulation
         // Entities
         std::shared_ptr<viewer::PointCloudEntity> pcEntity_;
         std::shared_ptr<viewer::PointCloudEntity> detectedPointCloudEntity_;
+
+        // Async signal processing state
+        std::atomic<bool> signalProcessingBusy_{false};
+        std::mutex pendingResultMutex_;
+        std::shared_ptr<math::PointCloud> pendingPointCloud_;
+        std::atomic<bool> hasPendingResult_{false};
     };
 
 } // namespace simulation
