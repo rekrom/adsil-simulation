@@ -6,6 +6,9 @@
 #include <deque>
 #include <string>
 #include <memory>
+#include <thread>
+#include <mutex>
+#include <atomic>
 #include <simulation/implementations/Frame.hpp>
 #include <adapter/AdapterManager.hpp> // Assuming this loads PointCloud
 #include <simulation/interfaces/IFrameObserver.hpp>
@@ -66,5 +69,14 @@ namespace simulation
         void loadWindowAround(int centerFrame);
         std::shared_ptr<Frame> loadFrame(int frameIndex);
         void fireCallback();
+
+        // Async frame preloading
+        void startPreloadingNextFrame();
+
+        std::mutex preloadMutex_;
+        std::shared_ptr<Frame> preloadedFrame_;
+        int preloadedFrameIndex_ = -1;
+        std::atomic<bool> preloadInProgress_{false};
+        std::atomic<bool> hasPreloadedFrame_{false};
     };
 }

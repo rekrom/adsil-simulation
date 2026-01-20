@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <thread>
 
 namespace simulation
 {
@@ -28,6 +29,9 @@ namespace simulation
         }
 
         loadWindowAround(currentFrameIndex_);
+
+        // Start preloading the next frame
+        startPreloadingNextFrame();
     }
 
     void FrameBufferManager::update(float deltaTime)
@@ -108,9 +112,27 @@ namespace simulation
 
             int newFrameIndex = currentFrameIndex_ + windowSize_;
             if (newFrameIndex < totalFrameCount_)
-                frameWindow_.push_back(loadFrame(newFrameIndex));
+            {
+                // Try to use preloaded frame if available
+                if (hasPreloadedFrame_.load() && preloadedFrameIndex_ == newFrameIndex)
+                {
+                    std::lock_guard<std::mutex> lock(preloadMutex_);
+                    frameWindow_.push_back(preloadedFrame_);
+                    preloadedFrame_.reset();
+                    hasPreloadedFrame_.store(false);
+                }
+                else
+                {
+                    frameWindow_.push_back(loadFrame(newFrameIndex));
+                }
+            }
             else
+            {
                 frameWindow_.push_back(std::make_shared<Frame>());
+            }
+
+            // Start preloading the next frame in background
+            startPreloadingNextFrame();
         }
         else if (direction == -1)
         {
@@ -242,6 +264,49 @@ namespace simulation
     void FrameBufferManager::addFrameObserver(const std::shared_ptr<IFrameObserver> &observer)
     {
         frameObservers_.push_back(observer);
+    }
+
+    void FrameBufferManager::startPreloadingNextFrame()
+    {
+        // Don't start if already preloading
+        if (preloadInProgress_.load())
+            return;
+
+        // Calculate which frame to preload (next one after current window)
+        int nextFrameIndex = currentFrameIndex_ + windowSize_ + 1;
+
+        if (nextFrameIndex >= totalFrameCount_)
+            return; // No more frames to preload
+
+        preloadInProgress_.store(true);
+
+        std::thread([this, nextFrameIndex]()
+                    {
+            try
+            {
+                std::ostringstream filename;
+                filename << "frame_" << std::setw(5) << std::setfill('0') << nextFrameIndex << ".json";
+                std::string path = core::ResourceLocator::getJsonPathForScene(filename.str());
+                
+                // Create a new adapter for thread safety
+                adapter::AdapterManager threadAdapters;
+                auto frame = threadAdapters.fromJson<std::shared_ptr<simulation::Frame>>(path);
+                frame->filePath = path;
+
+                {
+                    std::lock_guard<std::mutex> lock(preloadMutex_);
+                    preloadedFrame_ = frame;
+                    preloadedFrameIndex_ = nextFrameIndex;
+                    hasPreloadedFrame_.store(true);
+                }
+            }
+            catch (const std::exception &e)
+            {
+                LOGGER_WARN("Failed to preload frame: " + std::string(e.what()));
+            }
+
+            preloadInProgress_.store(false); })
+            .detach();
     }
 
 }
